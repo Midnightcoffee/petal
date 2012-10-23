@@ -1,5 +1,6 @@
 # polar_bar.py
 
+import os
 from flask import Flask, make_response
 app = Flask(__name__)
 
@@ -12,7 +13,7 @@ def simple():
     import numpy as np
     import matplotlib.cm as cm
 
-    import os
+
     from matplotlib.pyplot import figure, show, rc
     import datetime
     import StringIO
