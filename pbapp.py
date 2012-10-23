@@ -4,13 +4,16 @@ from flask import Flask, make_response
 app = Flask(__name__)
 
 
-import numpy as np
-import matplotlib.cm as cm
-from matplotlib.pyplot import figure, show, rc
+
 
 @app.route("/")
 def simple():
     #TODO find out why there are imported in function
+    import numpy as np
+    import matplotlib.cm as cm
+
+    import os
+    from matplotlib.pyplot import figure, show, rc
     import datetime
     import StringIO
     import random
