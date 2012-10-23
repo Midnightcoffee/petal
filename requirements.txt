@@ -1,2 +1,1 @@
 numpy==1.6.2
-prod-requirements.txt
