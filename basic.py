@@ -15,13 +15,10 @@ fig = figure(figsize=(12,12))
 ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
 
 
-#ax = fig.add_subplot(111, polar=True)
 deg = [360/len(labels) * x for x in range(1,len(labels)+1)]
 theta = [i*pi/180 for i in deg]  # convert to radians
 
 radii = [rr(0,6) for x in range(len(labels))]
-N = len(labels)
-#width = np.pi/7*np.random.rand(N)
 #TODO figure out width... artistically
 bars = ax.bar(theta,radii, width=0.35, bottom=0.0, align='center')
 for r,bar in zip(radii, bars):
