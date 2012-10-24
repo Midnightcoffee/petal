@@ -5,8 +5,6 @@ from flask import Flask, make_response
 app = Flask(__name__)
 
 
-
-
 @app.route("/")
 def simple():
     #TODO find out why there are imported in function
