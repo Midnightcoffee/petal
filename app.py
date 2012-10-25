@@ -50,7 +50,7 @@ def simple():
     
     ax.set_thetagrids(deg,labels, fontsize=15)
 
-    ax.set_title("Beaumont Hospital", fontsize=50, weight="bold")
+    ax.set_title("St Mungio's Hospital for Magical Maladies and Injuries", fontsize=20, weight="bold",color="blue")
 
     #TODO i'm assuming this is the paint part
     canvas=FigureCanvas(fig)
