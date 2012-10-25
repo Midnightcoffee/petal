@@ -1,11 +1,14 @@
-# polar_bar.py
 
 import os
-from flask import Flask, make_response
+from flask import Flask, make_response,render_template
 app = Flask(__name__)
 
-
 @app.route("/")
+def main():
+    #TODO what to display on mainpage
+    return render_template('main.html')
+
+@app.route("/polarchart")
 def simple():
     #TODO find out why there are imported in function
     import numpy as np
@@ -45,7 +48,7 @@ def simple():
     
     ax.set_thetagrids(deg,labels, fontsize=15)
 
-    ax.set_title("like this Cheryl?", fontsize=50, weight="bold")
+    ax.set_title("Beaumont Hospital, Detroit, MI", fontsize=50, weight="bold")
 
     #TODO i'm assuming this is the paint part
     canvas=FigureCanvas(fig)
