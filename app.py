@@ -33,7 +33,7 @@ def simple():
         "Education and training", "Certification"]
 
     # force square figure and square axes looks better for polar, IMO
-    fig = figure(figsize=(10,10))
+    fig = figure(figsize=(12,12))
     #TODO its cutting off text
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
 
@@ -41,16 +41,16 @@ def simple():
     deg = [360/len(labels) * x for x in range(1,len(labels)+1)]
     theta = [i*pi/180 for i in deg]  # convert to radians
 
-    radii = [rr(0,6) for x in range(len(labels))]
+    radii = [rr(0,11) for x in range(len(labels))]
     #TODO figure out width... artistically
     bars = ax.bar(theta,radii, width=0.35, bottom=0.0, align='center')
     for r,bar in zip(radii, bars):
         bar.set_facecolor( cm.jet(r/10.))
         bar.set_alpha(0.5)
     
-    ax.set_thetagrids(deg,labels, fontsize=15)
+    ax.set_thetagrids(deg,labels, frac= 1, fontsize=14, verticalalignment = 'top',weight ="bold", color = "blue",clip_on =True)
 
-    ax.set_title("St Mungio's Hospital for Magical Maladies and Injuries", fontsize=20, weight="bold",color="blue")
+    ax.set_title("----PCI----", fontsize=30, weight="bold")
 
     #TODO i'm assuming this is the paint part
     canvas=FigureCanvas(fig)
