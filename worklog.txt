@@ -1,4 +1,6 @@
 
+**CHECK DEBUG BEFORE DEPLOYING!**
+
 To Do:
 investigate safety features for production vs development
 
@@ -14,7 +16,8 @@ Learned about environment variables, virtualenvwrapper hooks, flask
 production vs development.
 
 2012-10-26 
-
+Updated app to have a click-able sections linking to (possible) graphs.
+learned about for_url usage,mapping coordinates
 
 
 

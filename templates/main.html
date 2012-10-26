@@ -6,18 +6,16 @@
   
 </head>
 <body>
-  <h1>Map of U.S</h1>
   <p>
-  Once I know where the hospitals are I can add icons/links 
-  on the map that correspond to the graphs.It would also be possible to have
-  users sign in and build,edit,save and view their information. Click
-  anywhere on the map to view a test polar graph.
+  To view a hospital's polar chart, click on their location marker on the map.
   </p>
-  <!-- how to get map from file! -->
-  
-  <a href= "/polarchart">
-    <img src ="{{ url_for('static', filename='UnitedStates2.png') }}">
-  </a>
+
+  <img src ="{{ url_for('static', filename='US.png') }}" alt="U.S map" usemap="#logos">
+
+  <map name="logos">
+    <!-- from http://www.mobilefish.com/services/record_mouse_coordinates/record_mouse_coordinates.php-->
+    <area shape="rect" coords="690,248,708,264" href ="/polarchart" title="PCI" alt="PCI" />
+  </map>
  
 
 </body>
