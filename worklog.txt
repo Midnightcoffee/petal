@@ -1,0 +1,22 @@
+
+To Do:
+investigate safety features for production vs development
+
+Possible extension:
+handling user input into site
+
+
+WORK LOG:
+
+2012-10-25
+Updated app to have a link img, changed title
+Learned about environment variables, virtualenvwrapper hooks, flask 
+production vs development.
+
+2012-10-26 
+
+
+
+
+
+
