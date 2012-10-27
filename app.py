@@ -1,8 +1,7 @@
-
 import os
 from flask import Flask, make_response,render_template,url_for
 app = Flask(__name__)
-
+#silly line
 @app.route("/")
 def main():
     #TODO what to display on mainpage
