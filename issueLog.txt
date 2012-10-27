@@ -1,1 +1,6 @@
-Issue 1: Allow user to enter input
+Issue 1: Allow user to enter input 
+    opened - 2012-10-26
+    closed - 2012-10-27
+
+Issue 2: Allow user to create a complete graph
+    opened - 2012-10-27
