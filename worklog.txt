@@ -18,8 +18,9 @@ Learned about environment variables, virtualenvwrapper hooks, flask
 production vs development.
 
 2012-10-26 
-Updated app to have a click-able sections linking to (possible) graphs.
-learned about for_url usage,mapping coordinates
+Updated app to have a click-able sections linking to (possible) graphs. As 
+well as the ability to pass values from view to view using sessions. Possible,
+will be replaced by a database next.
 
 
 
