@@ -41,7 +41,7 @@ def simple():
     #TODO clean this up
     try:
         num = int(session['number'])
-        assert num >= 0 and num <= 10
+        assert (num >= 0 and num <= 10)
     except:
         num = 10
     
