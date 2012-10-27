@@ -3,7 +3,7 @@ from flask import Flask, make_response,render_template,url_for,request,redirect,
 app = Flask(__name__)
 
 app.config.from_object('defaultconfig')
-app.config.from_envvar('PETAL_DEV')
+app.config.from_envvar('PETAL_PRO')
 #TODO doctrings?
 
 @app.route("/")
