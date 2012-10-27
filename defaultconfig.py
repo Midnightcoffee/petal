@@ -1,2 +1,2 @@
-SECRET_KEY = "j2oj3pr9jsa98uf23423sdfsfu98"
+SECRET_KEY = "j2oj3pr9jsa98uf23423sdfsfu9877777777"
 DEBUG = False
