@@ -3,6 +3,8 @@
 
 To Do:
 investigate safety features for production vs development
+make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
+use the map.
 
 Possible extension:
 handling user input into site
