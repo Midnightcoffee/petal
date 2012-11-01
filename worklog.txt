@@ -2,6 +2,7 @@
 **CHECK DEBUG BEFORE DEPLOYING!**
 
 To Do:
+Add tests!
 Remove Defaultconfig from git history
 investigate safety features for production vs development! Default config?
 make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
