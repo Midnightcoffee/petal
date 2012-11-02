@@ -7,4 +7,8 @@ Issue 2: Allow user to create a complete graph
     closed - 2012-10-27
 
 Issue 3: Restructure for a larger project
-    opened  2012-11-02
+    opened - 2012-11-02
+    closed - 2012-11-02
+
+Issue 4: Create a secure login page
+    opened - 2012-11-02
