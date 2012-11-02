@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action="{{ url_for('make_charts') }}" method=post >
+  <h1>certification(enter a number between 1 and 10):</h1>
+  <textarea name=number rows=8 cols=40></textarea>
+  <input type=submit value=share />
+</form>
+<p> now when you click the on the map/link to the Michigan polar chart you
+should see your value for Certification" </p>
+{% endblock %}
