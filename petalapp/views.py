@@ -1,8 +1,8 @@
 from flask import Flask, make_response,render_template,url_for,request,redirect,session,escape
-
+from petalapp import app
 #TODO add comments!
 app.config.from_object('defaultconfig')
-app.config.from_envvar('PETAL_PRO')
+app.config.from_envvar('PETAL_DEV')
 #TODO doctrings?
 
 @app.route("/")

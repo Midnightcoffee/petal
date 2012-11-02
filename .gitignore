@@ -27,6 +27,6 @@ pip-log.txt
 .mr.developer.cfg
 
 #defaultconfig file,
-defaultconfig.py
+petalapp/defaultconfig.py
 
 build/
