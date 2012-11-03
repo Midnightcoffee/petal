@@ -1,16 +1,9 @@
-<!doctype html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-
-  <title>PetalProject</title>
-  
-</head>
+{% extends "base.html" %}
+{% block content %}
 <body>
   <p>
   To view a hospital's polar chart, click on their location marker on the map.
   </p>
-  <p>To make your own chart click <a href="/show_charts">here</a></p>
-
   <img src ="{{ url_for('static', filename='US.png') }}" alt="U.S map" usemap="#logos">
 
   <map name="logos">
@@ -18,5 +11,5 @@
     <area shape="rect" coords="690,248,708,264" href ="/polarchart" title="PCI" alt="PCI" />
   </map>
 </body>
-
+{% endblock %}
 

@@ -1,13 +1,16 @@
 from flask import Flask, make_response,render_template,url_for,request,redirect,session,escape
 from petalapp import app
-#TODO add comments!
-
-#TODO doctrings?
+#TODO add comments, doctrings?
+#TODO change  main to base/welcome
 
 @app.route("/")
-def main():
+def index():
+    return render_template('index.html')
+
+@app.route("/map")
+def map():
     #TODO fix up mainpage
-    return render_template('main.html')
+    return render_template('map.html')
 
 @app.route("/make_charts",methods=['GET','POST'])
 def make_charts():
