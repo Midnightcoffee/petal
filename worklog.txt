@@ -1,0 +1,32 @@
+
+**CHECK DEBUG BEFORE DEPLOYING!**
+
+To Do:
+Add tests.
+Should be using url_for rather then hard coding urls
+CSS style within div classes.
+Remove Defaultconfig from git history
+investigate safety features for production vs development! Default config?
+make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
+use the map.
+
+Possible extension:
+handling user input into site
+
+
+WORK LOG:
+
+2012-10-25
+Updated app to have a link img, changed title
+Learned about environment variables, virtualenvwrapper hooks, flask 
+production vs development.
+
+2012-10-26 
+Updated app to have a click-able sections linking to (possible) graphs. As 
+well as the ability to pass values from view to view using sessions. Possible,
+will be replaced by a database next.
+
+
+
+
+
