@@ -1,5 +1,6 @@
-import os
+# i suppose i just need the app
 from petalapp import app
+
 
 # aren't necessary with gunicorn 
 #port = int(os.environ.get('PORT', 5000))

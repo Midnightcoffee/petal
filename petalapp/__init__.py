@@ -1,12 +1,18 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+#alternative method
+#from flask.ext.sqlalchemy import SQLAlchemy
+from  flask_heroku import Heroku
 import os
 app = Flask(__name__)
+#configuring from my local computer
 app.config.from_object('defaultconfig')
 app.config.from_envvar('PETAL_DEV')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-db = SQLAlchemy(app)
+# alternative method to using flask-heroku
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+#db = SQLAlchemy(app)
 
+#flask heroku
+heroku = Heroku(app)
 from petalapp import views
 
 
