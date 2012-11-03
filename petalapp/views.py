@@ -38,7 +38,6 @@ def simple():
         assert (num >= 0 and num <= 10)
     except:
         num = 10
-
     response=make_response(plotpolar(num).getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
