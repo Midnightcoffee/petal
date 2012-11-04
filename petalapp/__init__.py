@@ -8,7 +8,7 @@ app = Flask(__name__)
 #configuring from my local computer
 #app.config.from_object('defaultconfig')
 app.config.from_object('fakeconfig')
-app.config.from_envvar('PETAL_DEV')
+app.config.from_envvar('PETAL_PRO')
 # alternative method to using flask-heroku
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
