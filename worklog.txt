@@ -10,6 +10,12 @@ investigate safety features for production vs development! Default config?
 make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
 use the map.
 
+use heroku logs
+(09:36:25 PM) pearkes: midnightcoffee is this for env variables?
+(09:37:08 PM) midnightcoffee: pearkes, yes. I'm trying to figure out how to keep my "SECRET_KEY" (from flask) ... secret
+(09:37:40 PM) pearkes: midnightcoffee heroku config:add SECRET_KEY=yoursecretkey
+(09:37:52 PM) pearkes: that sets it in the app and keeps it out of git!
+
 Possible extension:
 handling user input into site
 
