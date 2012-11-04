@@ -10,5 +10,8 @@ Issue 3: Restructure for a larger project
     opened - 2012-11-02
     closed - 2012-11-02
 
-Issue 4: Create a secure login page
+Issue 4: Create a secure login page -> became boiler plate for database,
+    gunicorn and a host of other things. Login never achieved, needed to push
+    to see if app see working.
     opened - 2012-11-02
+    closed - 2012-11-03
