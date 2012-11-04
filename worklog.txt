@@ -27,6 +27,18 @@ use heroku logs
 (09:59:13 PM) midnightcoffee: pearkes: oh, thats brilliant. 
 (09:59:19 PM) pearkes: But on development, you'd probably not have that env variable, so it would fall back to 5000
 
+use multiple procfiles
+(01:46:30 PM) pearkes: midnightcoffee guinicorn is an http server - usually overkill for development. It also doesn't have flask's (werkzeugs, really) awesome built-in debugger
+(01:46:41 PM) pearkes: If I were you
+(01:46:45 PM) pearkes: I would make two procfiles
+(01:46:48 PM) pearkes: one called Procfile
+(01:46:52 PM) pearkes: For Heroku
+(01:46:52 PM) maletor [~maletor@c-69-181-24-86.hsd1.ca.comcast.net] entered the room.
+(01:47:00 PM) pearkes: and one called Procfile.dev
+(01:47:17 PM) pearkes: in Procfile.dev you can put web: python app.py for example
+(01:47:31 PM) pearkes: and then locally, run this:
+(01:47:42 PM) pearkes: foreman start --procfile Procfile.dev
+
 Possible extension:
 handling user input into site
 
