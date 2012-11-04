@@ -18,4 +18,3 @@ heroku = Heroku(app)
 db = SQLAlchemy(app)
 from petalapp import views
 
-
