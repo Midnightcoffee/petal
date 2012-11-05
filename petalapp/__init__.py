@@ -10,7 +10,6 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 #app.config.from_envvar('PETAL_DEV')
 # alternative method to using flask-heroku
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
 #flask heroku
