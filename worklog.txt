@@ -1,7 +1,8 @@
 
-**CHECK DEBUG BEFORE DEPLOYING!**
 
+##########
 To Do:
+############
 Add tests.
 Should be using url_for rather then hard coding urls
 CSS style within div classes.
@@ -9,13 +10,17 @@ Remove Defaultconfig from git history
 investigate safety features for production vs development! Default config?
 make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
 use the map.
-
+Possible extension:
+handling user input into site
+#############
+advice
+#############
 use heroku logs
 (09:36:25 PM) pearkes: midnightcoffee is this for env variables?
 (09:37:08 PM) midnightcoffee: pearkes, yes. I'm trying to figure out how to keep my "SECRET_KEY" (from flask) ... secret
 (09:37:40 PM) pearkes: midnightcoffee heroku config:add SECRET_KEY=yoursecretkey
 (09:37:52 PM) pearkes: that sets it in the app and keeps it out of git!
-(09:53:46 PM) midnightcoffee: I need a flask/heroku mentor it seems. That worked after i commented out the from_env part as well. 
+(09:53:46 PM) midnightcoffee: I need a flask/heroku mentor it seems. That worked after i commented out the from_env part as well.
 (09:53:56 PM) pearkes: midnightcoffee cool!
 (09:54:21 PM) pearkes: I recommend doing env variables something like this: https://github.com/pearkes/lyre/blob/master/settings.py
 (09:54:43 PM) pearkes: You can then add defaults, for example, on the port
@@ -24,7 +29,7 @@ use heroku logs
 (09:58:27 PM) pearkes: midnightcoffee Nope, that's just the python .get() method. Its defaults to None if there isn't a default set.
 (09:58:35 PM) pearkes: Heroku automatically sets a env variable called PORT
 (09:59:02 PM) pearkes: So when it runs os.environ.get('PORT', 5000), it just gets the value of the PORT in the env.
-(09:59:13 PM) midnightcoffee: pearkes: oh, thats brilliant. 
+(09:59:13 PM) midnightcoffee: pearkes: oh, thats brilliant.
 (09:59:19 PM) pearkes: But on development, you'd probably not have that env variable, so it would fall back to 5000
 
 use multiple procfiles
@@ -39,23 +44,19 @@ use multiple procfiles
 (01:47:31 PM) pearkes: and then locally, run this:
 (01:47:42 PM) pearkes: foreman start --procfile Procfile.dev
 
-Possible extension:
-handling user input into site
 
 
+################
 WORK LOG:
+##################
 
 2012-10-25
 Updated app to have a link img, changed title
-Learned about environment variables, virtualenvwrapper hooks, flask 
+Learned about environment variables, virtualenvwrapper hooks, flask
 production vs development.
 
-2012-10-26 
-Updated app to have a click-able sections linking to (possible) graphs. As 
+2012-10-26
+Updated app to have a click-able sections linking to (possible) graphs. As
 well as the ability to pass values from view to view using sessions. Possible,
 will be replaced by a database next.
-
-
-
-
 

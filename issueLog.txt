@@ -15,3 +15,6 @@ Issue 4: Create a secure login page -> became boiler plate for database,
     to see if app see working.
     opened - 2012-11-02
     closed - 2012-11-03
+
+Issue 5: Create a Database/posible login page.
+    open 2012-11-05
