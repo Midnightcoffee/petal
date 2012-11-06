@@ -16,5 +16,9 @@ Issue 4: Create a secure login page -> became boiler plate for database,
     opened - 2012-11-02
     closed - 2012-11-03
 
-Issue 5: Create a Database/posible login page.
-    open 2012-11-05
+Issue 5: Create a Database/posible login page. -> closed to work on image iss
+    opened 2012-11-05
+    closed 2012-11-05
+
+Issue 6: Handle/store images
+    opened 2012-11-05

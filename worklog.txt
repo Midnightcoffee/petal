@@ -60,3 +60,6 @@ Updated app to have a click-able sections linking to (possible) graphs. As
 well as the ability to pass values from view to view using sessions. Possible,
 will be replaced by a database next.
 
+2012-11-05
+Had meeting with group today, outlined project goals.
+worked on database, switching to image storeage problem
