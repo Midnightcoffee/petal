@@ -2,6 +2,7 @@ from flask import  make_response,render_template,url_for,request,redirect,sessio
 from petalapp import app
 #python path points to petalapp?
 from graph import plotpolar
+
 #TODO add comments, doctrings?
 #TODO change  main to base/welcome
 
@@ -37,10 +38,9 @@ def simple():
         num = int(session['number'])
         assert (num >= 0 and num <= 10)
     except:
-        num = 10
+        num = 10    
     response=make_response(plotpolar(num).getvalue())
     response.headers['Content-Type'] = 'image/png'
-
     return response
 
 
