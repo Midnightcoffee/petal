@@ -1,3 +1,141 @@
+
+
+
+
+use heroku logs
+(09:36:25 PM) pearkes: midnightcoffee is this for env variables?
+(09:37:08 PM) midnightcoffee: pearkes, yes. I'm trying to figure out how to keep my "SECRET_KEY" (from flask) ... secret
+(09:37:40 PM) pearkes: midnightcoffee heroku config:add SECRET_KEY=yoursecretkey
+(09:37:52 PM) pearkes: that sets it in the app and keeps it out of git!
+(09:53:46 PM) midnightcoffee: I need a flask/heroku mentor it seems. That worked after i commented out the from_env part as well.
+(09:53:56 PM) pearkes: midnightcoffee cool!
+(09:54:21 PM) pearkes: I recommend doing env variables something like this: https://github.com/pearkes/lyre/blob/master/settings.py
+(09:54:43 PM) pearkes: You can then add defaults, for example, on the port
+(09:54:58 PM) pearkes: So if the port doesn't exist in the env, it defaults to 5000 (for development)
+(09:57:49 PM) midnightcoffee: pearkes, is that possible because of how heroku works?
+(09:58:27 PM) pearkes: midnightcoffee Nope, that's just the python .get() method. Its defaults to None if there isn't a default set.
+(09:58:35 PM) pearkes: Heroku automatically sets a env variable called PORT
+(09:59:02 PM) pearkes: So when it runs os.environ.get('PORT', 5000), it just gets the value of the PORT in the env.
+(09:59:13 PM) midnightcoffee: pearkes: oh, thats brilliant.
+(09:59:19 PM) pearkes: But on development, you'd probably not have that env variable, so it would fall back to 5000
+
+use multiple procfiles
+(01:46:30 PM) pearkes: midnightcoffee guinicorn is an http server - usually overkill for development. It also doesn't have flask's (werkzeugs, really) awesome built-in debugger
+(01:46:41 PM) pearkes: If I were you
+(01:46:45 PM) pearkes: I would make two procfiles
+(01:46:48 PM) pearkes: one called Procfile
+(01:46:52 PM) pearkes: For Heroku
+(01:46:52 PM) maletor [~maletor@c-69-181-24-86.hsd1.ca.comcast.net] entered the room.
+(01:47:00 PM) pearkes: and one called Procfile.dev
+(01:47:17 PM) pearkes: in Procfile.dev you can put web: python app.py for example
+(01:47:31 PM) pearkes: and then locally, run this:
+(01:47:42 PM) pearkes: foreman start --procfile Procfile.dev
+
+
+
+heroku limitations possible apache
+2012-11-06T03:58:18  <midnightcoffee> I'm trying to build a site which builds and stores matplotlib graphs, should i consider using amazons s3 service to store the images or .... what are my options?
+2012-11-06T03:58:20  <herdrick> soulseekah: that's not a flaw, that's a feature for read-only data
+2012-11-06T03:58:39  <cdunklau> midnightcoffee: where does your app live?
+2012-11-06T03:58:56  <GrahamDumpleton> soulseekah: Read http://code.google.com/p/modwsgi/wiki/ProcessesAndThreading Is for mod_wsgi but the issues are common for any WSGI server.
+2012-11-06T03:58:59  <herdrick> soulseekah: ok, thanks for the warning.  i won't tinker with it.
+2012-11-06T03:59:34  <midnightcoffee> cdunklua, sorry forgot to add that, i'm deploying with heroku
+2012-11-06T03:59:55  <cdunklau> midnightcoffee: then s3 is a good bet.
+2012-11-06T04:00:02  <soulseekah> GrahamDumpleton, will certainly do even if I don't use mod_wsgi; anything particularly stupid I said that made you point out that to me?
+2012-11-06T04:00:18  *** atula has quit IRC
+2012-11-06T04:00:34  <cdunklau> midnightcoffee: there's flask-s3 that was recently made, but it sounds like you'll need to upload from inside the app with workers, ya?
+2012-11-06T04:00:51  <GrahamDumpleton> It explains some things in the context of mod_wsgi, but the issues are the same for other WSGI servers. Read it and you will see what I mean. Talks about data sharing processes, concurrency etc.
+2012-11-06T04:00:56  <cdunklau> midnightcoffee: get cozy with boto. it's nice.
+2012-11-06T04:01:09  <soulseekah> GrahamDumpleton, will do, thanks.
+2012-11-06T04:01:31  <bob2> herdrick, no, you'd want it out of process entirely
+2012-11-06T04:01:36  *** atula has joined #pocoo
+2012-11-06T04:01:47  <bob2> herdrick, my suggestion was just to move the huge delay from import time to first access time
+2012-11-06T04:02:01  <herdrick> bob2: right, so a DB or something
+2012-11-06T04:02:08  <soulseekah> herdrick, you may like this too http://code.google.com/p/modwsgi/wiki/ProcessesAndThreading#Sharing_Of_Global_Data good stuff
+2012-11-06T04:02:20  <cdunklau> midnightcoffee: overall, though, you probably should host that another way. like with a platform that you can use well with static files
+2012-11-06T04:02:57  <bob2> your current way at least means the big delay happens before the wsgi main loop is entered
+2012-11-06T04:03:04  <bob2> so you won't pause during requests
+2012-11-06T04:03:11  <herdrick> bob2: i find it's quicker to dev without a db.  add a db as needed.  but it sounds like that workflow won't work with Flask.
+2012-11-06T04:03:28  <cdunklau> midnightcoffee: i suppose heroku can do this for you, but you might just want to roll your own with EC2
+2012-11-06T04:03:42  <cdunklau> midnightcoffee: apache, nginx, or the like
+2012-11-06T04:03:44  <herdrick> soulseekah: thanks, i'll read that
+2012-11-06T04:03:57  *** macabre has quit IRC
+2012-11-06T04:04:14  <bob2> it's not related to flask at all
+2012-11-06T04:04:16  <soulseekah> GrahamDumpleton, good read, it all makes perfect sense of course.
+2012-11-06T04:04:27  <herdrick> so i'm bummed.  going to have to add a DB or go back to web.py.
+2012-11-06T04:04:44  <midnightcoffee> cdunklau, thanks. I'm trying to digest your advice, this is all new to me
+2012-11-06T04:04:44  <bob2> :-/
+2012-11-06T04:04:51  <bob2> in what way is webpy any different?
+2012-11-06T04:05:11  <bob2> you've made import supremely expensive, that will be a problem in any wsgi framework
+2012-11-06T04:05:17  <soulseekah> webpy's dev. server seems to replace the WSGI app in place, without reloading the interpreter
+2012-11-06T04:05:18  <cdunklau> midnightcoffee: how quickly do you have to ramp this up to a large number of concurrent requests?
+2012-11-06T04:05:40  <GrahamDumpleton> In place module reloading is very very error prone.
+2012-11-06T04:05:45  <bob2> yowzer
+2012-11-06T04:05:48  <herdrick> above i mentioned that web.py does not reload the app's dependencies even in debug mode.  you have to reload(some_module) yourself
+2012-11-06T04:05:59  <soulseekah> herdrick, intersting
+2012-11-06T04:06:12  <herdrick> bob2:  my last comment was for you
+2012-11-06T04:06:24  <bob2> so it's just a dev mode issue then?
+2012-11-06T04:06:47  <midnightcoffee> cdunklau, were hoping to display around 24 images in about 2 weeks. I'm trying to plan for many more
+2012-11-06T04:06:49  <soulseekah> doesn't web.py use the cherrypy server?
+2012-11-06T04:06:55  <cdunklau> midnightcoffee: because if it isn't for a while, i'd just work on an apache server.
+2012-11-06T04:07:41  <cdunklau> midnightcoffee: wait is the app going to generate charts live?
+2012-11-06T04:07:50  <bob2> use_reloader=False to app.run()
+2012-11-06T04:08:29  <bob2> but remember if you do use reload() that it does exactly one thing and that is load a new instance of a module and return it, it leaves references to the original laying around etc
+2012-11-06T04:10:14  *** skot has joined #pocoo
+2012-11-06T04:10:27  <soulseekah> maybe you can change https://github.com/mitsuhiko/werkzeug/blob/master/werkzeug/serving.py#L559 the reloader loop and have it reload() your modules and replace the app
+2012-11-06T04:10:33  <midnightcoffee> cdunklau, cdunklau yes, i'm hopeing the user will be able to build a chart from the app. Then i would save the image.
+2012-11-06T04:10:36  <soulseekah> but that's a crazy hack
+2012-11-06T04:11:06  <soulseekah> whenever a reload is detected, that will have the same behavior as web.py then
+2012-11-06T04:11:12  <bob2> you can't blindly use reload(), it needs to be done very carefully in an appspecific way
+2012-11-06T04:11:20  *** R_Macy has quit IRC
+2012-11-06T04:11:40  <soulseekah> without any doubt
+2012-11-06T04:13:50  <cdunklau> midnightcoffee: yeah i  would build that on your own hardware, or an EC2 instance or something
+2012-11-06T04:15:03  *** bjazz has quit IRC
+2012-11-06T04:15:20  <cdunklau> midnightcoffee: since it'll be far easier to just write to disk from the app, and serve the written file from a normal web server
+2012-11-06T04:15:23  <soulseekah> herdrick, https://github.com/webpy/webpy/blob/master/web/application.py#L687 this is web.py's reloader
+2012-11-06T04:15:40  <soulseekah> it looks for changed files and reloads only them
+2012-11-06T04:16:33  <soulseekah> with enough time you can port it to wz if you really want to, just for the fun of it though
+2012-11-06T04:17:17  <midnightcoffee> cdunklau, by "build on your own hardware" do you mean set up my own server?
+2012-11-06T04:17:26  <bob2> yowzer
+2012-11-06T04:17:29  <bob2> that's fraught
+2012-11-06T04:17:35  <cdunklau> midnightcoffee: yeah. apache or nginx
+2012-11-06T04:17:50  <cdunklau> midnightcoffee: or something else
+2012-11-06T04:18:04  <herdrick> soulseekah: thanks.  no thanks on the porting, though.  maybe i'll have to be a good soldier and use an external DB.  ;)
+2012-11-06T04:19:10  <soulseekah> oh do be so smart and do the latter
+2012-11-06T04:20:51  <midnightcoffee> cdunklau, thanks a ton, let me see if i understand. I would get information from the user -> store it in my heroku db -> have my sever access that db and build the chart then ->  something -> profit?
+2012-11-06T04:20:58  *** anth0ny has quit IRC
+2012-11-06T04:21:19  <cdunklau> midnightcoffee: no, more with the "not using heroku" thing
+2012-11-06T04:22:34  *** alekzvik has quit IRC
+2012-11-06T04:22:50  <cdunklau> midnightcoffee: you can't depend on the disk with heroku, at lease not after one request
+2012-11-06T04:24:03  <herdrick> soulseekah: bob2: ah.  so web.py might not reliably work the way I've been using it, either.  great.
+2012-11-06T04:25:09  <soulseekah> herdrick, they don't advertise it as unstable, but I believe GrahamDumpleton
+2012-11-06T04:25:45  <herdrick> from that doc soulseekah: sent me: "data will need to be stored in a way that it can be accessed from multiple child processes. ... [ex.] in shared memory accessible by all child processes."
+2012-11-06T04:26:10  *** tulioz has quit IRC
+2012-11-06T04:26:15  <soulseekah> i.e. a database, on disk or in memory
+2012-11-06T04:26:29  <herdrick> right. but how to get shared memory accessible by all child processes?
+2012-11-06T04:26:46  <soulseekah> it's the job of the "database" to provide an interface to its data of course
+2012-11-06T04:27:33  <herdrick> no, the shared memory option
+2012-11-06T04:27:57  <soulseekah> the database is the "shared memory"
+2012-11-06T04:28:25  <soulseekah> you can use and allocate shmem yourself of course if you're feeling adventerous
+2012-11-06T04:28:28  <soulseekah> and write your own apis
+2012-11-06T04:29:01  <herdrick> what i'm saying is that just keeping memory in a module var is damned convenient for dev.  different processes will have their own copy of course.  but that's often ok.
+2012-11-06T04:29:06  <soulseekah> you can of course try http://poshmodule.sourceforge.net/ and the sorts
+2012-11-06T04:29:32  *** shiver has quit IRC
+2012-11-06T04:29:33  <herdrick> posh - interesting
+2012-11-06T04:29:43  <soulseekah> you might also like something more low level like http://docs.python.org/2/library/multiprocessing.html#sharing-state-between-processes
+2012-11-06T04:30:18  *** tdignan has left #pocoo
+2012-11-06T04:30:31  <soulseekah> you might like to write a shared library instead
+2012-11-06T04:30:36  *** Fandekasp has quit IRC
+2012-11-06T04:30:46  <soulseekah> and dlopen it, us stuff from it
+2012-11-06T04:31:16  <herdrick> is there a way for me to specify that i just want a single process / single thread with a WSGI server?
+2012-11-06T04:31:38  <soulseekah> you can try http://pypi.python.org/pypi/posix_ipc/0.5.4 too
+2012-11-06T04:32:08  <soulseekah> sure
+2012-11-06T04:32:20  <herdrick> yeah, that's just implementing my own in-memory db
+2012-11-06T04:32:35  <herdrick> would rather just use redis or something
+2012-11-06T04:32:59  <midnightcoffee> cdunklau, is this relevant to what you mean by "cannot depend on the disk wit heroku?"https://devcenter.heroku.com/articles/read-only-filesystem
+2012-11-06T04:33:02  *** skot has quit IRC
+
+Heroku limitations s3 possible
 (10:56:53 PM) midnightcoffee: From the heroku website " Your app is compiled into a slug for fast distribution across the dyno manifold. The filesystem for the slug is read-only, which means you cannot dynamically write to the filesystem for semi-permanent storage.", i take it this means that heroku isn't a good choice if i want my web app to dynamically build and store matplotlib charts for people to view?
 (10:58:53 PM) Xitium [~Xitium@static-50-43-40-207.bvtn.or.frontiernet.net] entered the room.
 (10:59:45 PM) Xitium: Hi, I have been trying to work thru the online book at railstutorial.org, and everything seems to go well until it has me install the Heroku toolbelt. After that rails seems to break, what am I doing wrong?
@@ -55,3 +193,49 @@
 (11/06/2012 12:02:43 AM) midnightcoffee: zrail, that makes more sense. Great! Well thanks-a-ton. i wish i could buy you a beer or something. One of the things i love about this profession/lifestyle is the community.
 (12:02:50 AM) zrail: :)
 (12:02:52 AM) zrail: no worries
+
+
+s3 boto StringIO
+-check book marks
+(02:28:32 PM) doobeh: midnightcoffee: that thefort page is mine actually-- if you're creating files on the server, you can just adapat the s3_upload function to store it in s3
+(02:32:07 PM) monocult [~monocult@f048233101.adsl.alicedsl.de] entered the room.
+(02:32:22 PM) braoru left the room (quit: Ping timeout: 246 seconds).
+(02:36:48 PM) doobeh: though if the processing power isn't much, maybe just store the values you want to create the charts?
+(02:37:06 PM) midnightcoffee: doobeh, great, hats how i interpreted it as well.  I was curious if the flask-s3 extension made it easier. As far as i can tell the author: Edwardr, plans to make that possible ...in the future. "One of the next stages will be to integrate uploads to S3 into the extension, so keep an eye out :-)" - Edwardr . Wonderful site btw.
+(02:37:28 PM) Karmaon left the room (quit: Read error: Connection reset by peer).
+(02:37:55 PM) Karmaon [~Karmaon@unaffiliated/karmaon] entered the room.
+(02:38:52 PM) cdunklau left the room (quit: Quit: leaving).
+(02:39:58 PM) doobeh: midnightcoffee: the set_contents_from_filename might be useful to you, instead of the set_contents_from_string in the example
+(02:40:36 PM) fretscha [~fretscha@134-57.192-178.cust.bluewin.ch] entered the room.
+(02:42:06 PM) Odra left the room (quit: Ping timeout: 264 seconds).
+(02:42:08 PM) Joes [~Miranda@213.111.90.25] entered the room.
+(02:42:36 PM) doobeh: https://gist.github.com/4027001 maybe
+(02:43:48 PM) doobeh: where filename is the path to the temporarynamedfile (or whatever)
+(02:45:23 PM) rehandalal left the room (quit: Quit: rehandalal).
+(02:48:55 PM) markd2 left the room (quit: ).
+(02:49:17 PM) m3thyl left the room (quit: Quit: Ex-Chat).
+(02:51:30 PM) midnightcoffee: doobeh, I believe the whatever that i'm using in my code is a is a StringIO instance. Which i believe helps the object behave like a file to other functions.
+(02:56:38 PM) weaver_ left the room (quit: Ping timeout: 260 seconds).
+(02:56:41 PM) weaver left the room (quit: Ping timeout: 245 seconds).
+(02:59:59 PM) doobeh: oh, then you'll just need to pick a filename yourself https://gist.github.com/4027108
+(03:00:40 PM) teebes [~teebes@216.30.179.54] entered the room.
+(03:01:16 PM) weaver [~azazello@76-191-184-242.dedicated.static.sonic.net] entered the room.
+(03:01:18 PM) weaver_ [~azazello@76-191-184-242.dedicated.static.sonic.net] entered the room.
+(03:02:42 PM) Seveas [~Seveas@ubuntu/member/seveas] entered the room.
+(03:03:35 PM) midnightcoffee: doobeh, great i'll hack away at this for a while see what comes of it.
+(03:03:36 PM) jpadilla [~jpadilla@173.215.151.61] entered the room.
+(03:04:51 PM) gabrielpjordao [~gabrielpj@177.19.218.200] entered the room.
+Corresponding code ->
+stringio_object = your_string_io_object
+destination_filename = 'whatever'
+
+# Connect to S3
+conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
+b = conn.get_bucket(app.config["S3_BUCKET"])
+
+# Upload the File
+sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
+sml.set_contents_from_string(stringio_object.getvalue())
+
+# Set the file's permissions.
+sml.set_acl(acl)

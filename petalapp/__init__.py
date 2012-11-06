@@ -11,7 +11,6 @@ app.config.from_pyfile('config.py')
 #app.config.from_envvar('PETAL_DEV')
 # alternative method to using flask-heroku
 db = SQLAlchemy(app)
-
 #flask heroku
 #heroku = Heroku(app)
 #db = SQLAlchemy(app)

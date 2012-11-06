@@ -15,34 +15,6 @@ handling user input into site
 #############
 advice
 #############
-use heroku logs
-(09:36:25 PM) pearkes: midnightcoffee is this for env variables?
-(09:37:08 PM) midnightcoffee: pearkes, yes. I'm trying to figure out how to keep my "SECRET_KEY" (from flask) ... secret
-(09:37:40 PM) pearkes: midnightcoffee heroku config:add SECRET_KEY=yoursecretkey
-(09:37:52 PM) pearkes: that sets it in the app and keeps it out of git!
-(09:53:46 PM) midnightcoffee: I need a flask/heroku mentor it seems. That worked after i commented out the from_env part as well.
-(09:53:56 PM) pearkes: midnightcoffee cool!
-(09:54:21 PM) pearkes: I recommend doing env variables something like this: https://github.com/pearkes/lyre/blob/master/settings.py
-(09:54:43 PM) pearkes: You can then add defaults, for example, on the port
-(09:54:58 PM) pearkes: So if the port doesn't exist in the env, it defaults to 5000 (for development)
-(09:57:49 PM) midnightcoffee: pearkes, is that possible because of how heroku works?
-(09:58:27 PM) pearkes: midnightcoffee Nope, that's just the python .get() method. Its defaults to None if there isn't a default set.
-(09:58:35 PM) pearkes: Heroku automatically sets a env variable called PORT
-(09:59:02 PM) pearkes: So when it runs os.environ.get('PORT', 5000), it just gets the value of the PORT in the env.
-(09:59:13 PM) midnightcoffee: pearkes: oh, thats brilliant.
-(09:59:19 PM) pearkes: But on development, you'd probably not have that env variable, so it would fall back to 5000
-
-use multiple procfiles
-(01:46:30 PM) pearkes: midnightcoffee guinicorn is an http server - usually overkill for development. It also doesn't have flask's (werkzeugs, really) awesome built-in debugger
-(01:46:41 PM) pearkes: If I were you
-(01:46:45 PM) pearkes: I would make two procfiles
-(01:46:48 PM) pearkes: one called Procfile
-(01:46:52 PM) pearkes: For Heroku
-(01:46:52 PM) maletor [~maletor@c-69-181-24-86.hsd1.ca.comcast.net] entered the room.
-(01:47:00 PM) pearkes: and one called Procfile.dev
-(01:47:17 PM) pearkes: in Procfile.dev you can put web: python app.py for example
-(01:47:31 PM) pearkes: and then locally, run this:
-(01:47:42 PM) pearkes: foreman start --procfile Procfile.dev
 
 
 

@@ -40,6 +40,7 @@ def simple():
         num = 10
     response=make_response(plotpolar(num).getvalue())
     response.headers['Content-Type'] = 'image/png'
+
     return response
 
 
