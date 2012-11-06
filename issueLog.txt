@@ -20,5 +20,5 @@ Issue 5: Create a Database/posible login page. -> closed to work on image iss
     opened 2012-11-05
     closed 2012-11-05
 
-Issue 6: Handle/store images
-    opened 2012-11-05
+Issue 6: Handle/store images using boto and s3
+    opened 2012-11-06
