@@ -1,0 +1,57 @@
+(10:56:53 PM) midnightcoffee: From the heroku website " Your app is compiled into a slug for fast distribution across the dyno manifold. The filesystem for the slug is read-only, which means you cannot dynamically write to the filesystem for semi-permanent storage.", i take it this means that heroku isn't a good choice if i want my web app to dynamically build and store matplotlib charts for people to view?
+(10:58:53 PM) Xitium [~Xitium@static-50-43-40-207.bvtn.or.frontiernet.net] entered the room.
+(10:59:45 PM) Xitium: Hi, I have been trying to work thru the online book at railstutorial.org, and everything seems to go well until it has me install the Heroku toolbelt. After that rails seems to break, what am I doing wrong?
+(11:00:36 PM) robmorrissey left the room (quit: Quit: Computer has gone to sleep.).
+(11:01:23 PM) tinybluepixel left the room (quit: Ping timeout: 260 seconds).
+(11:11:19 PM) R_Macy [~R_Macy@c-69-137-70-11.hsd1.tn.comcast.net] entered the room.
+(11:11:42 PM) Progster left the room (quit: Read error: Operation timed out).
+(11:15:08 PM) The account has disconnected and you are no longer in this chat. You will be automatically rejoined in the chat when the account reconnects.
+(11:15:50 PM) The topic for #heroku is: Docs at https://devcenter.heroku.com || Current status at https://status.heroku.com || Support at https://support.heroku.com
+(11:23:52 PM) dnnsmanace left the room (quit: Remote host closed the connection).
+(11:24:11 PM) rburton- [~rburton-@96.24.76.25] entered the room.
+(11:24:26 PM) rburton-: re
+(11:24:37 PM) rburton-: How does a database upgrade work on Heroku?
+(11:27:30 PM) justinmcp [~justinmcp@ppp118-208-143-23.lns20.bne1.internode.on.net] entered the room.
+(11:30:04 PM) dmclain [~textual@75-43-17-191.lightspeed.austtx.sbcglobal.net] entered the room.
+(11:30:33 PM) aetcore_ left the room (quit: Read error: Connection reset by peer).
+(11:30:46 PM) aetcore [~aetcore@120.148.163.228] entered the room.
+(11:32:04 PM) bobthecow: midnightcoffee: yes and no.
+(11:32:07 PM) bobthecow: there are ways to do it.
+(11:32:46 PM) gthank [~gthank@unaffiliated/gthank] entered the room.
+(11:33:03 PM) bobthecow: you can write the files to a scratch directory then, for example, dump 'em into redis or mongo (gridfs) to serve 'em back.
+(11:33:12 PM) gthank: What's the best way to run alembic migrations on my Heroku app?
+(11:37:00 PM) midnightcoffee: bobthecow, i'm rather green. For something of this nature would be advisable to 1. attempt something of the nature you suggested. 2. try building my webapp using apache 3. abandon the idea of dynamically building the charts live.
+(11:38:24 PM) zrail: midnightcoffee: you could also build them into a scratch directory and upload to S3, then serve the S3 URL
+(11:38:34 PM) zrail: midnightcoffee: that's basically what docverter does and it works well
+(11:39:23 PM) bobthecow: midnightcoffee: what zrail says isn't a bad idea at all.
+(11:39:54 PM) rburton-: anyone here work at Heroku?
+(11:40:07 PM) zrail: nope
+(11:40:43 PM) midnightcoffee: zrail, Where could i read more about this option, my googling is coming up short
+(11:40:53 PM) zrail: midnightcoffee: are you using ruby?
+(11:41:04 PM) midnightcoffee: zrail, python flask
+(11:41:07 PM) rburton-: Hmm I near their HQ
+(11:41:15 PM) rburton-: I would love to drop by their office
+(11:42:12 PM) zrail: midnightcoffee: http://docs.pythonboto.org/en/latest/s3_tut.html
+(11:42:40 PM) zrail: rburton-: probably send them an email first, but i would be astounded if they said no
+(11:42:57 PM) rburton-: I plan to :)
+(11:43:24 PM) zrail: midnightcoffee: basically, create a bucket in the s3 interface and then follow the directions under "Storing Data"
+(11:43:39 PM) zrail: midnightcoffee: er, in the AWS console
+(11:44:59 PM) dmclain left the room (quit: Quit: Computer has gone to sleep.).
+(11:45:06 PM) bobthecow left the room ("Linkinus - http://linkinus.com").
+(11:49:33 PM) midnightcoffee: zrail, thanks a bunch. I'm obviously in over my head here.  I was talking to someone in the pocoo (flask/python) channel and he said : " you can't depend on the disk with heroku, at lease not after one request". Your suggestion would address this concern? 
+(11:50:53 PM) zrail: midnightcoffee: that person is correct, in so far as the disk is basically one big tempdir that's wiped when the dyno is killed, which will happen automatically at least once per day
+(11:51:29 PM) zrail: midnightcoffee: if you build your charts and upload them to S3, then return the S3 URL as the image URL, you'll be able to serve that image several times
+(11:52:19 PM) midnightcoffee: zrail, ah so i would have to build the charts ... locally?
+(11:52:32 PM) zrail: midnightcoffee: no, you could build them on the fly
+(11:52:37 PM) zrail: midnightcoffee: and then just stuff them on S3
+(11:53:26 PM) zrail: so, 1) request comes in for /some-fancy-chart. 2) you render the chart, upload to S3 3) you return some HTML with an <img> tag pointing at the S3 URL
+(11:54:26 PM) macmartine [~macmartin@c-24-21-112-60.hsd1.or.comcast.net] entered the room.
+(11:56:26 PM) midnightcoffee: zrail, gotcha. I'm probable not understanding the problem in the first place. I had assumed that "can't depend on the disk..." was suggesting that because heroku wouldn't be able to handle multiple ppl trying to create charts at once. 
+(11:56:53 PM) zrail: midnightcoffee: oh, no not at all. heroku disks are really fast
+(11:57:08 PM) zrail: midnightcoffee: but they're temporary
+(11:57:26 PM) midnightcoffee: zrail, oh...
+(11:57:35 PM) zrail: that's why you put the charts on S3
+(11:57:39 PM) zrail: S3 is permanent
+(11/06/2012 12:02:43 AM) midnightcoffee: zrail, that makes more sense. Great! Well thanks-a-ton. i wish i could buy you a beer or something. One of the things i love about this profession/lifestyle is the community.
+(12:02:50 AM) zrail: :)
+(12:02:52 AM) zrail: no worries
