@@ -41,8 +41,10 @@ def plotpolar(num):
     ax.set_title("----PCI----", fontsize=30, weight="bold")
 
     canvas=FigureCanvas(fig)
+    #String.IO, i believe allows us to treat our object as if it were a file.
     png_output = StringIO.StringIO()
     canvas.print_png(png_output)
     return png_output
+
 
 

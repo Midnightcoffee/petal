@@ -25,11 +25,11 @@ def make_charts():
         return redirect(url_for('show_charts'))
 
 @app.route('/show_charts',methods= ['GET','POST'])
-def show_charts(): 
+def show_charts():
     #TODO should just copy this code ...
     return render_template('show_charts.html')
 
- 
+
 @app.route("/polarchart")
 def simple():
     #TODO find out why there are imported in function, possible just import.
