@@ -3,6 +3,7 @@
 ##########
 To Do:
 ############
+uncomment upload
 READ http://charlesleifer.com/blog/web-based-encrypted-file-storage-using-flask-and-aws/
 Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
 Add tests.
