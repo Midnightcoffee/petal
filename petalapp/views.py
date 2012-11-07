@@ -37,6 +37,7 @@ def show_charts():
 @app.route("/polarchart")
 def simple():
     #TODO find out why there are imported in function, possible just import.
+    #refactor this assert
     try:
         num = int(session['number'])
         assert (num >= 0 and num <= 10)
