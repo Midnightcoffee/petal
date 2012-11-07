@@ -10,6 +10,7 @@ from graph import plotpolar
 #TODO add comments, doctrings?
 #TODO change  main to base/welcome
 
+#post method possible to make awswtf work?
 @app.route("/")
 def index():
     return render_template('index.html')
