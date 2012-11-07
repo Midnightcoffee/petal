@@ -17,8 +17,10 @@ def upload_s3(num,destination_filename):
     sml.set_acl('public-read')
 
 def download_s3(destination_filename):
-    conn = boto.connect_s3()
-    b = conn.get_all_buckets()
+    conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],
+            app.config["AWS_SECRET_ACCESS_KEY"])
+    b = conn.get_bucket(app.config["S3_BUCKET"])
+
     k = Key(b)
     return k
 
