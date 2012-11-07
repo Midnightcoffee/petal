@@ -1,5 +1,6 @@
 from flask import  make_response,render_template,url_for,request,redirect,session
 from petalapp import app
+from tools import upload_s3, download_s3
 #python path points to petalapp?
 from graph import plotpolar
 
@@ -38,10 +39,10 @@ def simple():
         num = int(session['number'])
         assert (num >= 0 and num <= 10)
     except:
-        num = 10    
-    response=make_response(plotpolar(num).getvalue())
-    response.headers['Content-Type'] = 'image/png'
-    return response
+        num = 10
+    upload_s3(num)
+    k = download_s3(num)
+    return k.get_contents_to_filename("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
 
 
 
