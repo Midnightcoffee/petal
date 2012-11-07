@@ -5,7 +5,6 @@ Author: Drew Verlee
 Description: Contains function plotpolar
 '''
 
-
 import matplotlib.cm as cm
 from matplotlib.pyplot import figure
 import StringIO

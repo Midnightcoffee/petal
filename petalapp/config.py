@@ -8,4 +8,7 @@ AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 S3_BUCKET = os.environ.get("S3_BUCKET")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 TESTING = os.environ.get("TESTING", False)
+S3_UPLOAD_DIRECTORY = os.environ.get("S3_UPLOAD_DIRECTORY")
+ALLOWED_EXTENSIONS = os.environ.get("ALLOWED_EXTENSIONS")
 CSRF_ENABLED = True
+
