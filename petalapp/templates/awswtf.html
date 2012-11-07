@@ -8,7 +8,7 @@
     {% endif %}
 {% endwith %}
 
-<form method="POST" enctype="multipart/form-data" action=".">
+<form method="POST" enctype="multipart/form-data" action="/awswtf">
     {{ form.csrf_token }}
     {{ form.example }}
     <input type="submit" value="Go">
