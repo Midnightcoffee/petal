@@ -34,14 +34,14 @@ def show_charts():
 
 @app.route("/polarchart")
 def simple():
-    destination_filename = 'achart/profile.JPG'
+    destination_filename = 'achart'
     #TODO find out why there are imported in function, possible just import.
     try:
         num = int(session['number'])
         assert (num >= 0 and num <= 10)
     except:
         num = 10
-    #upload_s3(num,destination_filename)
+    upload_s3(num,destination_filename)
     k = download_s3(destination_filename)
     return k.get_contents_to_filename("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
 
