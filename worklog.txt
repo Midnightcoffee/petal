@@ -3,24 +3,14 @@
 ##########
 To Do:
 ############
-uncomment upload
+Store passwords somewhere, currently in my keepass. 
 READ http://charlesleifer.com/blog/web-based-encrypted-file-storage-using-flask-and-aws/
 Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
 Add tests.
 Should be using url_for rather then hard coding urls
 CSS style within div classes.
-Remove Defaultconfig from git history
-investigate safety features for production vs development! Default config?
 make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
 use the map.
-Possible extension:
-handling user input into site
-#############
-advice
-#############
-
-
-
 ################
 WORK LOG:
 ##################
@@ -38,3 +28,6 @@ will be replaced by a database next.
 2012-11-05
 Had meeting with group today, outlined project goals.
 worked on database, switching to image storeage problem
+
+2012-11-(6-7)
+Connected site to amazons AWS site
