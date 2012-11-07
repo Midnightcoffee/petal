@@ -15,6 +15,8 @@ def upload_s3_chart(num,destination_filename):
 
     # TODO investigate, Set the file's permissions.
     sml.set_acl('public-read')
+    # TODO not sure if it needs to return anything?
+    return destination_filename
 
 def download_s3_chart(destination_filename):
     conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],
