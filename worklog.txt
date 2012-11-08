@@ -31,3 +31,11 @@ worked on database, switching to image storeage problem
 
 2012-11-(6-7)
 Connected site to amazons AWS site
+
+
+############
+randomness
+$$$$$$$$$$$
+drew@think$ (git::master) python db_create.py 
+/home/drew/.virtualenvs/petal/local/lib/python2.7/site-packages/sqlalchemy/engine/url.py:105: SADeprecationWarning: The SQLAlchemy PostgreSQL dialect has been renamed from 'postgres' to 'postgresql'. The new URL format is postgresql[+driver]://<user>:<pass>@<host>/<dbname>
+  module = __import__('sqlalchemy.dialects.%s' % (dialect, )).dialects
