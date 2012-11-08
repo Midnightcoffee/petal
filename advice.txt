@@ -239,3 +239,14 @@ sml.set_contents_from_string(stringio_object.getvalue())
 
 # Set the file's permissions.
 sml.set_acl(acl)
+
+(12:07:45 PM) dampxf: I'm trying to wrap my head around database-migrations in the context of my flask-built-app that lives on heroku. I was planning on using sql-alchemy to help manage the database. Can it really be as simple as -> https://devcenter.heroku.com/articles/migrating-data-between-plans? Will other tools such as sqlalchemy-migrate even be relevent if i just migrate between two postgres db's?
+(12:08:52 PM) zrail: midnightcoffee: there's multiple meanings for the term "migration". there's migrating between schema versions, where you add or remove tables, columns, indexes, etc
+(12:09:11 PM) zrail: midnightcoffee: and then there's migrating between heroku database instances, which is what that article is talking about
+(12:09:28 PM) zrail: sqlalchemy-migrate will help you do the former
+(12:10:53 PM) dampxf: zrail, how would you do the former without doing the later? (if that makes sense)
+(12:12:02 PM) zrail: midnightcoffee: postgresql has built-in facilities for making changes to the database while it's running. you typically would only ever have to move between database instances when you outgrow your current limits.
+(12:12:39 PM) zrail: midnightcoffee: you can add and remove whole tables, columns, and indexes inside of a database transaction in postgresql
+(12:13:16 PM) danieldock left the room (quit: Quit: Leaving...).
+(12:15:23 PM) dampxf: zrail, so i won't need to use migration in order to add,remove tables,comlumns etc..? 
+(12:15:43 PM) zrail: you won't need to use a heroku database migration like that article describes
