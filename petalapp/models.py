@@ -39,8 +39,8 @@ class Data(db.Model):
     PC = db.Column(db.Integer)
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
 
-    def __init__(self, name):
-        self.PC = pc
+    def __init__(self, PC):
+        self.PC = PC
 
     def __repr__(self):
         return '<pc %r>' % self.PC
