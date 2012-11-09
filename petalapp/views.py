@@ -1,6 +1,6 @@
 from flask import  make_response,render_template,url_for,request,redirect \
-,session, redirect
-from petalapp import app
+,session, redirect,g
+from petalapp import app, models
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
 from graph import plotpolar
@@ -47,9 +47,16 @@ def simple():
     response.headers['Content-Type'] = 'image/png'
     return response
 
+
 @app.route("/awsgraph", methods =['GET','POST'])
 def aws():
     return render_template("awsgraph.html")
+
+@app.route("/dbshow")
+def dbindex():
+    mydata = str(models.Hospital.query.all())
+    return render_template("dbshow.html",data=mydata)
+
 
 
 
