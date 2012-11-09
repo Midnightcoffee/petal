@@ -29,4 +29,4 @@ pip-log.txt
 #defaultconfig file,
 petalapp/defaultconfig.py
 
-build/
+pci_notes/

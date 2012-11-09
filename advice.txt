@@ -250,3 +250,76 @@ sml.set_acl(acl)
 (12:13:16 PM) danieldock left the room (quit: Quit: Leaving...).
 (12:15:23 PM) dampxf: zrail, so i won't need to use migration in order to add,remove tables,comlumns etc..? 
 (12:15:43 PM) zrail: you won't need to use a heroku database migration like that article describes
+
+use models dummy!
+(08:49:20 PM) dampxf: is the "special g object" usable with flask-sqlalchemy? I'm trying to figure out how to retrieve information from my database
+(08:50:40 PM) dampxf: i think not...
+(08:51:36 PM) bergerx___ left the room (quit: Ping timeout: 240 seconds).
+(08:51:58 PM) cdunklau: midnightcoffee: just query off the models
+(08:52:26 PM) mpc1000 [6c19bf8c@gateway/web/freenode/ip.108.25.191.140] entered the room.
+(08:52:32 PM) cdunklau: midnightcoffee: BlogPost.query.all()[-5:]
+(08:52:37 PM) cdunklau: errr
+(08:52:46 PM) cdunklau: midnightcoffee: BlogPost.query.all()[:5]
+(08:53:48 PM) bergerx___ [~bergerx@24.133.145.199] entered the room.
+(08:54:00 PM) ryantology left the room (quit: ).
+(08:56:06 PM) mpc1000: soulseekah: heya, you around?
+(08:57:54 PM) dampxf: cdunklau, How would i retrieve the data for the purposes of using it in my application though. How are you accessing "BlogPost". The only thing i have found is the exmaple at the bottem of http://flask.pocoo.org/docs/patterns/sqlalchemy/ using create_engine, MetaData.
+(08:59:00 PM) ryantology [~ryantolog@unaffiliated/thinline] entered the room.
+(08:59:24 PM) kracekumar left the room (quit: Ping timeout: 252 seconds).
+(08:59:25 PM) bergerx___ left the room (quit: Ping timeout: 246 seconds).
+(09:00:26 PM) cdunklau: midnightcoffee: read the docs for the extension itself
+(09:00:35 PM) cdunklau: midnightcoffee: http://packages.python.org/Flask-SQLAlchemy/
+(09:00:55 PM) mpc1000: With flask I was under the impression that if the route doesn't exist that flask woud return a 404. Is this correct?
+(09:01:11 PM) cdunklau: midnightcoffee: it should, yes
+(09:01:15 PM) cdunklau: errr, midnightcoffee 
+(09:01:18 PM) cdunklau: errr mpc1000 
+(09:01:22 PM) cdunklau: there we go
+(09:01:24 PM) dampxf: errr
+(09:01:32 PM) mpc1000: cdunklau: :P
+(09:01:41 PM) cdunklau: mpc1000: is it not?
+(09:01:53 PM) mpc1000: cdunklau: yup. Everything is 200 OK.
+(09:01:54 PM) N30N left the room (quit: Ping timeout: 240 seconds).
+(09:02:14 PM) mpc1000: I just requested /adsgfd;glfkdgf;;fdlgkfg and got an empty 200 response
+(09:02:20 PM) cdunklau: mpc1000: uuuh
+(09:02:26 PM) cdunklau: mpc1000: your code?
+(09:02:46 PM) cdunklau: mpc1000: heck, just grep for app\.route and pastebin that
+(09:03:16 PM) mpc1000: cdunklau: I'm looking at it now because last night I implemented a 404 handler (not sure if that is eating it somehow)
+(09:04:01 PM) pjenvey- left the room (quit: Quit: ZNC - http://znc.sourceforge.net).
+(09:04:04 PM) mpc1000: cdunklau: that was it... 404handler was doing exactly what I told it too...
+(09:04:13 PM) N30N [~N30N@APoitiers-156-1-139-80.w86-199.abo.wanadoo.fr] entered the room.
+(09:04:13 PM) pjenvey [~pjenvey@underboss.org] entered the room.
+(09:04:17 PM) cdunklau: mpc1000: ?
+(09:05:04 PM) bergerx___ [~bergerx@24.133.145.199] entered the room.
+(09:05:18 PM) mpc1000: cdunklau: I hada 404 handler that returned werkzeug.environ (which was empty) so any 404 requests were coming back 200 empty (It was late and I forgot to add the 404 to set the proper status code)
+(09:05:44 PM) markd2 [~markd2@h219.185.88.75.dynamic.ip.windstream.net] entered the room.
+(09:06:05 PM) cdunklau: mpc1000: whoops!
+(09:06:53 PM) mpc1000: cdunklau: do you know how/where flask does the slash/noslash url rerouting?
+(09:07:07 PM) mpc1000: I thought it might 302 redirect but it's not doing that...
+(09:08:12 PM) cdunklau: mpc1000: 301, so your browser has it cached
+(09:08:27 PM) bergerx_ [~bergerx@24.133.145.199] entered the room.
+(09:08:38 PM) mpc1000: cdunklau: I was curling from on the host, hitting the wsgi app direct
+(09:08:52 PM) cdunklau: mpc1000: hmmm
+(09:08:58 PM) cdunklau: mpc1000: is it public?
+(09:09:07 PM) mpc1000: it can be
+(09:09:31 PM) cdunklau: mpc1000: try using requests.get('whateverurlnoslash', follow_redirects=False)
+(09:10:14 PM) cdunklau: mpc1000: or make it public and shoot me the url
+(09:11:28 PM) ryantology left the room (quit: ).
+(09:12:36 PM) bergerx___ left the room (quit: Ping timeout: 265 seconds).
+(09:13:38 PM) mpc1000: cdunklau: messaged ya
+(09:14:47 PM) cdunklau: mpc1000: why are you doing rewrites at the webserver?
+(09:15:03 PM) ryantology [~ryantolog@unaffiliated/thinline] entered the room.
+(09:15:14 PM) cdunklau: mpc1000: ah
+(09:15:25 PM) cdunklau: mpc1000: your route has /t/<track>/events
+(09:15:41 PM) cdunklau: mpc1000: if you want /t/<track>/events/ to work, you need to do it that way
+(09:15:45 PM) dampxf: cdunklau: flask.ext.sqlchemy.Model.query?
+(09:15:59 PM) joshfinnie left the room (quit: Read error: Connection reset by peer).
+(09:16:29 PM) cdunklau: mpc1000: http://flask.pocoo.org/docs/api/#url-route-registrations
+(09:16:36 PM) cdunklau: mpc1000: read the bit about trailing slashes
+(09:16:38 PM) mpc1000: cdunklau: I was seeing weird slowness with subdomain routing in flask (not sure why) so I tried this approach, essentially namespace the subdomain code under /t/ and have the webserver rewrite. Works great until you hit a no slash url with a slash (404 or a slash url with no slash (route becomes /t/sub/t/sub/wherever
+(09:18:09 PM) cdunklau: mpc1000: that sounds like a completely unecessary hack
+(09:18:14 PM) joshfinnie [~joshfinni@c-69-243-26-215.hsd1.md.comcast.net] entered the room.
+(09:18:19 PM) cdunklau: mpc1000: why bother with rewrites when flask does it?
+(09:18:35 PM) cdunklau: midnightcoffee: just use the model you've defined
+(09:18:39 PM) soulseekah: mpc1000, yeh, just woke up
+(09:18:42 PM) cdunklau: midnightcoffee: you have defined models, yes?
+the answer was yes,yes im a dummy
