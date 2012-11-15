@@ -13,12 +13,11 @@ from random import randrange as rr
 from math import pi
 
 def plotpolar(num):
-    labels = ["PC team wellness", "Interdisciplinary Team", "Coverage/Ability",
-        "Standard Form", "Initial PC evaluation", "Hospital PC screening",
-        "PC follow up", "Post Discharge Services", "Bereavement Contacts",
-        "Marking and Education","Marking and Education", "Care coordination",
-        "Availability", "Family Centerdness", "PC Networking",
-        "Education and training", "Certification"]
+    labels =["Standard Form", "Mkt & Edu Material", "Record Availability",
+    "Family Centerdness", "PC Networking","Education & Training", "Team Funding",
+    "Coverage", "PC for expired pts", "Hospital PC Screening",
+    "PC Follow UP", "Post Discharge Services", "Bereavement Contacts",
+    "Certification", "Team Wellness", "Care Coordination" ]
 
     fig = figure(figsize=(12,12))
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)

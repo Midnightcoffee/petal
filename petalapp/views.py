@@ -59,5 +59,8 @@ def dbindex():
 
 
 
+@app.route("/hospitals")
+def hospitals():
+    return render_template("hospitals.html")
 
 

@@ -3,6 +3,7 @@ from petalapp import db
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+#TODO:rename
 hospitals = db.Table('hospitals',
     db.Column('hospital_id', db.Integer, db.ForeignKey('hospital.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
@@ -36,13 +37,13 @@ class Hospital(db.Model):
 
 class Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    PC = db.Column(db.Integer)
+    pc = db.Column(db.Integer)
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
 
-    def __init__(self, PC):
-        self.PC = PC
+    def __init__(self, pc):
+        self.pc = pc
 
     def __repr__(self):
-        return '<pc %r>' % self.PC
+        return '<pc %r>' % self.pc
 
 
