@@ -30,3 +30,5 @@ pip-log.txt
 petalapp/defaultconfig.py
 
 pci_notes/
+
+petalapp/db_temp.py
