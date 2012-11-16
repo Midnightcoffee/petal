@@ -13,6 +13,7 @@ from tools import upload_s3
 def unpack_temp():
     for hospital_name,mega_data in hospitals.items():
         for i, data in enumerate(mega_data):
+            assert(len(data) == 16)
             if i == 0:
                 title_ext = "Baseline"
                 which_quarter = ""
@@ -22,4 +23,3 @@ def unpack_temp():
             upload_s3(title_ext+which_quarter+hospital_name,(
                     title_ext, which_quarter, hospital_name, data))
 
-unpack_temp()
