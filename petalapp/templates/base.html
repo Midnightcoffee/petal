@@ -1,18 +1,20 @@
 <!doctype html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Petal </title>
-  </head>
-  <body>
-    <a href="/login">/login</a>
-    <a href="/">/index</a>
-    <a href="/map">/map</a>
-    <!-- confusing nameing, possible fix-->
-    <a href="/show_charts">/make_charts</a>
-    <a href="/awsgraph">/awsgraph</a>
-    <a href="/dbshow">/dbshow</a>
-    <a href="/hospitals">/hospitals</a>
+<!-- TODO: fix the spaceing! -->
+<title>Petal </title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class =page>
+  <h1>Petal</h1>
+    <div class=metanav>
+      <h1>Hospitals</h1>
+      <!--<a href="/login">login</a>
+      <a href="/">index</a>
+      <a href="/map">map</a>
+      <a href="/show_charts">make_charts</a>
+      <a href="/awsgraph">awsgraph</a>
+      <a href="/dbshow">dbshow</a> -->
+      <h2><li><a href="{{ url_for('MetroWest') }}">MetroWest</a></li><h2>
+      <!-- <img src ="{{ url_for('static', filename='flower350.jpg') }}" alt="flower" usemap="#logos"> -->
+    </div>
+</div>
     {% block content %}{% endblock %}
-  </body>
-</html>
+

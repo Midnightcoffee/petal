@@ -12,21 +12,30 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from random import randrange as rr
 from math import pi
 
-def plotpolar(num):
+#TODO: do something num and data..and this default
+def plotpolar(data=[], num=None):
     labels =["Standard Form", "Mkt & Edu Material", "Record Availability",
     "Family Centerdness", "PC Networking","Education & Training", "Team Funding",
     "Coverage", "PC for expired pts", "Hospital PC Screening",
     "PC Follow UP", "Post Discharge Services", "Bereavement Contacts",
     "Certification", "Team Wellness", "Care Coordination" ]
 
-    fig = figure(figsize=(12,12))
+    fig = figure(figsize=(10,10))
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
 
     deg = [360/len(labels) * x for x in range(1,len(labels)+1)]
     theta = [i*pi/180 for i in deg]  # convert to radians
     #FIXME when possible reflect user input, atm random # of graph bars
-    radii = [rr(0,11) for x in range(len(labels)-1)]
-    radii.append(num)
+    # random..
+    if not data:
+        radii = [rr(0,11) for x in range(len(labels)-1)]
+        radii.append(num)
+    else:
+        title_ext = data[0]
+        which_quarter = data[1]
+        hospital_name = data[2]
+        radii = data[3]
+
     #TODO creates graph bars
     bars = ax.bar(theta,radii, width=0.35, bottom=0.0, align='center')
     for r,bar in zip(radii, bars):
@@ -36,12 +45,15 @@ def plotpolar(num):
     #degree labels
     ax.set_thetagrids(deg,labels, frac= 1, fontsize=14, verticalalignment = 'top',weight ="bold", color = "blue",clip_on =True)
     #title
-    ax.set_title("----PCI----", fontsize=30, weight="bold")
+    ax.set_title(title_ext + " " + which_quarter + " " + hospital_name , fontsize=30, weight="bold")
 
     canvas=FigureCanvas(fig)
     #String.IO, i believe allows us to treat our object as if it were a file.
     png_output = StringIO.StringIO()
     canvas.print_png(png_output)
+
+
+    #how to return it to simple in views
     return png_output
 
 

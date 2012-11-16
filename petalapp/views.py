@@ -4,7 +4,7 @@ from petalapp import app, models
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
 from graph import plotpolar
-
+import db_temp
 #TODO add comments, doctrings?
 #TODO change  main to base/welcome
 
@@ -43,10 +43,10 @@ def simple():
         assert (num >= 0 and num <= 10)
     except:
         num = 10
-    response=make_response(plotpolar(num).getvalue())
+    data = []
+    response=make_response(plotpolar(data, num).getvalue())
     response.headers['Content-Type'] = 'image/png'
     return response
-
 
 @app.route("/awsgraph", methods =['GET','POST'])
 def aws():
@@ -57,10 +57,9 @@ def dbindex():
     mydata = str(models.Hospital.query.all())
     return render_template("dbshow.html",data=mydata)
 
+@app.route("/MetroWest")
+def MetroWest():
+    return render_template("MetroWest.html")
 
-
-@app.route("/hospitals")
-def hospitals():
-    return render_template("hospitals.html")
 
 

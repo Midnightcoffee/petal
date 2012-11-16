@@ -11,14 +11,14 @@ from petalapp import app
 
 from graph import plotpolar
 
-#TODO separate out functions, add try except 
-def upload_s3(destination_filename,file_name=plotpolar(num).getvalue(),
-        acl="public-read"):
+#TODO separate out functions, add try except
+def upload_s3(destination_filename, data, acl="public-read"):
     """upload_s3 uploads a string to s3"""
     conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],
             app.config["AWS_SECRET_ACCESS_KEY"])
     b = conn.get_bucket(app.config["S3_BUCKET"])
 
+    file_name=plotpolar(data).getvalue()
     sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
     sml.set_contents_from_string(file_name)
 
@@ -36,4 +36,3 @@ def download_s3():
     return k
 
 
-def upload_s3_chart

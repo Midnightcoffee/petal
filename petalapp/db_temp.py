@@ -6,8 +6,8 @@ Description: just a place to hold the info tell i build the data base
 '''
 
 #{name: [[baseline, thrid quarter],...}
-{
-"MetroWest (LM/FR)": [
+hospitals ={
+"MetroWest": [
     [0, 10, 8, 6, 8, 10, 8, 8, 2, 10, 2, 4, 10, 4, 0,10],
     [10, 10, 10, 6, 8, 8, 2, 5, 2, 0, 10, 6, 10, 4, 4,10]
                 ],
