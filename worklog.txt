@@ -32,8 +32,15 @@ worked on database, switching to image storeage problem
 2012-11-(6-7)
 Connected site to amazons AWS site
 
+2012-11-16ish
+built up infrastructure for hospital views, then copied over urls to site.
+
+2012-11-23
+refactoring adding docs
+
 
 ############
+
 randomness
 $$$$$$$$$$$
 drew@think$ (git::master) python db_create.py 

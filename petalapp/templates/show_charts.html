@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+
 <form action="{{ url_for('make_charts') }}" method=post >
   <h1>certification(enter a number between 1 and 10):</h1>
   <textarea name=number rows=8 cols=40></textarea>

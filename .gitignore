@@ -23,12 +23,16 @@ pip-log.txt
 #Translations
 *.mo
 
+#Where is this from?
 #Mr Developer
 .mr.developer.cfg
 
 #defaultconfig file,
 petalapp/defaultconfig.py
 
+#sensitive data
 pci_notes/
 
+#sensitive data
 petalapp/db_temp.py
+

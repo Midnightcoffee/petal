@@ -12,8 +12,12 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from random import randrange as rr
 from math import pi
 
-#TODO: do something num and data..and this default
+#TODO: do something num and data..and this default, currently num
+#serves only as a teaching method from how to extract a num from session
+#TODO: re-factor out specific data
 def plotpolar(data=[], num=None):
+    """data and num used to build a graph using matplotlib"""
+
     labels =["Standard Form", "Mkt & Edu Material", "Record Availability",
     "Family Centerdness", "PC Networking","Education & Training", "Team Funding",
     "Coverage", "PC for expired pts", "Hospital PC Screening",

@@ -26,3 +26,7 @@ Issue 6: Handle/store images using boto and s: success
 
 Issue 7: Port data in ... excel sheet to site
     opened - 2012-11-07
+    closed - 2012-11-18
+
+Issue 8: refactor/docs
+    opened - 2012-11-23

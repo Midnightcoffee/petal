@@ -1,3 +1,11 @@
+'''
+File: runserver.py
+Date: 2012-11-23
+Author: Drew Verlee
+Description: script to run server on local machine. dated used replaced by 
+foreman start
+'''
+
 # i suppose i just need the app
 import os
 from petalapp import app

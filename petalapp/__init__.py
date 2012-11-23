@@ -14,5 +14,6 @@ db = SQLAlchemy(app)
 #flask heroku
 #heroku = Heroku(app)
 #db = SQLAlchemy(app)
-from petalapp import views, models
+from petalapp import views
+from petalapp.database import models
 
