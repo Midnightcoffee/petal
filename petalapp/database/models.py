@@ -12,8 +12,8 @@ hospitals = db.Table('hospitals',
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    #mail = db.Column(db.String(150), unique=True)
-    #role = db.Column(db.SmallInteger, default=ROLE_USER)
+    mail = db.Column(db.String(150), unique=True)
+    role = db.Column(db.SmallInteger, default=ROLE_USER)
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
