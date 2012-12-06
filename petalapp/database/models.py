@@ -24,11 +24,10 @@ class User(db.Model):
 
 
 
-    def __init__(self, name="NONE", role=ROLE_USER, mail="NONE", hospitals="NONE"):
+    def __init__(self, name="NONE", role=ROLE_USER, mail="NONE"):
         self.name = name
         self.role = role
         self.mail = mail
-        self.hospitals = hospitals
 
     def __repr__(self):
         return '<Name %r>' % self.name
