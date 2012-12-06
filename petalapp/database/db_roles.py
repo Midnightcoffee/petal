@@ -1,3 +1,10 @@
+'''
+File: db_roles.py
+Date: 2012-12-05
+Author: Drew Verlee
+Description: i think this is old
+'''
+#TODO remove?
 from petalapp import db
 
 ROLE_USER = 0
