@@ -11,6 +11,7 @@ import StringIO
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from random import randrange as rr
 from math import pi
+from labels import hospital_labels
 
 #TODO: do something num and data..and this default, currently num
 #serves only as a teaching method from how to extract a num from session
@@ -18,21 +19,15 @@ from math import pi
 def plotpolar(data=[], num=None):
     """data and num used to build a graph using matplotlib"""
 
-    labels =["Standard Form", "Mkt & Edu Material", "Record Availability",
-    "Family Centerdness", "PC Networking","Education & Training", "Team Funding",
-    "Coverage", "PC for expired pts", "Hospital PC Screening",
-    "PC Follow UP", "Post Discharge Services", "Bereavement Contacts",
-    "Certification", "Team Wellness", "Care Coordination" ]
-
     fig = figure(figsize=(10,10))
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
 
-    deg = [360/len(labels) * x for x in range(1,len(labels)+1)]
+    deg = [360/len(hospital_labels) * x for x in range(1,len(hospital_labels)+1)]
     theta = [i*pi/180 for i in deg]  # convert to radians
     #FIXME when possible reflect user input, atm random # of graph bars
     # random..
     if not data:
-        radii = [rr(0,11) for x in range(len(labels)-1)]
+        radii = [rr(0,11) for x in range(len(hospital_labels)-1)]
         radii.append(num)
     else:
         title_ext = data[0]
@@ -46,8 +41,8 @@ def plotpolar(data=[], num=None):
         bar.set_facecolor( cm.jet(r/10.))
         bar.set_alpha(0.5)
 
-    #degree labels
-    ax.set_thetagrids(deg,labels, frac= 1, fontsize=14, verticalalignment = 'top',weight ="bold", color = "blue",clip_on =True)
+    #degree hospital_labels
+    ax.set_thetagrids(deg,hospital_labels, frac= 1, fontsize=14, verticalalignment = 'top',weight ="bold", color = "blue",clip_on =True)
     #title
     ax.set_title(title_ext + " " + which_quarter + " " + hospital_name , fontsize=30, weight="bold")
 
