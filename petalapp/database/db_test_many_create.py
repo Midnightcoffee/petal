@@ -17,11 +17,7 @@ for database_entry in [data_test_1, user_test_1, hospital_test_1]:
 
 db.session.commit()
 
-hospital_test_1.data.append(data_test_1)
-user_test_1.hospitals.extend(hospital_test_1)
 
-db.session.commit()
 
-print("user_test_1: {0}".format(user_test_1.hospitals))
 
 
