@@ -49,6 +49,7 @@ def show_charts():
     return render_template('show_charts.html')
 
 
+
 @app.route("/polarchart")
 def simple():
     '''dynamically creates a chart'''
