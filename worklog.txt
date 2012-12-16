@@ -3,6 +3,7 @@
 ##########
 To Do:
 ############
+old Procfile: web: gunicorn runserver:app -b 0.0.0.0:$PORT -w 3
 change config to petalapp.config
 Store passwords somewhere, currently in my keepass. 
 READ http://charlesleifer.com/blog/web-based-encrypted-file-storage-using-flask-and-aws/
