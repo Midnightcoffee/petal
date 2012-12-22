@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
-#TODO:rename
+#TODO: possible rename
 hospitals = db.Table('hospitals',
     db.Column('hospital_id', db.Integer, db.ForeignKey('hospital.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
@@ -21,13 +21,8 @@ class User(db.Model):
 
     #passwords
 
-
-
-
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
-
-
 
     def __init__(self, password, last_name="NONE", first_name="NONE", role=ROLE_USER,
             email="NONE"):
@@ -44,7 +39,7 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.pw_hash, password)
 
-    #TODO what information to show?
+    #TODO what information should i show?
     def __repr__(self):
         return '<Name : %r, %r >' % (self.last_name ,self.first_name)
 
