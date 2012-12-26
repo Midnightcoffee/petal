@@ -1,0 +1,2 @@
+When creating a new remote (in our case staging) Its import to note that Heroku's env variables aren't copied over. 
+i'm not sure there is a elegant solution to this.
