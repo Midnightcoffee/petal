@@ -21,10 +21,7 @@ class User(db.Model):
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-
-
-    def __init__(self, last_name="NONE", first_name="NONE", role=ROLE_USER,
-            email="NONE"):
+    def __init__(self, last_name, first_name, email, role=ROLE_USER):
         self.last_name = last_name
         self.first_name = first_name
         self.role = role
