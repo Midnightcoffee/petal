@@ -1,10 +1,9 @@
 from petalapp import db
-from werkzeug.security import generate_password_hash, check_password_hash
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
-#TODO: possible rename
+#TODO:rename
 hospitals = db.Table('hospitals',
     db.Column('hospital_id', db.Integer, db.ForeignKey('hospital.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
@@ -19,27 +18,19 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_USER)
 
-    #passwords
-
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, password, last_name="NONE", first_name="NONE", role=ROLE_USER,
-            email="NONE"):
 
+
+    def __init__(self, last_name="NONE", first_name="NONE", role=ROLE_USER,
+            email="NONE"):
         self.last_name = last_name
         self.first_name = first_name
         self.role = role
         self.email = email
-        self.set_password(password)
 
-    def set_password(self, password):
-        self.pw_hash = generate_password_hash(self.pw_hash, password)
-
-    def check_password(self, password):
-        return check_password_hash(self.pw_hash, password)
-
-    #TODO what information should i show?
+    #TODO what information to show?
     def __repr__(self):
         return '<Name : %r, %r >' % (self.last_name ,self.first_name)
 
