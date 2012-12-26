@@ -26,7 +26,6 @@ flask-heroku==0.1.3
 flup==1.0.3.dev-20110405
 gunicorn==0.15.0
 ipython==0.13.1
-matplotlib==1.1.1
 psycopg2==2.4.5
 py-bcrypt==0.2
 python-openid==2.2.5
