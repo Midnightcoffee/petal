@@ -31,6 +31,18 @@ class User(db.Model):
     def __repr__(self):
         return '<Name : %r, %r >' % (self.last_name ,self.first_name)
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
 class Hospital(db.Model):
     """Hospital's has a one-to-many relationship with DATA and a
     many-to-many relationship with User"""

@@ -1,7 +1,10 @@
+import os
 from flask import Flask
 #alternative method
 from flask.ext.sqlalchemy import SQLAlchemy
-import os
+from flask.ext.openid import OpenID
+from flask.ext.login import LoginManager
+from config import basedir
 #from  flask_heroku import Heroku
 
 app = Flask(__name__)
@@ -14,6 +17,8 @@ db = SQLAlchemy(app)
 #flask heroku
 #heroku = Heroku(app)
 #db = SQLAlchemy(app)
-from petalapp import views
-from petalapp.database import models
 
+#login setup
+lm = LoginManager()
+lm.setup_app(app)
+oid = OpenID(app, os.path.join(basedir, 'tmp'))

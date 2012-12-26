@@ -4,12 +4,12 @@ Date: 2012-11
 Author: Drew Verlee
 Description: contains the views for the webapp
 '''
-
-
 from flask import make_response, render_template, url_for, request, redirect\
     , session, redirect, g
-from petalapp import app
-from petalapp.database import models, db_temp
+from petalapp import app, db, lm, oid
+from petalapp.database.models import User, ROLE_USER, ROLE_ADMIN
+from petalapp.database import db_temp
+from forms import LoginForm
 from graph import plotpolar
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
@@ -22,11 +22,21 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/login")
+@app.route("/login", methods = ['GET', 'POST'])
+@oid.loginhandler
 def login():
     '''login page'''
-    return render_template('login.html')
-
+def login():
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        session['remember_me'] = form.remember_me.data
+        return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
+    return render_template('login.html',
+        title = 'Sign In',
+        form = form,
+        providers = app.config['OPENID_PROVIDERS'])
 
 @app.route("/map")
 def map():
@@ -47,7 +57,6 @@ def show_charts():
     '''helps show graphs'''
     #TODO should just copy this code ...
     return render_template('show_charts.html')
-
 
 
 @app.route("/polarchart")
@@ -71,6 +80,14 @@ def dbindex():
     return render_template("dbshow.html",data=mydata)
 
 
+@lm.user_loader
+def load_user(id):
+    return models.User.query.get(int(id))
+
+@app.route("/hospitals")
+def hospitals():
+    '''page for hospitals'''
+    return render_template("hospitals.html")
 
 #below are the views for various hospitals
 #TODO: possible move to their own file?
