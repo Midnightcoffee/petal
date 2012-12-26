@@ -6,7 +6,7 @@ Description: contains the views for the webapp
 '''
 from flask import make_response, render_template, url_for, request, redirect\
     , session, redirect, g
-from petalapp import app
+from petalapp import app, oid, lm
 from petalapp.database.models import User, ROLE_USER, ROLE_ADMIN
 from petalapp.database import db_temp
 from forms import LoginForm

@@ -1,3 +1,4 @@
+
 import os
 from flask import Flask
 #alternative method
@@ -6,7 +7,6 @@ from flask.ext.openid import OpenID
 from flask.ext.login import LoginManager
 from config import basedir
 #not sure why i would need this
-from petalapp import views
 #from  flask_heroku import Heroku
 
 
