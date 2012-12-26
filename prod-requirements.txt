@@ -14,6 +14,7 @@ Jinja2==2.6
 Markdown==2.2.0
 SQLAlchemy==0.7.9
 Tempita==0.5.1
+matplotlib==1.1.1
 WTForms==1.0.2
 Werkzeug==0.8.3
 argparse==1.2.1
