@@ -6,11 +6,12 @@ Description: contains the views for the webapp
 '''
 from flask import make_response, render_template, url_for, request, redirect\
     , session, redirect, g
-from petalapp import app, oid, lm
-from petalapp.database.models import User, ROLE_USER, ROLE_ADMIN
-from petalapp.database import db_temp
+#from petalapp.database.models import User, ROLE_USER, ROLE_ADMIN
+from petalapp.database import models, db_temp
+from petalapp import app, lm, oid
 from forms import LoginForm
 from graph import plotpolar
+
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
 
@@ -22,21 +23,17 @@ def index():
     return render_template('index.html')
 
 
-@app.route("/login", methods = ['GET', 'POST'])
-@oid.loginhandler
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
-    '''login page'''
-def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
+        flash('Login requested for OpenID="' + form.openid.data + '", remember_me=' + str(form.remember_me.data))
+        return redirect('/index')
     return render_template('login.html',
         title = 'Sign In',
-        form = form,
-        providers = app.config['OPENID_PROVIDERS'])
+        form = form)
+
+@app.route(
 
 @app.route("/map")
 def map():
