@@ -5,7 +5,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.openid import OpenID
 from flask.ext.login import LoginManager
 from config import basedir
+#not sure why i would need this
+from petalapp import views
 #from  flask_heroku import Heroku
+
 
 app = Flask(__name__)
 #configuring from my local computer
