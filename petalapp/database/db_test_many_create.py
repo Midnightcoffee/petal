@@ -22,7 +22,7 @@ db.session.commit()
 example = User.query.get(1)
 print(example)
 
-users = Users.query.all()
+users = User.query.all()
 for u in users:
     db.session.delete(u)
 
