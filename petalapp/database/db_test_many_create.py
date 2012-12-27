@@ -1,7 +1,7 @@
 '''
 File: db_test_many_create.py
 Date: 2012-12-06
-Author: Drew Verlee
+Author: 
 Description: functions to build a many-to-many relationship
 '''
 import unittest
