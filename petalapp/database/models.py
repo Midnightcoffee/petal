@@ -27,7 +27,7 @@ class User(db.Model):
 
     #TODO what information to show?
     def __repr__(self):
-        return '<Name : %r, %r >' % (self.last_name ,self.first_name)
+        return '<Name : %r>' % (self.nickname)
 
     def is_authenticated(self):
         return True
