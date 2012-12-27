@@ -1,5 +1,5 @@
 from petalapp import db
-
+from datetime import datetime
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
@@ -60,6 +60,7 @@ class Data(db.Model):
     """Data has a many-to-one relationship with Hospital"""
 
     id = db.Column(db.Integer, primary_key=True)
+
     standard_form = db.Column(db.Integer)
     marketing_education = db.Column(db.Integer)
     record_availability = db.Column(db.Integer)
@@ -77,14 +78,16 @@ class Data(db.Model):
     team_wellness = db.Column(db.Integer)
     care_coordination = db.Column(db.Integer)
 
+    timestamp = db.Column(db.DateTime)
+
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
 
-    def __init__(self, standard_form=0, marketing_education=0,
-        record_availability=0, family_centerdness=0,
+    def __init__(self, standard_form=0, 
+            marketing_education=0, record_availability=0, family_centerdness=0,
         pc_networking=0, education_and_training=0, team_funding=0,
         coverage=0, pc_for_expired_pts=0, hospital_pc_screening=0,
         pc_follow_up=0, post_discharge_services=0, bereavement_contacts=0,
-        certification=0, team_wellness=0, care_coordination=0):
+        certification=0, team_wellness=0, care_coordination=0, timestamp=datetime.utcnow()):
 
             self.standard_form = standard_form
             self.marketing_education =  marketing_education
@@ -102,25 +105,28 @@ class Data(db.Model):
             self.certification =  certification
             self.team_wellness =  team_wellness
             self.care_coordination = care_coordination
+            self.timestamp = timestamp
 
     def __repr__(self):
         return """
-    {standard_form : %r}
-    {marketing_education : %r}
-    {record_availability : %r}
-    {family_centerdness : %r}
-    {pc_networking : %r}
-    {education_and_training : %r}
-    {team_funding : %r}
-    {coverage : %r}
-    {pc_for_expired_pts : %r}
-    {hospital_pc_screening  : %r}
-    {pc_follow_up : %r}
-    {post_discharge_services : %r}
-    {bereavement_contacts : %r}
-    {certification : %r}
-    {team_wellness : %r}
-    {care_coordination : %r}""" % (
+    <standard_form : %r>\n
+    <marketing_education : %r>\n
+    <record_availability : %r>\n
+    <family_centerdness : %r>\n
+    <pc_networking : %r>\n
+    <education_and_training : %r>\n
+    <team_funding : %r>\n
+    <coverage : %r>\n
+    <pc_for_expired_pts : %r>\n
+    <hospital_pc_screening  : %r>\n
+    <pc_follow_up : %r>\n
+    <post_discharge_services : %r>\n
+    <bereavement_contacts : %r>\n
+    <certification : %r>\n
+    <team_wellness : %r>\n
+    <care_coordination : %r>\n
+    <datetime_utc  : %r>""" % (
+
     self.standard_form,
     self.marketing_education,
     self.record_availability,
@@ -136,5 +142,6 @@ class Data(db.Model):
     self.bereavement_contacts,
     self.certification,
     self.team_wellness,
-    self.care_coordination)
+    self.care_coordination,
+    self.timestamp)
 
