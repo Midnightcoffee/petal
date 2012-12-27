@@ -9,7 +9,7 @@ from models import db, User, Hospital, Data
 
 db.session.drop_all()
 data_test_1 = Data(1)
-user_test_1 = User("test_user_1")
+user_test_1 = User("test_user_nickname")
 hospital_test_1 = Hospital("test_hospital_1")
 
 for database_entry in [data_test_1, user_test_1, hospital_test_1]:

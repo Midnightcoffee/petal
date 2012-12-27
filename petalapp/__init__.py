@@ -24,7 +24,7 @@ db = SQLAlchemy(app)
 
 #login setup
 lm = LoginManager()
-lm.setup_app(app)
+lm.init_app(app)
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 from petalapp.database import models
