@@ -13,17 +13,15 @@ class User(db.Model):
     """User has a many-to-many relationship with Hospital"""
 
     id = db.Column(db.Integer, primary_key=True)
-    last_name = db.Column(db.String(80))
-    first_name = db.Column(db.String(80))
+    nickname = db.Column(db.String(64), unique = True)
     email = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_USER)
 
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, last_name, first_name, email, role=ROLE_USER):
-        self.last_name = last_name
-        self.first_name = first_name
+    def __init__(self, nickname, email, role=ROLE_USER):
+        self.nickname= nickname
         self.role = role
         self.email = email
 

@@ -5,7 +5,7 @@ Author: Drew Verlee
 Description: contains the views for the webapp
 '''
 from flask import make_response, render_template, url_for, request, redirect\
-    , session, redirect, g
+    , session, redirect, g, flash
 #from petalapp.database.models import User, ROLE_USER, ROLE_ADMIN
 from petalapp.database import models, db_temp
 from petalapp import app, lm, oid
@@ -20,7 +20,8 @@ from graph import plotpolar
 @app.route("/")
 def index():
     '''extends base and home of app ...'''
-    return render_template('index.html')
+    user = { 'nickname': 'Drew' }
+    return render_template('index.html',user=user)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -31,9 +32,9 @@ def login():
         return redirect('/index')
     return render_template('login.html',
         title = 'Sign In',
-        form = form)
+        form = form,
+        providers = app.config['OPENID_PROVIDERS'])
 
-@app.route(
 
 @app.route("/map")
 def map():

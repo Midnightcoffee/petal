@@ -6,7 +6,17 @@
     <div class=metanav>
       <a href="/login">login</a>
       <a href="/hospitals">hospitals</a>
-      <a href="/pci form">pci_form</a>
+      <a href="/pci_form">pci form</a>
+      <hr>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+      {% for message in messages %}
+          <li>{{ message }} </li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
     </div>
 </div>
 {% block content %}{% endblock %}
