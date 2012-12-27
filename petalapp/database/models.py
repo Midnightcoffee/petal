@@ -41,7 +41,7 @@ class User(db.Model):
     def get_id(self):
         return unicode(self.id)
 
-    @stacticmethod
+    @staticmethod
     def make_unique_nickname(nickname):
         if User.query.filter_by(nickname = nickname).first() == None:
             return nickname

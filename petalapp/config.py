@@ -41,7 +41,7 @@ OPENID_PROVIDERS = [
 MAIL_SERVER = 'localhost'
 MAIL_PORT = 25
 MAIL_USERNAME = None
-MAIN_PASSWORD = None
+MAIL_PASSWORD = None
 
 
 # administrator list
