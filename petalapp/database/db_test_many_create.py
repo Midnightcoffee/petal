@@ -15,6 +15,7 @@ class BuildDestroyTables(unittest.TestCase):
     hospital_test_1 = Hospital("test_hospital_1")
 
     def setUP(self):
+        db.drop_all()
         db.create_all()
 
 
