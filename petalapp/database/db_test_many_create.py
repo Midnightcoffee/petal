@@ -5,12 +5,13 @@ Author: Drew Verlee
 Description: functions to build a many-to-many relationship
 '''
 
-db.session.drop_all()
-from models import db, User, Hospital, Data
+
+from petalapp.database.models import User, Hospital, Data, ROLE_USER
+from petalapp import db
 
 
 data_test_1 = Data(1)
-user_test_1 = User("test_user_nickname")
+user_test_1 = User("test_user_nickname","user_email",ROLE_USER)
 hospital_test_1 = Hospital("test_hospital_1")
 
 for database_entry in [data_test_1, user_test_1, hospital_test_1]:
