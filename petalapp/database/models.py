@@ -126,7 +126,6 @@ class Data(db.Model):
     <team_wellness : %r>\n
     <care_coordination : %r>\n
     <datetime_utc  : %r>""" % (
-
     self.standard_form,
     self.marketing_education,
     self.record_availability,
