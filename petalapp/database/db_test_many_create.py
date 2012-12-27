@@ -74,3 +74,5 @@ class BuildDestroyTables(unittest.TestCase):
             db.session.delete(d)
 
 
+if __name__ == "__main__":
+    unittest.main()
