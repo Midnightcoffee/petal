@@ -82,7 +82,7 @@ class Data(db.Model):
 
     hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
 
-    def __init__(self, standard_form=0, 
+    def __init__(self, standard_form=0,
             marketing_education=0, record_availability=0, family_centerdness=0,
         pc_networking=0, education_and_training=0, team_funding=0,
         coverage=0, pc_for_expired_pts=0, hospital_pc_screening=0,
