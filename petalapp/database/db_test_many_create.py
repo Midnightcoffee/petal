@@ -22,7 +22,12 @@ for database_entry in [data_test_1, user_test_1, hospital_test_1]:
 db.session.commit()
 
 example = User.query.get(1)
-print(example)
+print("our user {0}".format(example))
+
+user_test_1.hospitals(hospital_test_1)
+hospital_test_1.data(data_test_1)
+print(list("user hospital : {0}".format(user_test_1.hospitals)))
+
 
 users = User.query.all()
 print("********************** users **************")
