@@ -1,7 +1,7 @@
 '''
 File: db_test_many_create.py
 Date: 2012-12-06
-Author: 
+Author: Drew Verlee
 Description: functions to build a many-to-many relationship
 '''
 import unittest
@@ -14,7 +14,7 @@ class BuildDestroyTables(unittest.TestCase):
     data_test_1 = Data(1)
     hospital_test_1 = Hospital("test_hospital_1")
 
-    def setUP(self):
+    def setUp(self):
         db.drop_all()
         db.create_all()
 
