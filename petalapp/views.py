@@ -78,6 +78,17 @@ def after_login(resp):
 def pci_form():
     return render_template('pci_form.html')
 
+
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
 #@app.route("/map")
 #def map():
 #    '''renders map of united states'''
