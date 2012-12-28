@@ -10,9 +10,10 @@ from petalapp import db
 
 class BuildDestroyTables(unittest.TestCase):
 
+    hospital_test_1 = Hospital("test_hospital_1")
     user_test_1 = User("test_user_nickname","user_email",ROLE_USER)
     data_test_1 = Data(1)
-    hospital_test_1 = Hospital("test_hospital_1")
+
 
     def setUp(self):
         db.drop_all()
@@ -42,16 +43,16 @@ class BuildDestroyTables(unittest.TestCase):
 
 
     def test_print(self):
-        example = User.query.get(1)
-        print("our user {0}".format(example))
+        users = User.query.all()
+        print("our users:  {0}".format(users))
 
 
     def test_user_hospital_link(self):
-        self.user_test_1.hospitals(self.hospital_test_1)
+        self.user_test_1.hospitals.append(self.hospital_test_1)
         db.session.commit()
 
     def test_hospital_data_link(self):
-        self.hospital_test_1.data(self.data_test_1)
+        self.hospital_test_1.data.append(self.data_test_1)
         db.session.commit()
 
 
@@ -101,7 +102,6 @@ class BuildDestroyTables(unittest.TestCase):
 
         #add
         db.session.add(drew)
-        db.session.add(derek)
         db.session.add(mac_hospital)
         db.session.add(pro_hospital)
         db.session.add(mac_data)
@@ -111,12 +111,35 @@ class BuildDestroyTables(unittest.TestCase):
         db.session.commit()
 
         #create links
-        mac_hospital.data(mac_data)
-        pro_hospital.data(pro_data)
-        drew.hospitals(mac_hospital)
-        drew.hospitals(pro_hospital)
+        mac_hospital.data.append(mac_data)
+        pro_hospital.data.append(pro_data)
+        drew.hospitals.append(mac_hospital)
+        drew.hospitals.append(pro_hospital)
         db.session.commit()
 
+    def functions_of_add_remove(self):
+        johns_hospital_data = Data('johns_hospital_data')
+        johns_hospital = Hospital('johns_hospital')
+        john = User('john', 'john@gmail.com')
+
+        db.session.add(johns_hospital_data)
+        db.session.add(johns_hospital)
+        db.session.add(john)
+
+        #TODO make a function for this?
+        johns_hospital.append(johns_hospital_data)
+        #do  i need a commit?
+        db.session.commit()
+
+        self.assertEqual(john.remove_hospital(johns_hospital), None)
+
+
+        john_has_hospital = john.add_hospital(johns_hospital)
+        db.session.add(john_has_hospital)
+        db.session.commit()
+
+        self.assertEqual(john.add_hospital(johns_hospital), None)
+        self.assertEqual(len(john.hospitals), 1)
 
 
 if __name__ == "__main__":

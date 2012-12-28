@@ -3,7 +3,7 @@ from datetime import datetime
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
-#TODO:rename
+#TODO:rename?
 hospitals = db.Table('hospitals',
     db.Column('hospital_id', db.Integer, db.ForeignKey('hospital.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
@@ -40,6 +40,16 @@ class User(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+    def add_hospital(self, hospital):
+        if not (hospital in self.hospitals):
+            self.hospitals.append(hospital)
+
+    def remove_hospital(self, hospital):
+        if not (hospital in self.hospital):
+            self.hospitals.remove(hospital)
+
+
 
     @staticmethod
     def make_unique_nickname(nickname):
