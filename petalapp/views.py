@@ -77,7 +77,8 @@ def after_login(resp):
 @app.route('/pci_form')
 @login_required
 def pci_form():
-    return render_template('pci_form.html')
+    user = g.user
+    return render_template('pci_form.html', user=user)
 
 
 @app.errorhandler(404)
