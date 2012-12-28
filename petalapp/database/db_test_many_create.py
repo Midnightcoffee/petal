@@ -10,11 +10,6 @@ from petalapp import db
 
 class BuildDestroyTables(unittest.TestCase):
 
-    hospital_test_1 = Hospital("test_hospital_1")
-    user_test_1 = User("test_user_nickname","user_email",ROLE_USER)
-    data_test_1 = Data(1)
-
-
     def setUp(self):
         db.drop_all()
         db.create_all()
@@ -27,53 +22,22 @@ class BuildDestroyTables(unittest.TestCase):
 
     def test_user_setup(self):
 
-        db.session.add(self.user_test_1)
+        user_test_1 = User("test_user_nickname","user_email",ROLE_USER)
+        db.session.add(user_test_1)
         db.session.commit()
 
 
     def test_data_setup(self):
 
-        db.session.add(self.data_test_1)
+        data_test_1 = Data(1)
+        db.session.add(data_test_1)
         db.session.commit()
 
     def test_hospital_setup(self):
 
-        db.session.add(self.hospital_test_1)
+        hospital_test_1 = Hospital("test_hospital_1")
+        db.session.add(hospital_test_1)
         db.session.commit()
-
-
-    def test_print(self):
-        users = User.query.all()
-        print("our users:  {0}".format(users))
-
-
-    def test_user_hospital_link(self):
-        self.user_test_1.hospitals.append(self.hospital_test_1)
-        db.session.commit()
-
-    def test_hospital_data_link(self):
-        self.hospital_test_1.data.append(self.data_test_1)
-        db.session.commit()
-
-
-    def test_print_verbose(self):
-        users = User.query.all()
-        print("********************** users **************")
-        for u in users:
-            print(u)
-            db.session.delete(u)
-
-        hospitals = Hospital.query.all()
-        print("********** hostpitals ***************")
-        for h in hospitals:
-            print(h)
-            db.session.delete(h)
-
-        data = Data.query.all()
-        print("******************* data **************")
-        for d in data:
-            print(d)
-            db.session.delete(d)
 
 
     def test_make_unique_nickname(self):
@@ -132,7 +96,6 @@ class BuildDestroyTables(unittest.TestCase):
         db.session.commit()
 
         self.assertEqual(john.remove_hospital(johns_hospital), None)
-
 
         john_has_hospital = john.add_hospital(johns_hospital)
         db.session.add(john_has_hospital)
