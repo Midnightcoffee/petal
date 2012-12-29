@@ -323,3 +323,16 @@ use models dummy!
 (09:18:39 PM) soulseekah: mpc1000, yeh, just woke up
 (09:18:42 PM) cdunklau: midnightcoffee: you have defined models, yes?
 the answer was yes,yes im a dummy
+
+
+# database
+
+(06:28:43 PM) dampxf: can someone help me uderstand what a store is in the context of http://packages.python.org/Flask-OpenID/ ? My webapp runs locally but not in on heroku and i'm thinking the reason might be that i have my "store" as a tmp folder in my app and that won't work in production.
+(06:29:46 PM) bubu2345 left the room (quit: Quit: Page closed).
+(06:30:26 PM) lar1914 [lar1914@186.176.73.4] entered the room.
+(06:31:45 PM) DasIch: midnightcoffee1: "You can alternatively implement your own store that uses the database or a no-sql server. For more information about that, consult the python-openid documentation."
+(06:32:16 PM) DasIch: midnightcoffee1: second paragraph under how to use ;)
+(06:33:22 PM) DasIch: midnightcoffee1: if you use a service like heroku you indeed probably don't have filesystem access
+(06:33:50 PM) dampxf: Dasich, Yea, so i need to figure out implement a store that uses database access.
+(06:33:57 PM) joes1 [~Adium@213.111.90.25] entered the room.
+(06:34:15 PM) DasIch: midnightcoffee1: indeed
