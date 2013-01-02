@@ -17,7 +17,12 @@ from petalapp.graphing_tools.labels import hospital_labels
 #serves only as a teaching method from how to extract a num from session
 #TODO: re-factor out specific data
 def plotpolar(data=[], num=None):
-    """data and num used to build a graph using matplotlib"""
+    """data and num used to build a graph using matplotlib, 
+       data[0]  is title
+       data[1] is which_quarter
+       data[2] is hospital_name
+       data[3] is the list of radii
+    """
 
     fig = figure(figsize=(10,10))
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
@@ -30,7 +35,7 @@ def plotpolar(data=[], num=None):
         radii = [rr(0,11) for x in range(len(hospital_labels)-1)]
         radii.append(num)
     else:
-        title_ext = data[0]
+        title_ext = data[0] #leave blank for no title
         which_quarter = data[1]
         hospital_name = data[2]
         radii = data[3]
