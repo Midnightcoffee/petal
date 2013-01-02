@@ -12,7 +12,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 
-#from tools import upload_s3_chart, download_s3_chart
+from petalapp.aws.tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
 
 
@@ -92,7 +92,11 @@ def add_pci_form():
     #db.session.add(test_data)
     #db.session.commit()
     #test_hospital.data.append(test_data)
-    
+    sample_data= Data.query.get(1)
+    sample_hospital = Hospital.query.get(1)
+    package = [str(d.timestamp),'fake quarter', '100', [sample_data.standard_form, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    upload_s3('charts/quarter4'+ str(sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name , package)
+
     return redirect(url_for('pci_form'))
 
 
