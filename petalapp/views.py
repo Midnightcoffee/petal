@@ -12,7 +12,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 
-from petalapp.aws.tools import upload_s3_chart, download_s3_chart
+from petalapp.aws.tools import upload_s3
 #python path points to petalapp?
 
 
