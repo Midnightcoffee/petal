@@ -34,7 +34,7 @@ def index():
 @app.route('/login', methods = ['GET', 'POST'])
 @oid.loginhandler
 def login():
-    if g.user is not None and g.user.is_authenticated():
+    if g.user is not None and g.user.is_authenticated() and g.user.email == 'drew.verlee@gmail.com':
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
@@ -62,11 +62,8 @@ def after_login(resp):
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
         nickname = User.make_unique_nickname(nickname)
-        # FIXME: not general enough a solution
-        if resp.email == 'drew.verlee@gmail.com':
-            ROLE = ROLE_ADMIN
-        else:
-            ROLE = ROLE_USER
+
+
         user = User(nickname = nickname, email = resp.email, role = ROLE)
         db.session.add(user)
         db.session.commit()
