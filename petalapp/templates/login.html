@@ -19,8 +19,9 @@
         <form action="" method="post" name="login">
             {{form.hidden_tag()}}
             <p>
-                Please enter your OpenID, or select one of the providers below:<br>
-                {{form.openid(size=80)}}
+                Login with an existing accounting:<br>
+                For example, click google to login using your gmail account<br>
+                {{form.openid(size=0)}}
                 {% for error in form.errors.openid %}
                 <span style="color: red;">[{{error}}]</span>
                 {% endfor %}<br>
@@ -30,8 +31,8 @@
             </p>
             <p>{{form.remember_me}} Remember Me</p>
             <p><input type="submit" value="Sign In"></p>
-            <p><a href="http://openid.net/get-an-openid/what-is-openid/">What is OpenID?</a>
-            <a href="http://openid.net/get-an-openid/">Other OpenID providers!</a>
+            <!--<p><a href="http://openid.net/get-an-openid/what-is-openid/">What is OpenID?</a>
+            <a href="http://openid.net/get-an-openid/">Other OpenID providers!</a>-->
         </form>
     </div>
 </div>

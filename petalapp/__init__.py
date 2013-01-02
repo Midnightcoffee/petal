@@ -5,8 +5,8 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.openid import OpenID
 from flask.ext.login import LoginManager
-from config import basedir
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
+from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
+    MAIL_PASSWORD, SQLALCHEMY_DATABASE_URI
 #from  flask_heroku import Heroku
 
 
@@ -24,7 +24,8 @@ db = SQLAlchemy(app)
 #login setup
 lm = LoginManager()
 lm.init_app(app)
-oid = OpenID(app, os.path.join(basedir, 'tmp'))
+oid = OpenID(app, os.path.join(basedir, '/tmp'))
+
 
 from petalapp.database import models
 from petalapp import views

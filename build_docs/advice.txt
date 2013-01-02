@@ -336,3 +336,17 @@ the answer was yes,yes im a dummy
 (06:33:50 PM) dampxf: Dasich, Yea, so i need to figure out implement a store that uses database access.
 (06:33:57 PM) joes1 [~Adium@213.111.90.25] entered the room.
 (06:34:15 PM) DasIch: midnightcoffee1: indeed
+
+#flask social shows some sort of integration.
+(02:07:17 PM) dvanduzer: midnightcoffee: http://packages.python.org/Flask-Social/ is a sample integration
+(02:14:45 PM) rhumzouc [~rhumzouc@75-101-96-64.dsl.static.sonic.net] entered the room.
+(02:14:57 PM) rhumzouc left the room (quit: Client Quit).
+(02:15:20 PM) dampxf: dvanduzer, a sample integration using Flask-Social, do you suggest i use it instead of the Flask-OpenID extension?
+(02:19:58 PM) dvanduzer: midnightcoffee: I believe it only integrates Flask-OAuth and not Flask-OpenID, but the principal of storing the tokens and integrating with Flask-Login (via Flask-Security) should be the same.
+(02:20:06 PM) jasonsee [~JSON@va-67-76-165-3.dyn.embarqhsd.net] entered the room.
+(02:21:14 PM) dampxf: dvanduzer, Yea at least its something. I'm a nervous when i google looking for a solution and all i get is my own stackoverflow question 
+(02:21:57 PM) jasonsee left the room.
+(02:22:12 PM) skot left the room (quit: Quit: ZNC - http://znc.in).
+(02:22:27 PM) skot [~skot@2002:ad03:cd62:0:211:32ff:fe14:8481] entered the room.
+(02:22:30 PM) aviraldg left the room (quit: Read error: Connection reset by peer).
+(02:22:31 PM) dvanduzer: midnightcoffee: Flask-Security (the meat of Flask-Social) will do most of that work for you

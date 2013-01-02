@@ -53,6 +53,7 @@ def logout():
 
 @oid.after_login
 def after_login(resp):
+    print(resp.email)
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
         redirect(url_for('login'))

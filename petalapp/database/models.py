@@ -50,7 +50,6 @@ class User(db.Model):
             self.hospitals.remove(hospital)
 
 
-
     @staticmethod
     def make_unique_nickname(nickname):
         if User.query.filter_by(nickname = nickname).first() == None:
