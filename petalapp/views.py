@@ -86,12 +86,12 @@ def pci_form():
 def add_pci_form():
     test_hospital = Hospital('test_hospital')
     #TODO remove me
-    #db.session.add(test_hospital)
-    #db.session.commit()
-    #test_data = Data(request.form['data'])
-    #db.session.add(test_data)
-    #db.session.commit()
-    #test_hospital.data.append(test_data)
+    db.session.add(test_hospital)
+    db.session.commit()
+    test_data = Data(request.form['data'])
+    db.session.add(test_data)
+    db.session.commit()
+    test_hospital.data.append(test_data)
     sample_data= Data.query.get(1)
     sample_hospital = Hospital.query.get(1)
     package = [str(d.timestamp),'fake quarter', '100', [sample_data.standard_form, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
