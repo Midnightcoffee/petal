@@ -2,9 +2,12 @@
 {% block content %}
 
 <div class =page>
-    <div class=metanav> 
+    <div class=metanav>
     <h1>Pci form</h1>
     <h1>{{user.nickname}}!</h1>
+      <form action="{{url_for('add_pci_form') }}" method="post" accept-charset="utf-8">
+         <input type=text" name="data" id="" value="" />
+      </form>
     </div>
 </div>
 {% endblock %}

@@ -62,9 +62,7 @@ def after_login(resp):
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
         nickname = User.make_unique_nickname(nickname)
-
-
-        user = User(nickname = nickname, email = resp.email, role = ROLE)
+        user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
         db.session.add(user)
         db.session.commit()
     remember_me = False
@@ -76,11 +74,24 @@ def after_login(resp):
 
 
 
-@app.route('/pci_form')
+@app.route('/pci_form', methods = ['GET'])
 @login_required
 def pci_form():
     user = g.user
     return render_template('pci_form.html', user=user)
+
+
+@app.route('/add_pci_form', methods = ['POST', 'GET'])
+@login_required
+def add_pci_form():
+    test_hospital = Hospital('test_hospital')
+    #TODO remove me
+    db.session.add(test_hospital)
+    db.session.commit()
+    test_data = Data(request.form['data'])
+    db.session.add(test_data)
+    db.session.commit()
+    return redirect(url_for('pci_form'))
 
 
 @app.errorhandler(404)
