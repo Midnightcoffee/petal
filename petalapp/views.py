@@ -10,7 +10,7 @@ from petalapp.database.models import User, Hospital, Data, ROLE_USER, ROLE_ADMIN
 from petalapp import db, app, lm, oid
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from forms import LoginForm
-from graphing_tools.graph import plotpolar
+from petalapp.graphing_tools.graph import plotpolar
 
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
