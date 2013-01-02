@@ -10,7 +10,7 @@ from petalapp.database.models import User, Hospital, Data, ROLE_USER, ROLE_ADMIN
 from petalapp import db, app, lm, oid
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from forms import LoginForm
-from graph import plotpolar
+from graphing_tools.graph import plotpolar
 
 #from tools import upload_s3_chart, download_s3_chart
 #python path points to petalapp?
@@ -86,11 +86,13 @@ def pci_form():
 def add_pci_form():
     test_hospital = Hospital('test_hospital')
     #TODO remove me
-    db.session.add(test_hospital)
-    db.session.commit()
-    test_data = Data(request.form['data'])
-    db.session.add(test_data)
-    db.session.commit()
+    #db.session.add(test_hospital)
+    #db.session.commit()
+    #test_data = Data(request.form['data'])
+    #db.session.add(test_data)
+    #db.session.commit()
+    #test_hospital.data.append(test_data)
+    
     return redirect(url_for('pci_form'))
 
 

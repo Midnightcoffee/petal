@@ -9,7 +9,7 @@ import boto
 from boto.s3.key import Key
 from petalapp import app
 
-from graph import plotpolar
+from petalapp.graphing_tools.graph import plotpolar
 
 #TODO separate out functions, add try except
 def upload_s3(destination_filename, data, acl="public-read"):
