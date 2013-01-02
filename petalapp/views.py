@@ -62,7 +62,12 @@ def after_login(resp):
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
         nickname = User.make_unique_nickname(nickname)
-        user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
+        # FIXME: not general enough a solution
+        if resp.email == 'drew.verlee@gmail.com':
+            ROLE = ROLE_ADMIN
+        else:
+            ROLE = ROLE_USER
+        user = User(nickname = nickname, email = resp.email, role = ROLE)
         db.session.add(user)
         db.session.commit()
     remember_me = False
