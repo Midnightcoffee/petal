@@ -33,5 +33,7 @@ Issue 8: refactor/docs: semi successful, added some docs, and cleaned up some
     opened - 2012-11-23
     closed - 2012-12-20
 
-Issue 9: Implement database
+Issue 9: Implement working database: overshot a bit started working on download.
+         Successful but database will need to be completely changed for survey.
     opened - 2012-12-26
+    closed - 2013-1-3

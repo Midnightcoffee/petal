@@ -9,7 +9,7 @@ import boto
 from boto.s3.key import Key
 from boto.s3.connection import S3Connection
 from petalapp import app
-from petal.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,S3_BUCKET
+from petalapp.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,S3_BUCKET
 
 from petalapp.graphing_tools.graph import plotpolar
 
