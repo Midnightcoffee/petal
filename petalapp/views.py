@@ -108,10 +108,10 @@ def add_pci_form():
     db.session.add(test_data)
     db.session.commit()
     test_hospital.data.append(test_data)
-    sample_data= Data.query.get(1)
+    latest_sample_data= Data.query.all().pop()
     sample_hospital = Hospital.query.get(1)
-    package = [str(sample_data.timestamp),'fake quarter', '100', [sample_data.standard_form, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
-    upload_s3('charts/quarter4'+ str(sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name , package)
+    package = [str(latest_sample_data.timestamp),'fake quarter', '100', [latest_sample_data.standard_form, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    upload_s3('charts/quarter4'+ str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name , package)
 
     return redirect(url_for('pci_form'))
 
