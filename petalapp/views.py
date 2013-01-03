@@ -88,7 +88,23 @@ def add_pci_form():
     #TODO remove me
     db.session.add(test_hospital)
     db.session.commit()
-    test_data = Data(request.form['data'])
+    #TODO what if not integer
+    test_data = Data(int(request.form['standard_form']),
+                    int(request.form['marketing_education']),
+                    int(request.form['record_availability']),
+                    int(request.form['family_centerdness']),
+                    int(request.form['pc_networking']),
+                    int(request.form['education_and_training']),
+                    int(request.form['team_funding']),
+                    int(request.form['coverage']),
+                    int(request.form['pc_for_expired_pts']),
+                    int(request.form['hospital_pc_screening']),
+                    int(request.form['pc_follow_up']),
+                    int(request.form['post_discharge_services']),
+                    int(request.form['certification']),
+                    int(request.form['team_wellness']),
+                    int(request.form['care_coordination'])
+                    )
     db.session.add(test_data)
     db.session.commit()
     test_hospital.data.append(test_data)

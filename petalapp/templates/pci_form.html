@@ -1,13 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class =page>
-    <div class=metanav>
     <h1>Pci form</h1>
-    <h1>{{user.nickname}}!</h1>
-      <form action="{{url_for('add_pci_form') }}" method="post" accept-charset="utf-8">
-         <input type=text" name="data" id="" value="" />
-      </form>
-    </div>
-</div>
+    <h2>welcome {{user.nickname}}</h2>
+    <form action="{{url_for('add_pci_form') }}" method="post" class=add-entry>
+        <dl>
+            <dt>Standard form:
+            <dd><input type="text" name="standard_form" id="" value="" size =2 />
+            <dt>Marketing and education materials:
+            <dd><input type="text" name="marketing_education" id="" value="" size =2 />
+            <dt>Record availability:
+            <dd><input type="text" name="record_availability" id="" value="" size =2 />
+            <dt>Family centerdness:
+            <dd><input type="text" name="family_centerdness" id="" value="" size =2 />
+            <dt>Palliative care networking:
+            <dd><input type="text" name="pc_networking" id="" value="" size =2 />
+            <dt>Education and training:
+            <dd><input type="text" name="education_and_training" id="" value="" size =2 />
+            <dt>Team funding:
+            <dd><input type="text" name="team_funding" id="" value="" size =2 />
+            <dt>Coverage:
+            <dd><input type="text" name="coverage" id="" value="" size =2 />
+            <dt>Palliative care concerning expired patients:
+            <dd><input type="text" name="pc_for_expired_pts" id="" value="" size =2 />
+            <dt>Hospital Palliative care screenings:
+            <dd><input type="text" name="hospital_pc_screening" id="" value="" size =2 />
+            <dt>Palliative Care follow up:
+            <dd><input type="text" name="pc_follow_up" id="" value="" size =2 />
+            <dt>Post discharge services:
+            <dd><input type="text" name="post_discharge_services" id="" value="" size =2 />
+            <dt>Bereavement contacts:
+            <dd><input type="text" name="bereavement_contacts" id="" value="" size =2 />
+            <dt>Certification:
+            <dd><input type="text" name="certification" id="" value="" size =2 />
+            <dt>Team wellness:
+            <dd><input type="text" name="team_wellness" id="" value="" size =2 />
+            <dt>Care coordination:
+            <dd><input type="text" name="care_coordination" id="" value="" size =2 />
+            <dt><input type="submit" name="" id="" value="submit all" />
+        </dl>
+    </form>
 {% endblock %}
