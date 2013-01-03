@@ -6,7 +6,7 @@ Description: Contains function plotpolar
 '''
 
 import matplotlib.cm as cm
-from matplotlib.pyplot import figure, gca, ylim
+from matplotlib.pyplot import figure, ylim, axes
 import StringIO
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from random import randrange as rr
@@ -26,10 +26,11 @@ def plotpolar(data=[], num=None):
 
     fig = figure(figsize=(10,10))
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
-    ax = gca()
-    ax.set_autoscale_on(False)
+    #ax = gca()
+    #ax.set_autoscale_on(False)
     #xmin,xmax,ymin,ymax
-    ylim(10)
+    ax.set_ylim(0,10)
+    
     
 
     deg = [360/len(hospital_labels) * x for x in range(1,len(hospital_labels)+1)]
