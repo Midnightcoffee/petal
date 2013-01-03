@@ -132,8 +132,8 @@ def add_pci_form():
     title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
     in_file = 'charts/'
     upload_s3(title , package)
-    g.url =download_s3(in_file + title)
-    return render_template(test_hospital_title + '.html', url=g.url)
+    url =download_s3(in_file + title)
+    return render_template(test_hospital_title + '.html', url=url)
     return redirect(url_for('pci_form'))
 
 
