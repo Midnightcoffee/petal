@@ -101,6 +101,7 @@ def add_pci_form():
                     int(request.form['hospital_pc_screening']),
                     int(request.form['pc_follow_up']),
                     int(request.form['post_discharge_services']),
+                    int(request.form['bereavement_contacts']),
                     int(request.form['certification']),
                     int(request.form['team_wellness']),
                     int(request.form['care_coordination'])
@@ -123,6 +124,7 @@ def add_pci_form():
              latest_sample_data.hospital_pc_screening,
              latest_sample_data.pc_follow_up,
              latest_sample_data.post_discharge_services,
+             latest_sample_data.bereavement_contacts,
              latest_sample_data.certification,
              latest_sample_data.team_wellness,
              latest_sample_data.care_coordination]]
