@@ -51,8 +51,8 @@ def upload_s3(destination_filename, data, acl="public-read"):
 
 
 def download_s3(file_title):
-    s3conn = boto.connect_s3(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY)
-    bucket = s3conn.get_bucket(S3_BUCKET)
+    s3conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],app.config["AWS_SECRET_ACCESS_KEY"])
+    bucket = s3conn.get_bucket(app.config["S3_BUCKET"])
     key = bucket.get_key(file_title)
     seconds = 60*5
     url = key.generate_url(expires_in=seconds)
