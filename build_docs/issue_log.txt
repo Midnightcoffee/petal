@@ -36,4 +36,7 @@ Issue 8: refactor/docs: semi successful, added some docs, and cleaned up some
 Issue 9: Implement working database: overshot a bit started working on download.
          Successful but database will need to be completely changed for survey.
     opened - 2012-12-26
-    closed - 2013-1-3
+    closed - 2013-01-03
+
+Issue 10: Downloading and uploaded from amazon s3;
+    opened - 2013-01-03

@@ -12,7 +12,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 
-from petalapp.aws.tools import upload_s3
+from petalapp.aws.tools import upload_s3, download_s3
 #python path points to petalapp?
 
 
@@ -77,14 +77,14 @@ def after_login(resp):
 @app.route('/pci_form', methods = ['GET'])
 @login_required
 def pci_form():
-    user = g.user
-    return render_template('pci_form.html', user=user)
+    return render_template('pci_form.html', user=g.user)
 
 
 @app.route('/add_pci_form', methods = ['POST', 'GET'])
 @login_required
 def add_pci_form():
-    test_hospital = Hospital('test_hospital')
+    test_hospital_title = 'detroit_receiving'
+    test_hospital = Hospital(test_hospital_title)
     #TODO remove me
     db.session.add(test_hospital)
     db.session.commit()
@@ -128,8 +128,12 @@ def add_pci_form():
              latest_sample_data.certification,
              latest_sample_data.team_wellness,
              latest_sample_data.care_coordination]]
-    upload_s3('charts/quarter4'+ str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name , package)
-
+    #TODO refactor
+    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
+    in_file = 'charts/'
+    upload_s3(title , package)
+    g.url =download_s3(in_file + title)
+    return render_template(test_hospital_title + '.html', url=g.url)
     return redirect(url_for('pci_form'))
 
 

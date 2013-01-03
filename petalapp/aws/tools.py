@@ -38,8 +38,23 @@ def upload_s3(destination_filename, data, acl="public-read"):
 #    k = Key(b)
 #    return k
 #
+#method described here:  http://www.givp.org/blog/2011/08/01/amazon-s3-expiring-urls-with-boto/
+#def download_s3(file_key):
+#    s3 = S3Connection(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY, is_secure=False)
+#    url_w_extra = s3.generate_url(60, 'GET', bucket=S3_BUCKET, key=file_key, force_http=True) #FIXME Your_FILE_KEY figure out how to get file
+#    #TODO make this more general somehow
+#    file_title = url_w_extra[url_w_extra.find('.com/')+5:url_w_extra.find('?Signature')]
+#    url = "https://s3.amazonaws.com/petalbucket/charts/" + file_title
+#    return url_w_extra
 
-def download_s3():
-    s3 = S3Connection(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY, is_secure=False)
-    url = s3.generate_url(60, 'GET', bucket=S3_BUCKET, key="Your_FILE_KEY", force_http=True) #FIXME Your_FILE_KEY figure out how to get file
-    return url #FIXME remember to filter url
+#method here:http://jamiecurle.co.uk/blog/creating-expiring-link-s3/
+
+
+def download_s3(file_title):
+    s3conn = boto.connect_s3(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY)
+    bucket = s3conn.get_bucket(S3_BUCKET)
+    key = bucket.get_key(file_title)
+    seconds = 60*5
+    url = key.generate_url(expires_in=seconds)
+    return url
+
