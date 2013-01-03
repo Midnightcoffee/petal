@@ -58,3 +58,6 @@ def download_s3(file_title):
     url = key.generate_url(expires_in=seconds)
     return url
 
+# then 
+# g.url = download_s3('some_title')
+
