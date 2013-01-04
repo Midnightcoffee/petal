@@ -38,5 +38,12 @@ Issue 9: Implement working database: overshot a bit started working on download.
     opened - 2012-12-26
     closed - 2013-01-03
 
-Issue 10: Downloading and uploaded from amazon s3;
+Issue 10: Downloading and uploaded from amazon s3: Success, need to do some 
+        heavy clean up
     opened - 2013-01-03
+    closed - 2013-01-03
+
+Issue 10: Extend login and database for regular login:
+    opened - 2013-01-03
+
+

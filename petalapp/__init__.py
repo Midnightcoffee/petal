@@ -8,7 +8,10 @@ from flask.ext.login import LoginManager
 from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
     MAIL_PASSWORD, SQLALCHEMY_DATABASE_URI
 #from  flask_heroku import Heroku
+#from flask.bycrpt import Bcrypt
 
+
+#bycrpt extension
 
 app = Flask(__name__)
 #configuring from my local computer
