@@ -128,10 +128,10 @@ def add_pci_form():
              latest_sample_data.certification,
              latest_sample_data.team_wellness,
              latest_sample_data.care_coordination]]
-    #TODO refactor
+    #TODO refactor ,title
     title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
     in_file = 'charts/'
-    upload_s3(in_file + title , package)
+    upload_s3(title , package)
     url =download_s3(in_file + title)
     return render_template(test_hospital_title + '.html', url=url)
 

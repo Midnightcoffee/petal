@@ -22,11 +22,14 @@ def upload_s3(destination_filename, data, acl="public-read"):
     b = conn.get_bucket(app.config["S3_BUCKET"])
 
     file_name=plotpolar(data).getvalue()
+    import pdb; pdb.set_trace()
     sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
     sml.set_contents_from_string(file_name)
 
     # TODO investigate, Set the file's permissions.
     sml.set_acl(acl)
+
+
 
 #TODO returning key, need a way to connect it to rest of code/add filename?
 #def download_s3():
