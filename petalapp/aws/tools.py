@@ -22,7 +22,6 @@ def upload_s3(destination_filename, data, acl="public-read"):
     b = conn.get_bucket(app.config["S3_BUCKET"])
 
     file_name=plotpolar(data).getvalue()
-    import pdb; pdb.set_trace()
     sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
     sml.set_contents_from_string(file_name)
 
