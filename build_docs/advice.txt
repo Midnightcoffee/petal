@@ -350,3 +350,33 @@ the answer was yes,yes im a dummy
 (02:22:27 PM) skot [~skot@2002:ad03:cd62:0:211:32ff:fe14:8481] entered the room.
 (02:22:30 PM) aviraldg left the room (quit: Read error: Connection reset by peer).
 (02:22:31 PM) dvanduzer: midnightcoffee: Flask-Security (the meat of Flask-Social) will do most of that work for you
+
+
+#OpenID security:
+(10:29:55 PM) dampxf: Would it be secure to check the email i receive back from an OpenID provider against a list of trusted emails for means of assigning user roles on my site?
+(10:30:53 PM) eevee: no
+(10:31:09 PM) eevee: i could set up an openid provider that claims i have any arbitrary email
+(10:34:28 PM) dampxf: eevee, errr maybe i'm confused. After the user is authenticated i'm able to get some information back. like nickname, email, etc... ur saying i can't trust this to be accurate? Like someone else could send my site a midnightcoffee@gmail.com even though thats my email?
+(10:34:51 PM) xpen left the room (quit: Ping timeout: 276 seconds).
+(10:34:54 PM) eevee: yes; the nickname and email and etc are totally arbitrary and at the site's discretion
+(10:35:07 PM) eevee: the only thing you can trust is the url that gets verified
+(10:35:17 PM) o11c: the only information openid is good for is unique identity validation
+(10:35:29 PM) recurrence [~recurrenc@c-67-180-74-231.hsd1.ca.comcast.net] entered the room.
+(10:35:31 PM) recurrence left the room (quit: Excess Flood).
+(10:35:32 PM) Petskull: ok, peep this, g-dawgs (including mh`)!  If I comment out the scrollbar, it expands all the way!  --->>>   http://image.bayimg.com/1caf1b93ff0f3beb1d85e07cc6967ce088d8653c.jpg
+(10:35:45 PM) blf: Does it sound reasonable to allow the user of a class to assign the class a function to be called by the class during one of its routines?
+(10:35:47 PM) eevee: feel free to *send* email to that address, but don't assume that the person actually owns it
+
+(10:44:47 PM) dampxf: eevee, so how do i use the verified url? Where can i read about this without asking 50 more questions? my google is weak.
+(10:44:54 PM) renstar left the room (quit: Read error: Connection reset by peer).
+(10:45:20 PM) Buglouse [~Buglouse@unaffiliated/Buglouse] entered the room.
+(10:45:21 PM) blf: netbat: the ones-complement of A is not(A). the twos-complement of A is not(A) + 1
+(10:45:44 PM) bob2: midnightcoffee, it's a unique identifier that they have "proven" they owned at the time they gave it to you
+(10:46:06 PM) nedbat: blf: i'm just not sure what you are displaying?  Isn't it going to be displayed as -1234 either way? What are you building?
+(10:46:07 PM) eevee: midnightcoffee: whatever library you're using should expose this stuff
+(10:46:17 PM) bob2: midnightcoffee, (if you want to know their email address, email a long random string to the address they gave you then ask them to enter the long random string)
+
+(11:04:26 PM) dash: midnightcoffee: persona sounds like a good fit if you want to identify users via email address
+(11:04:32 PM) dash: midnightcoffee: since that's what it's built around
+(11:04:48 PM) bob2: socentralised :/
+(11:04:58 PM) dash: midnightcoffee: the way we use it on our site is to track user accounts by email address, and assign them different acls from there
