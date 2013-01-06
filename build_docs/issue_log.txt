@@ -49,3 +49,6 @@ Issue 10: Extend login and database for regular login: didn't go this route
 
 Issue 11: Revise Database structure!
     opened - 2013-01-06
+    closed - 2013-01-06
+
+Issue 12: refactor code to accommodate database and new login
