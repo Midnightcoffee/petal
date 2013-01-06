@@ -6,16 +6,14 @@ Description: contains the views for the webapp
 '''
 from flask import make_response, render_template, url_for, request, redirect\
     , session, redirect, g, flash
-from petalapp.database.models import (User, Hospital, Question, Survey, Answer
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER)
-from petalapp import db, app, lm, oid
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
+        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
+from petalapp import db, app, lm
+from flask.ext.login import login_user, logout_user, current_user, login_required\
+        , LoginManager
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
-
-from petalapp.aws.tools import upload_s3, download_s3
-#python path points to petalapp?
-
+from aws_tools import upload_s3, download_s3
 
 
 @app.before_request
@@ -23,56 +21,13 @@ def before_request():
     '''run before every url request, to auth our user'''
     g.user = current_user
 
+
 #post method possible to make awswtf work?
 @app.route("/")
 @app.route('/index')
 def index():
     '''extends base and home of app ...'''
-    user = g.user
-    return render_template('index.html',user=user)
-
-
-@app.route('/login', methods = ['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated() and g.email == 'drew.verlee@gmail.com':
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
-    return render_template('login.html',
-        title = 'Sign In',
-        form = form,
-        providers = app.config['OPENID_PROVIDERS'])
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
-
-@oid.after_login
-def after_login(resp):
-    if resp.email is None or resp.email == "":
-        flash('Invalid login. Please try again.')
-        redirect(url_for('login'))
-    user = User.query.filter_by(email = resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        nickname = User.make_unique_nickname(nickname)
-        user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
-        db.session.add(user)
-        db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember = remember_me)
-    return redirect(request.args.get('next') or url_for('index'))
-
+    return render_template('index.html')
 
 
 @app.route('/pci_form', methods = ['GET'])

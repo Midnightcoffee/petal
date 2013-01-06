@@ -1,8 +1,8 @@
 from petalapp import db
 
-ROLE_VIEWER = 0
-ROLE_CONTRIBUTER = 1
-ROLE_ADMIN = 2
+ROLE_VIEWER = 'viewer'
+ROLE_CONTRIBUTER = 'contributer'
+ROLE_ADMIN = 'admin'
 
 
 #TODO:rename?
@@ -21,13 +21,13 @@ class User(db.Model):
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, nickname, email, password="OpenID",role=ROLE_VIEWER):
+    def __init__(self, email, role=ROLE_VIEWER):
         self.role = role
         self.email = email
 
     #TODO what information to show?
     def __repr__(self):
-        return '<Name : %r>' % (self.nickname)
+        return '<email : %r>' % (self.email)
 
     def add_hospital(self, hospital):
         if not (hospital in self.hospitals):
@@ -37,6 +37,18 @@ class User(db.Model):
         if not (hospital in self.hospital):
             self.hospitals.remove(hospital)
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
+
 
 class Hospital(db.Model):
     """Hospital's has a one-to-many relationship with answer and a
@@ -44,7 +56,7 @@ class Hospital(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    answer = db.relationship('answer', backref='hospital', lazy = 'dynamic')
+    answer = db.relationship('Answer', backref='hospital', lazy = 'dynamic')
 
     def __init__(self, name):
         self.name = name
@@ -67,13 +79,13 @@ class Question(db.Model):
     """Question has a one to many to one relationship with Answer"""
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(500))
-    answers = db.relationship('answer', backref='question', lazy='dynamic')
+    answers = db.relationship('Answer', backref='question', lazy='dynamic')
 
 
 class Survey(db.Model):
     """survey has a one to may relationship with  answer"""
     id = db.Column(db.Integer, primary_key=True)
-    answers = db.relationship('answer', backref='survey', lazy='dynamic')
+    answers = db.relationship('Answer', backref='survey', lazy='dynamic')
     release  = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime)
 
