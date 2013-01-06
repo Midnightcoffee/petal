@@ -36,62 +36,62 @@ def pci_form():
     return render_template('pci_form.html', user=g.user)
 
 
-@app.route('/add_pci_form', methods = ['POST', 'GET'])
-@login_required
-def add_pci_form():
-    test_hospital_title = 'detroit_receiving'
-    test_hospital = Hospital(test_hospital_title)
-    #TODO remove me
-    db.session.add(test_hospital)
-    db.session.commit()
-    #TODO what if not integer
-    test_data = Data(int(request.form['standard_form']),
-                    int(request.form['marketing_education']),
-                    int(request.form['record_availability']),
-                    int(request.form['family_centerdness']),
-                    int(request.form['pc_networking']),
-                    int(request.form['education_and_training']),
-                    int(request.form['team_funding']),
-                    int(request.form['coverage']),
-                    int(request.form['pc_for_expired_pts']),
-                    int(request.form['hospital_pc_screening']),
-                    int(request.form['pc_follow_up']),
-                    int(request.form['post_discharge_services']),
-                    int(request.form['bereavement_contacts']),
-                    int(request.form['certification']),
-                    int(request.form['team_wellness']),
-                    int(request.form['care_coordination'])
-                    )
-    db.session.add(test_data)
-    db.session.commit()
-    test_hospital.data.append(test_data)
-    latest_sample_data= Data.query.all().pop()
-    sample_hospital = Hospital.query.get(1)
-    package = [str(latest_sample_data.timestamp),'fake quarter', '100',
-            [latest_sample_data.standard_form,
-             latest_sample_data.marketing_education,
-             latest_sample_data.record_availability,
-             latest_sample_data.family_centerdness,
-             latest_sample_data.pc_networking,
-             latest_sample_data.education_and_training,
-             latest_sample_data.team_funding,
-             latest_sample_data.coverage,
-             latest_sample_data.pc_for_expired_pts,
-             latest_sample_data.hospital_pc_screening,
-             latest_sample_data.pc_follow_up,
-             latest_sample_data.post_discharge_services,
-             latest_sample_data.bereavement_contacts,
-             latest_sample_data.certification,
-             latest_sample_data.team_wellness,
-             latest_sample_data.care_coordination]]
-    #TODO refactor ,title
-    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
-    in_file = 'charts/'
-    upload_s3(title , package)
-    url =download_s3(in_file + title)
-    return render_template(test_hospital_title + '.html', url=url)
-
-
+#@app.route('/add_pci_form', methods = ['POST', 'GET'])
+#@login_required
+#def add_pci_form():
+#    test_hospital_title = 'detroit_receiving'
+#    test_hospital = Hospital(test_hospital_title)
+#    #TODO remove me
+#    db.session.add(test_hospital)
+#    db.session.commit()
+#    #TODO what if not integer
+#    test_data = Data(int(request.form['standard_form']),
+#                    int(request.form['marketing_education']),
+#                    int(request.form['record_availability']),
+#                    int(request.form['family_centerdness']),
+#                    int(request.form['pc_networking']),
+#                    int(request.form['education_and_training']),
+#                    int(request.form['team_funding']),
+#                    int(request.form['coverage']),
+#                    int(request.form['pc_for_expired_pts']),
+#                    int(request.form['hospital_pc_screening']),
+#                    int(request.form['pc_follow_up']),
+#                    int(request.form['post_discharge_services']),
+#                    int(request.form['bereavement_contacts']),
+#                    int(request.form['certification']),
+#                    int(request.form['team_wellness']),
+#                    int(request.form['care_coordination'])
+#                    )
+#    db.session.add(test_data)
+#    db.session.commit()
+#    test_hospital.data.append(test_data)
+#    latest_sample_data= Data.query.all().pop()
+#    sample_hospital = Hospital.query.get(1)
+#    package = [str(latest_sample_data.timestamp),'fake quarter', '100',
+#            [latest_sample_data.standard_form,
+#             latest_sample_data.marketing_education,
+#             latest_sample_data.record_availability,
+#             latest_sample_data.family_centerdness,
+#             latest_sample_data.pc_networking,
+#             latest_sample_data.education_and_training,
+#             latest_sample_data.team_funding,
+#             latest_sample_data.coverage,
+#             latest_sample_data.pc_for_expired_pts,
+#             latest_sample_data.hospital_pc_screening,
+#             latest_sample_data.pc_follow_up,
+#             latest_sample_data.post_discharge_services,
+#             latest_sample_data.bereavement_contacts,
+#             latest_sample_data.certification,
+#             latest_sample_data.team_wellness,
+#             latest_sample_data.care_coordination]]
+#    #TODO refactor ,title
+#    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
+#    in_file = 'charts/'
+#    upload_s3(title , package)
+#    url =download_s3(in_file + title)
+#    return render_template(test_hospital_title + '.html', url=url)
+#
+#
 @app.errorhandler(404)
 def internal_error(error):
     return render_template('404.html'), 404
