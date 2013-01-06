@@ -56,3 +56,5 @@ Issue 12: refactor code to accommodate database and new login: some problems,
     opened - 2013-01-06
     closed - 2013-01-06
 
+Issue 13: roles
+    opened - 2013-01-06

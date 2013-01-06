@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, Response
 #alternative method
 from flask.ext.sqlalchemy import SQLAlchemy
 #from flask.ext.openid import OpenID
@@ -8,7 +8,7 @@ from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
     MAIL_PASSWORD, SQLALCHEMY_DATABASE_URI
 
 from flask.ext.browserid import BrowserID
-
+from flask_principal import Principal, Permission, RoleNeed
 #from  flask_heroku import Heroku
 #from flask.bycrpt import Bcrypt
 
@@ -32,7 +32,9 @@ lm.init_app(app)
 #oid = OpenID(app, os.path.join(basedir, './tmp')) #old version
 #oid = OpenID(app, './tmp') #on a whim
 
-
+#flask Principle #TODO better in config?
+principles = Principal(app)
+contributer_permission = Permission(RoleNeed('contributer'))
 
 from petalapp.database import models
 from petalapp import views

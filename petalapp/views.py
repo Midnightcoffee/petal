@@ -14,7 +14,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
-
+from petalapp import contributer_permission
 
 @app.before_request
 def before_request():
@@ -151,6 +151,7 @@ def load_user(id):
 
 @app.route("/hospitals")
 @login_required
+@contributer_permission.require()
 def hospitals():
     '''page for hospitals'''
     return render_template("hospitals.html")
