@@ -51,4 +51,8 @@ Issue 11: Revise Database structure!
     opened - 2013-01-06
     closed - 2013-01-06
 
-Issue 12: refactor code to accommodate database and new login
+Issue 12: refactor code to accommodate database and new login: some problems,
+    need to fix logout
+    opened - 2013-01-06
+    closed - 2013-01-06
+
