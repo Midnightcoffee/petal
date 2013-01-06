@@ -43,7 +43,9 @@ Issue 10: Downloading and uploaded from amazon s3: Success, need to do some
     opened - 2013-01-03
     closed - 2013-01-03
 
-Issue 10: Extend login and database for regular login:
+Issue 10: Extend login and database for regular login: didn't go this route
     opened - 2013-01-03
+    closed - 2013-01-06 
 
-
+Issue 11: Revise Database structure!
+    opened - 2013-01-06

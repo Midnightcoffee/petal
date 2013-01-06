@@ -5,7 +5,7 @@ Author: Drew Verlee
 Description: functions to build a many-to-many relationship
 '''
 import unittest
-from petalapp.database.models import User, Hospital, Data, ROLE_USER
+from petalapp.database.models import User, Hospital, ROLE_USER
 from petalapp import db
 
 class BuildDestroyTables(unittest.TestCase):
