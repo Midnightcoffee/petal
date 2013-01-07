@@ -56,5 +56,9 @@ Issue 12: refactor code to accommodate database and new login: some problems,
     opened - 2013-01-06
     closed - 2013-01-06
 
-Issue 13: roles
+Issue 13: roles: that and i tagged on sslify
     opened - 2013-01-06
+    closed - 2013-01-07
+
+Issue 14: Create survey
+    opened - 2013-01-07 
