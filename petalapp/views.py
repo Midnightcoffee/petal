@@ -71,8 +71,8 @@ def index():
 
 @app.route('/login')
 def login():
-    perm1 = Permission(RoleNeed(g.user.role))
     if g.user.is_active():
+        perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
         session['logged_in'] = True
         #TODO add some flashing
