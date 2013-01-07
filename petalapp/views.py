@@ -76,6 +76,8 @@ def login():
         identity_changed.send(app, identity=Identity(g.user.role))
         session['logged_in'] = True
         #TODO add some flashing
+    else:
+        perm1= None # to represent no level aka Anonymous
     return render_template('login.html', perm1=perm1,level=g.user.role)
 
 
