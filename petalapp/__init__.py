@@ -32,13 +32,10 @@ lm.init_app(app)
 #oid = OpenID(app, os.path.join(basedir, './tmp')) #old version
 #oid = OpenID(app, './tmp') #on a whim
 
-#flask Principle #TODO better in config?
+
 principles = Principal(app)
-contributer_permission = Permission(RoleNeed('contributer'))
-viewer_permission = Permission(RoleNeed('viewer'))
-admin_permission = Permission(RoleNeed('admin'))
 
-
+#flask Principle #TODO better in config?
 from petalapp.database import models
 from petalapp import views
 from browserid_tools import get_user_by_id, get_user
@@ -50,6 +47,8 @@ login_manager.init_app(app)
 browserid = BrowserID()
 browserid.user_loader(get_user)
 browserid.init_app(app)
+
+
 
 
 

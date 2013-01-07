@@ -1,8 +1,8 @@
 from petalapp import db
 
-ROLE_VIEWER = 'viewer'
-ROLE_CONTRIBUTER = 'contributer'
-ROLE_ADMIN = 'admin'
+ROLE_VIEWER = 0
+ROLE_CONTRIBUTER = 1
+ROLE_ADMIN = 2
 
 
 #TODO:rename?
@@ -21,7 +21,7 @@ class User(db.Model):
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, email, role=ROLE_VIEWER):
+    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundent 
         self.role = role
         self.email = email
 

@@ -4,6 +4,7 @@ Date: 2012-11
 Author: Drew Verlee
 Description: contains the views for the webapp
 '''
+
 from flask import make_response, render_template, url_for, request, redirect\
     , session, redirect, g, flash
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
@@ -14,7 +15,15 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
-from petalapp import contributer_permission, viewer_permission, admin_permission
+from flask_principal import Permission, RoleNeed
+
+
+viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
+contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
+admin_persmission = Permission(RoleNeed(ROLE_ADMIN))
+
+
+# FIXME: I have some sort of import loop i need to fix
 
 @app.before_request
 def before_request():
@@ -30,11 +39,21 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/pci_form', methods = ['GET'])
+@app.route('/pci_form2', methods = ['GET'])
 @contributer_permission.require(403)
 @login_required
 def pci_form():
-    return render_template('pci_form.html', user=g.user)
+    users_hospitals = g.user.hospitals.query.all()
+    return render_template('pci_form.html', users_hospitals)
+
+
+@app.route('/add_pci_form2', methods = ['POST', 'GET'])
+@login_required
+@contributer_permission.require(403)
+def add_pci_form2():
+    render_template('pci_form2.html')
+
+
 
 
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])

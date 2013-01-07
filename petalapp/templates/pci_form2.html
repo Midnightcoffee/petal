@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>welcome {{user.email}}</h2>
+    <form action="{{url_for('add_pci_form2') }}" method="post" class=add-entry>
+    <input type="radio" name="your-group" value="unit-in-group" />Unit in group
+    </form>
+
+
+{% endblock %}
