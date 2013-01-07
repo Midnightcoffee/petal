@@ -71,14 +71,17 @@ def index():
 
 @app.route('/login')
 def login():
+    #TODO refactor please :(
     if g.user.is_active():
         perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
+        rolelevel= g.user.role
         session['logged_in'] = True
         #TODO add some flashing
     else:
-        perm1= None # to represent no level aka Anonymous
-    return render_template('login.html', perm1=perm1,level=g.user.role)
+        perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymous
+        rolelevel = None
+    return render_template('login.html', perm1=perm1,level=rolelevel)
 
 
 @app.route('/logout')
