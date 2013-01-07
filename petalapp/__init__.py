@@ -35,6 +35,9 @@ lm.init_app(app)
 #flask Principle #TODO better in config?
 principles = Principal(app)
 contributer_permission = Permission(RoleNeed('contributer'))
+viewer_permission = Permission(RoleNeed('viewer'))
+admin_permission = Permission(RoleNeed('admin'))
+
 
 from petalapp.database import models
 from petalapp import views
