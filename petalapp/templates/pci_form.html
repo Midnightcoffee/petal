@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Pci form</h1>
-    <h2>welcome {{user.nickname}}</h2>
+    <h2>welcome {{user.email}}</h2>
     <form action="{{url_for('add_pci_form') }}" method="post" class=add-entry>
         <dl>
             <dt>Standard form:

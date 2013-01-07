@@ -4,20 +4,11 @@
 <div class =page>
   <h1>Petal</h1>
     <div class=metanav>
-      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('login') }}">Login</a>
       <a href="{{ url_for('hospitals') }}">hospitals</a>
-      <a href="{{ url_for('pci_form') }}">pci form</a>
+      <a href="{{ url_for('pci_form2') }}">pci form</a>
       <hr>
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <ul>
-      {% for message in messages %}
-          <li>{{ message }} </li>
-      {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
-    </div>
+      <!-- add flashes -->
 {% block content %}{% endblock %}
 </div>
 

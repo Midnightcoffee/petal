@@ -6,26 +6,51 @@ Description: contains the views for the webapp
 '''
 
 from flask import make_response, render_template, url_for, request, redirect\
-    , session, redirect, g, flash
+    , session, redirect, g, flash, session
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
         ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
-from petalapp import db, app, lm
+from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
 from forms import LoginForm
 from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
-from flask_principal import Permission, RoleNeed
+from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
+    UserNeed, Identity, identity_changed, Need, AnonymousIdentity
 
 
 # FIXME: move problem import error
+#older code
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
-admin_persmission = Permission(RoleNeed(ROLE_ADMIN))
+admin_permission = Permission(RoleNeed(ROLE_ADMIN))
+
+#@identity_loaded.connect_via(app)
+#def on_identity_loaded(sender, identity):
+#    identity.user = current_user
+#
+#    if hasattr(current_user):
+#        identity.provides.add(RoleNeed(current_user.role))
+#
 
 
-contributer_permission.issubset(viewer_permission)
-admin_persmission.issubset(contributer_permission)
+
+
+#example TODO remove
+@identity_loaded.connect_via(app)
+def on_identity_loaded(sender, identity):
+    """ identity.name is the g.user.role so for admin=2,contributer=1,viewer=0"""
+    for roles in range(identity.name+1):
+        identity.provides.add(RoleNeed(roles))
+
+#    if identity.name == 'admin':
+#        identity.provides.add(Need('superuser', 'my_value'))
+#    elif identity.name == 'bill':
+#        identity.provides.add(Need('need1', 'my_value'))
+#    elif identity.name == 'sally':
+#        identity.provides.add(Need('need2', 'my_value'))
+        #TODO add some flashing
+
 
 
 @app.before_request
@@ -34,20 +59,39 @@ def before_request():
     g.user = current_user
 
 
+
 #post method possible to make awswtf work?
+
 @app.route("/")
-@app.route('/index')
 def index():
     '''extends base and home of app ...'''
-    return render_template('index.html')
+    #TODO build a index/home page
+    return redirect(url_for('login'))
 
+
+@app.route('/login')
+def login():
+    perm1 = Permission(RoleNeed(g.user.role))
+    if g.user.is_active():
+        identity_changed.send(app, identity=Identity(g.user.role))
+        session['logged_in'] = True
+        #TODO add some flashing
+    return render_template('login.html', perm1=perm1,level=g.user.role)
+
+
+@app.route('/logout')
+def logout():
+    # TODO figure out broswerID logout
+    identity_changed.send(app, Identity=AnonymousIdentity())
+    session.pop('logged_in', None)
+    return redirect(url_for("login")) #TODO should be something else?
 
 @app.route('/pci_form2', methods = ['GET'])
 @contributer_permission.require(403)
 @login_required
-def pci_form():
-    users_hospitals = g.user.hospitals.query.all()
-    return render_template('pci_form.html', users_hospitals)
+def pci_form2():
+    #users_hospitals = g.user.hospitals.query.all()
+    return render_template('pci_form2.html',user=g.user) # TODO: send only name?
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])
@@ -55,9 +99,6 @@ def pci_form():
 @contributer_permission.require(403)
 def add_pci_form2():
     render_template('pci_form2.html')
-
-
-
 
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])
 #@login_required
@@ -174,7 +215,7 @@ def load_user(id):
 
 @app.route("/hospitals")
 @login_required
-@viewer_permission.require(403)
+@contributer_permission.require(403)
 def hospitals():
     '''page for hospitals'''
     return render_template("hospitals.html")

@@ -18,6 +18,7 @@ def create_broswerid_user(kwargs):
         user = User(kwargs['email']) # i don't need to create an id?
         db.session.add(user)
         db.session.commit()
+
         return user
     else:
         return None

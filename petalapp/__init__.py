@@ -33,6 +33,7 @@ lm.init_app(app)
 #oid = OpenID(app, './tmp') #on a whim
 
 
+
 principles = Principal(app)
 
 #flask Principle #TODO better in config?
