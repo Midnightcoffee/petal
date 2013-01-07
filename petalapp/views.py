@@ -75,8 +75,13 @@ def login():
         perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
         session['logged_in'] = True
+        rolelevel = g.user.role
         #TODO add some flashing
-    return render_template('login.html', perm1=perm1,level=g.user.role)
+    else:
+        perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
+        rolelevel = None
+    return render_template('login.html', perm1=perm1,level=rolelevel)
+
 
 
 @app.route('/logout')
