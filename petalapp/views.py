@@ -18,12 +18,15 @@ from aws_tools import upload_s3, download_s3
 from flask_principal import Permission, RoleNeed
 
 
+# FIXME: move problem import error
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_persmission = Permission(RoleNeed(ROLE_ADMIN))
 
 
-# FIXME: I have some sort of import loop i need to fix
+contributer_permission.issubset(viewer_permission)
+admin_persmission.issubset(contributer_permission)
+
 
 @app.before_request
 def before_request():

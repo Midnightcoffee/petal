@@ -21,7 +21,7 @@ class User(db.Model):
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundent 
+    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant 
         self.role = role
         self.email = email
 
