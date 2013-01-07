@@ -9,6 +9,7 @@ Flask-OpenID==1.1
 Flask-Principal==0.3.3
 Flask-S3==0.1.1
 Flask-SQLAlchemy==0.16
+Flask-SSLify==0.1.4
 Flask-Testing==0.4
 Flask-WTF==0.8
 Jinja2==2.6

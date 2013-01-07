@@ -50,6 +50,8 @@ browserid.user_loader(get_user)
 browserid.init_app(app)
 
 
+from flask.ext.sslify import SSLify
+sslify = SSLify(app)
 
 
 
