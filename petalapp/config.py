@@ -17,7 +17,6 @@ DEBUG = str(os.environ.get("DEBUG"))
 ALLOWED_EXTENSIONS = str(os.environ.get("ALLOWED_EXTENSIONS"))
 CSRF_ENABLED = True
 TESTING = os.environ.get("TESTING", False)
-DEBUG = True  # CHANGE
 
 #database, TODO add local db?
 SQLALCHEMY_DATABASE_URI = str(os.environ.get("DATABASE_URL"))

@@ -40,7 +40,7 @@ class SSLify(object):
         # Should we redirect?
         criteria = [
             request.is_secure,
-            self.app.debug,
+            not(self.app.debug),# FIXME just for debug
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
 
