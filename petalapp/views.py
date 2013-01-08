@@ -54,14 +54,14 @@ def on_identity_loaded(sender, identity):
 
 @app.before_request
 def before_request():
-    '''run before every url request, to auth our user''' 
+    '''run before every url request, to auth our user'''
     criteria = [
         request.is_secure,
         app.debug,# FIXME just for debug
         request.headers.get('X-Forwarded-Proto', 'http') == 'https'
     ]
     if not any(criteria):
-        if request.url.endswith('/pci_form2'):
+        if 'pci_form' in request.url:
             url = request.url.replace('http://','https://',1)
             return redirect(url)
 
@@ -70,7 +70,7 @@ def before_request():
    #         url = request.url.replace('https://','http://',1)
    #         print('before url: ', url)
    #         return redirect(url)
-            
+
 
     g.user = current_user
 
