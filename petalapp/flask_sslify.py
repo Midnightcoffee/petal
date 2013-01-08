@@ -42,9 +42,14 @@ class SSLify(object):
             self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
-
+        #print('*' * 20)
+        #print('request.url: ', request.url)
+        #print('pci in request url: ' , 'pci_form' in request.url)
+        #print('fav in request: ', 'favicon' in request.url)
+        #print('both: ', 'pci_form' in request.url or 'favicon' in request.url)
+        #print('*' * 20)
         if not any(criteria):
-            if 'pci_form' in request.url: #TODO um, 
+            if 'pci_form' in request.url or 'favicon' in request.url: #TODO um,
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
                 if self.permanent:
