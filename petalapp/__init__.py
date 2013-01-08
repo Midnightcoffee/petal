@@ -51,7 +51,7 @@ browserid.init_app(app)
 
 
 #from flask.ext.sslify import SSLify
-sslify = SSLify(app, exluded='login')
+sslify = SSLify(app)
 
 
 

@@ -8,13 +8,12 @@ YEAR_IN_SECS = 31536000
 class SSLify(object):
     """Secures your Flask App."""
 
-    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False,exluded=False):
+    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False):
         if app is not None:
             self.app = app
             self.hsts_age = age
             self.hsts_include_subdomains = subdomains
             self.permanent = permanent
-            self.exluded = exluded
 
             self.init_app(self.app)
         else:
@@ -40,34 +39,19 @@ class SSLify(object):
         # Should we redirect?
         criteria = [
             request.is_secure,
-            self.app.debug, #CHANGE!
+            self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
-        #TODO this is probable not the best way to do this
-        print('request.url: ',request.url)
-        print('self.exluded: ', self.exluded)
-        print('url and exult not in url: ', request.url.startswith('http://') and self.exluded not in request.url)
-        if not self.exluded:
-            if not any(criteria):
-                if request.url.startswith('http://'): #my addition, prob has some security flaw
-                    url = request.url.replace('http://', 'https://', 1)
-                    code = 302
-                    if self.permanent:
-                        code = 301
-                    r = redirect(url, code=code)
 
-                    return r
-        else:
-            if not any(criteria):
-                if request.url.startswith('http://') and self.exluded not in request.url: #my addition, prob has some security flaw
-                    print('**************')
-                    url = request.url.replace('http://', 'https://', 1)
-                    code = 302
-                    if self.permanent:
-                        code = 301
-                    r = redirect(url, code=code)
+        if not any(criteria):
+            if request.url.startswith('http://'):
+                url = request.url.replace('http://', 'https://', 1)
+                code = 302
+                if self.permanent:
+                    code = 301
+                r = redirect(url, code=code)
 
-                    return r
+                return r
 
     def set_hsts_header(self, response):
         """Adds HSTS header to each response."""
