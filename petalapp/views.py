@@ -6,7 +6,7 @@ Description: contains the views for the webapp
 '''
 
 from flask import make_response, render_template, url_for, request, redirect\
-    , session, redirect, g, flash, session
+    , session, g, flash, session, request
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
         ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
 from petalapp import db, app, lm,app
@@ -17,7 +17,6 @@ from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     UserNeed, Identity, identity_changed, Need, AnonymousIdentity
-
 
 # FIXME: move problem import error
 #older code
@@ -56,7 +55,13 @@ def on_identity_loaded(sender, identity):
 @app.before_request
 def before_request():
     '''run before every url request, to auth our user'''
+    if request.url.startswith("https://"):
+        if request.url.endswith('/') or request.url.endswith('login'):
+            url = request.url.replace('https://','http://',1)
+            return redirect(url)
+
     g.user = current_user
+
 
 
 
