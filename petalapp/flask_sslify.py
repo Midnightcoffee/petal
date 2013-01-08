@@ -45,12 +45,19 @@ class SSLify(object):
         ]
 
         if not any(criteria):
+            print('self.excluded: ', self.excluded)
+            print('request.url: ', request.url)
+            print('self.excluded not in request.url :', self.excluded not in request.url)
+            print("request.url.startswith('http://') and self.excluded not in request.url",\
+                    request.url.startswith('http://') and self.excluded not in request.url)
             if request.url.startswith('http://') and self.excluded not in request.url:
                 url = request.url.replace('http://', 'https://', 1)
+                print('url: ', url)
                 code = 302
                 if self.permanent:
                     code = 301
                 r = redirect(url, code=code)
+                print('r: ', r)
 
                 return r
 
