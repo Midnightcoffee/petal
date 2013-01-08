@@ -63,9 +63,9 @@ class SSLify(object):
 
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
-                if self.permanent:
-                    code = 301
-                r = redirect(url, code=code)
+                #if self.permanent:
+                #    code = 301
+                r = redirect(url) #, code=code)
                 print('''url: {0}\nr : {1}'''.format(url,r))
 
                 return r
