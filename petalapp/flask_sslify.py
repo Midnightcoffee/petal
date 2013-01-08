@@ -46,6 +46,7 @@ class SSLify(object):
         #TODO this is probable not the best way to do this
         print('request.url: ',request.url)
         print('self.exluded: ', self.exluded)
+        print('url and exult not in url: ', request.url.startswith('http://') and self.exluded not in request.url)
         if not self.exluded:
             if not any(criteria):
                 if request.url.startswith('http://'): #my addition, prob has some security flaw
@@ -59,6 +60,7 @@ class SSLify(object):
         else:
             if not any(criteria):
                 if request.url.startswith('http://') and self.exluded not in request.url: #my addition, prob has some security flaw
+                    print('**************')
                     url = request.url.replace('http://', 'https://', 1)
                     code = 302
                     if self.permanent:
