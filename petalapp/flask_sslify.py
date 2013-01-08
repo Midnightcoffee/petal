@@ -44,9 +44,10 @@ class SSLify(object):
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
 
-        print('''request.isecure: {0}\nnot(self.app.debug): {1}\nrequest.headers.get: {2}\n
-        \nnot any(criteria): {3}'request.headers.get('X-Forwarded-Proto', 'http') == 'https: {4}'''
-        .format(request.is_secure, not(self.app.debug),\
+        print('''request.isecure: {0}\nnot(self.app.debug): {1}\n
+        \n'request.headers.get('X-Forwarded-Proto', 'http') == 'https: {2}\n
+            not any(criteria): {3}'''
+        .format(request.is_secure, not(self.app.debug),not any(criteria),\
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'))
 
         if not any(criteria):
