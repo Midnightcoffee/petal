@@ -50,7 +50,8 @@ class SSLify(object):
             print('self.excluded not in request.url :', self.excluded not in request.url)
             print("request.url.startswith('http://') and self.excluded not in request.url",\
                     request.url.startswith('http://') and self.excluded not in request.url)
-            if request.url.startswith('http://') and self.excluded not in request.url:
+            print("style not in request: ", 'style' not in request.url)
+            if request.url.startswith('http://') and ((self.excluded not in request.url) and ('style' not in request.url)):
                 url = request.url.replace('http://', 'https://', 1)
                 print('url: ', url)
                 code = 302
