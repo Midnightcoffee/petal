@@ -11,7 +11,7 @@ from flask.ext.browserid import BrowserID
 from flask_principal import Principal, Permission, RoleNeed
 #from  flask_heroku import Heroku
 #from flask.bycrpt import Bcrypt
-from flask_sslify import SSLify
+from petalapp.flask_sslify import SSLify
 
 #bycrpt extension
 
