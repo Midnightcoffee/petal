@@ -40,7 +40,7 @@ class SSLify(object):
         # Should we redirect?
         criteria = [
             request.is_secure,
-            self.app.debug,
+            not(self.app.debug), #CHANGE!
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
         #TODO this is probable not the best way to do this
@@ -62,7 +62,6 @@ class SSLify(object):
                     if self.permanent:
                         code = 301
                     r = redirect(url, code=code)
-
 
                     return r
 
