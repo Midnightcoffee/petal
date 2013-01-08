@@ -43,25 +43,27 @@ class SSLify(object):
             not(self.app.debug),# FIXME just for debug
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
-        print('request.is_secure: ',request.is_secure)
-        print('not(self.app.debug): ',not(self.app.debug)) # FIXME just for debug
-        print("request.headers.get('X-Forwarded-Proto', 'http') == 'https': ",request.headers.get('X-Forwarded-Proto', 'http') == 'https')
-        print('not any criteria: ', not any(criteria))
+
+        print('''request.isecure: {0}\nnot(self.app.debug): {1}\nrequest.headers.get: {2}\n
+        \nnot any(criteria): {3}'''.format(request.is_secure, not(self.app.debug),\
+            request.headers.get('X-Forwarded-Proto', 'http') == 'https'))
+
         if not any(criteria):
-            print('self.excluded: ', self.excluded)
-            print('request.url: ', request.url)
-            print('self.excluded not in request.url :', self.excluded not in request.url)
-            print("request.url.startswith('http://') and self.excluded not in request.url",\
-                    request.url.startswith('http://') and self.excluded not in request.url)
-            print("style not in request: ", 'style' not in request.url)
-            if request.url.startswith('http://') and ((self.excluded not in request.url) and ('style' not in request.url)):
+
+            print('''request.url.startswith('http://'): {0}\nself.excluded not in request.url: {1}\n
+                'style' not in request.url: {2}\n'favicon' not in request.url: {3}'''.
+                format(request.url.startswith('http://'),self.excluded not in request.url,
+                    'style' not in request.url,'favicon' not in request.url))
+
+            if request.url.startswith('http://') and (self.excluded not in request.url) \
+                and ('style' not in request.url) and 'favicon' not in request.url:
+
                 url = request.url.replace('http://', 'https://', 1)
-                print('url: ', url)
                 code = 302
                 if self.permanent:
                     code = 301
                 r = redirect(url, code=code)
-                print('r: ', r)
+                print('''url: {0}\nr : {1}'''.format(url,r))
 
                 return r
 
