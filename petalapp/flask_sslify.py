@@ -44,6 +44,8 @@ class SSLify(object):
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
         #TODO this is probable not the best way to do this
+        print('request.url: ',request.url)
+        print('self.exluded: ', self.exluded)
         if not self.exluded:
             if not any(criteria):
                 if request.url.startswith('http://'): #my addition, prob has some security flaw
