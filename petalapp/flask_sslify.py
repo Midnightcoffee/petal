@@ -43,6 +43,9 @@ class SSLify(object):
             not(self.app.debug),# FIXME just for debug
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
+        print('request.is_secure: ',request.is_secure)
+        print('not(self.app.debug): ',not(self.app.debug)) # FIXME just for debug
+        print("request.headers.get('X-Forwarded-Proto', 'http') == 'https': ",request.headers.get('X-Forwarded-Proto', 'http') == 'https')
         print('not any criteria: ', not any(criteria))
         if not any(criteria):
             print('self.excluded: ', self.excluded)
