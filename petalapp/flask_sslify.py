@@ -8,12 +8,14 @@ YEAR_IN_SECS = 31536000
 class SSLify(object):
     """Secures your Flask App."""
 
-    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False):
+    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False,exluded=[],ignore=False):
         if app is not None:
             self.app = app
             self.hsts_age = age
             self.hsts_include_subdomains = subdomains
             self.permanent = permanent
+            self.exluded = exluded
+            self.ignore = ignore
 
             self.init_app(self.app)
         else:
@@ -42,23 +44,26 @@ class SSLify(object):
             self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
-        #print('*' * 20)
-        #print('request.url: ', request.url)
-        #print('pci in request url: ' , 'pci_form' in request.url)
-        #print('fav in request: ', 'favicon' in request.url)
-        #print('both: ', 'pci_form' in request.url or 'favicon' in request.url)
-        #print('*' * 20)
-        if not any(criteria):
-            if 'pci_form' in request.url or 'favicon' in request.url: #TODO um,
-                url = request.url.replace('http://', 'https://', 1)
-                code = 302
-                if self.permanent:
-                    code = 301
-                r = redirect(url, code=code)
 
-                return r
+        if not any(criteria):
+            if self.exluded:
+                for e in self.exluded:
+                    if e in request.url:
+                        self.ignore = True
+                    else:
+                        self.ignore = False
+            if not self.ignore:
+                if request.url.startswith('http://'):
+                    url = request.url.replace('http://', 'https://', 1)
+                    code = 302
+                    if self.permanent:
+                        code = 301
+                    r = redirect(url, code=code)
+
+                    return r
 
     def set_hsts_header(self, response):
         """Adds HSTS header to each response."""
-        response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
-        return response
+        if not self.ignore:
+            response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
+            return response
