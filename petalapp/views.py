@@ -64,9 +64,7 @@ def before_request():
 
 @app.route("/")
 def index():
-    '''extends base and home of app ...'''
-    #TODO build a index/home page
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
 
 @app.route('/login')

@@ -13,7 +13,7 @@ import os
 PORT = int(os.environ.get("PORT", 5000))
 basedir = str(os.path.abspath(os.path.dirname(__file__)))
 SECRET_KEY = str(os.environ.get("APP_SECRET_KEY"))
-DEBUG = str(os.environ.get("DEBUG"))
+DEBUG = True#str(os.environ.get("DEBUG"))
 ALLOWED_EXTENSIONS = str(os.environ.get("ALLOWED_EXTENSIONS"))
 CSRF_ENABLED = True
 TESTING = os.environ.get("TESTING", False)
