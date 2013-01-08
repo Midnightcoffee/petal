@@ -45,7 +45,7 @@ class SSLify(object):
         ]
 
         if not any(criteria):
-            if request.url.startswith('http://') and excluded not in request.url:
+            if request.url.startswith('http://') and self.excluded not in request.url:
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
                 if self.permanent:
