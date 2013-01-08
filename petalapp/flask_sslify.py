@@ -50,8 +50,7 @@ class SSLify(object):
                 for e in self.exluded:
                     if e in request.url:
                         self.ignore = True
-                    else:
-                        self.ignore = False
+
             if not self.ignore:
                 if request.url.startswith('http://'):
                     url = request.url.replace('http://', 'https://', 1)
