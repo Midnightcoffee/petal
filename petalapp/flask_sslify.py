@@ -43,16 +43,28 @@ class SSLify(object):
             self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
+        #TODO this is probable not the best way to do this
+        if not self.exluded:
+            if not any(criteria):
+                if request.url.startswith('http://'): #my addition, prob has some security flaw
+                    url = request.url.replace('http://', 'https://', 1)
+                    code = 302
+                    if self.permanent:
+                        code = 301
+                    r = redirect(url, code=code)
 
-        if not any(criteria):
-            if request.url.startswith('http://') and self.exluded in request.url: #my addition, prob has some security flaw
-                url = request.url.replace('http://', 'https://', 1)
-                code = 302
-                if self.permanent:
-                    code = 301
-                r = redirect(url, code=code)
+                    return r
+        else:
+            if not any(criteria):
+                if request.url.startswith('http://') and self.exluded not in request.url: #my addition, prob has some security flaw
+                    url = request.url.replace('http://', 'https://', 1)
+                    code = 302
+                    if self.permanent:
+                        code = 301
+                    r = redirect(url, code=code)
 
-                return r
+
+                    return r
 
     def set_hsts_header(self, response):
         """Adds HSTS header to each response."""
