@@ -11,7 +11,7 @@ from flask.ext.browserid import BrowserID
 from flask_principal import Principal, Permission, RoleNeed
 #from  flask_heroku import Heroku
 #from flask.bycrpt import Bcrypt
-from petalapp import flask_sslify
+#from petalapp import flask_sslify
 
 #bycrpt extension
 
@@ -51,7 +51,7 @@ browserid.init_app(app)
 
 
 #from flask.ext.sslify import SSLify
-sslify = flask_sslify.SSLify(app, exluded =['login','logout','favicon'])
+#sslify = flask_sslify.SSLify(app, exluded =['login','logout','favicon'])
 
 
 #note that we are only enabling the emails when we run without debugging.
