@@ -55,28 +55,36 @@ def on_identity_loaded(sender, identity):
 @app.before_request
 def before_request():
     '''run before every url request, to auth our user'''
+    g.user = current_user
     #criteria = [
     #    request.is_secure,
     #    app.debug,
     #    request.headers.get('X-Forwarded-Proto', 'http') == 'https'
     #]
     #if not any(criteria):
-    if not app.debug:
-        if 'pci_form' in request.url:
-            url = request.url.replace('http://','https://',1)
-            return redirect(url)
 
-   # if request.url.startswith("https://"):
-   #     if request.url.endswith('/') or request.url.endswith('login'):
-   #         url = request.url.replace('https://','http://',1)
-   #         print('before url: ', url)
-   #         return redirect(url)
+    #if not app.debug:
+    #    if 'pci_form' in request.url:
+    #        url = request.url.replace('http://','https://',1)
+    #        r = redirect(url)
+    #        return r
 
 
-    g.user = current_user
+   ## if request.url.startswith("https://"):
+   ##     if request.url.endswith('/') or request.url.endswith('login'):
+   ##         url = request.url.replace('https://','http://',1)
+   ##         print('before url: ', url)
+   ##         return redirect(url)
 
 
 
+
+#@app.after_request
+#def after_request():
+#    """Adds HSTS header to each response."""
+#    response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
+#    return response
+#
 
 #post method possible to make awswtf work?
 

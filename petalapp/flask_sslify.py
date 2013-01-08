@@ -8,13 +8,12 @@ YEAR_IN_SECS = 31536000
 class SSLify(object):
     """Secures your Flask App."""
 
-    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False, excluded='False'):
+    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False):
         if app is not None:
             self.app = app
             self.hsts_age = age
             self.hsts_include_subdomains = subdomains
             self.permanent = permanent
-            self.excluded = excluded
 
             self.init_app(self.app)
         else:
@@ -40,33 +39,17 @@ class SSLify(object):
         # Should we redirect?
         criteria = [
             request.is_secure,
-            not(self.app.debug),# FIXME just for debug
+            self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
 
-        print('''request.isecure: {0}\nnot(self.app.debug): {1}\n
-        \n'request.headers.get('X-Forwarded-Proto', 'http') == 'https: {2}\n
-            not any(criteria): {3}'''
-        .format(request.is_secure, not(self.app.debug),not any(criteria),\
-            request.headers.get('X-Forwarded-Proto', 'http') == 'https'))
-
         if not any(criteria):
-
-            print('''request.url.startswith('http://'): {0}\nself.excluded not in request.url: {1}\n
-                'style' not in request.url: {2}\n'favicon' not in request.url: {3}'''.
-                format(request.url.startswith('http://'),self.excluded not in request.url,
-                    'style' not in request.url,'favicon' not in request.url))
-
-            if request.url.startswith('http://') and (self.excluded not in request.url) \
-                and ('style' not in request.url) and 'favicon' not in request.url \
-                and 'logout' not in request.url and not request.url.endswith('/'):
-
+            if 'pci_form' in request.url: #TODO um, 
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
-                #if self.permanent:
-                #    code = 301
-                r = redirect(url) #, code=code)
-                print('''url: {0}\nr : {1}'''.format(url,r))
+                if self.permanent:
+                    code = 301
+                r = redirect(url, code=code)
 
                 return r
 
