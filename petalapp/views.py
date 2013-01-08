@@ -58,7 +58,9 @@ def before_request():
     if request.url.startswith("https://"):
         if request.url.endswith('/') or request.url.endswith('login'):
             url = request.url.replace('https://','http://',1)
+            print('before url: ', url)
             return redirect(url)
+            
 
     g.user = current_user
 
