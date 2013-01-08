@@ -54,7 +54,6 @@ browserid.init_app(app)
 sslify = flask_sslify.SSLify(app, 'login')
 
 
-
 #note that we are only enabling the emails when we run without debugging.
 #
 #Testing this on a development PC that does not have an email server is easy,
