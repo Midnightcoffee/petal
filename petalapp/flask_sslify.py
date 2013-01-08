@@ -58,7 +58,8 @@ class SSLify(object):
                     'style' not in request.url,'favicon' not in request.url))
 
             if request.url.startswith('http://') and (self.excluded not in request.url) \
-                and ('style' not in request.url) and 'favicon' not in request.url:
+                and ('style' not in request.url) and 'favicon' not in request.url \
+                and 'logout' not in request.url and not request.url.endswith('/'):
 
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
