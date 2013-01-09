@@ -22,7 +22,7 @@ class User(db.Model):
     hospitals = db.relationship('Hospital', secondary=hospitals,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant 
+    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant
         self.role = role
         self.email = email
 
@@ -120,7 +120,7 @@ class Survey(db.Model):
 
     def __init__(self, release,timestamp=datetime.datetime.utcnow()):
         self.release = release
-        self.timestamp = timestamp 
+        self.timestamp = timestamp
 
 def __repr__(self):
     return '<Release: %r>' % self.release

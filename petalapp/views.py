@@ -122,8 +122,8 @@ def pci_form2():
     #users_hospitals = g.user.hospitalsjj
     surveys = Survey.query.all()
     question_headers = Question_header.query.all()
-    return render_template('pci_form2.html',user=g.user, 
-            surveys=surveys) # TODO: send only name?
+    return render_template('pci_form2.html',user=g.user,
+            surveys=surveys,question_headers=question_headers) # TODO: send only name?
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])

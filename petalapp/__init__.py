@@ -50,8 +50,8 @@ browserid.user_loader(get_user)
 browserid.init_app(app)
 
 
-#from flask.ext.sslify import SSLify
-#sslify = flask_sslify.SSLify(app)
+from flask.ext.sslify import SSLify
+slify = SSLify(app)
 
 #note that we are only enabling the emails when we run without debugging.
 #
