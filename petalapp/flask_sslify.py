@@ -43,15 +43,16 @@ class SSLify(object):
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
         #added site specific logic
-        if request.url.startswith('http://') and not('login' in request.url)\
-            and not('favicon' in request.url) and not('logout' in request.url):
-            url = request.url.replace('http://', 'https://', 1)
-            code = 302
-            if self.permanent:
-                code = 301
-            r = redirect(url, code=code)
+        if not any(criteria):
+            if request.url.startswith('http://') and not('login' in request.url)\
+                and not('favicon' in request.url) and not('logout' in request.url):
+                url = request.url.replace('http://', 'https://', 1)
+                code = 302
+                if self.permanent:
+                    code = 301
+                r = redirect(url, code=code)
 
-            return r
+                return r
 
     def set_hsts_header(self, response):
         """Adds HSTS header to each response."""
