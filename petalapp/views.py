@@ -93,7 +93,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
     if g.user.is_active():
         perm1 = Permission(RoleNeed(g.user.role))
