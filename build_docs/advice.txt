@@ -380,3 +380,197 @@ the answer was yes,yes im a dummy
 (11:04:32 PM) dash: midnightcoffee: since that's what it's built around
 (11:04:48 PM) bob2: socentralised :/
 (11:04:58 PM) dash: midnightcoffee: the way we use it on our site is to track user accounts by email address, and assign them different acls from there
+
+Talk with dash about about BrowserID and sslify
+(06:05:24 PM) dampxf: Hey dash, my app is working live but failing in production i get a "login error: failed" when i try click the broswerID button.... i have not stacktrace to go on and my heroku logs are don't show anything. any ideas?
+(06:07:25 PM) dampxf: The only thing i could think of is that i have my site redirecting to https:// even on the login page. Maybe that interferes with it..
+(01/08/2013 03:57:54 PM) dampxf:  I posted my question on IT Security. http://security.stackexchange.com/questions/26709/browserid-and-https-conflictds... still not sure how to proceed. I had some elementary success just limiting the redirection a bit. But it seemed randomly the url would goto https then it was stuck there. I'm hopeing someone can at least confirm the login failure is because its https.
+(03:59:35 PM) dash: hmm
+(03:59:41 PM) dash: well we use browserid and https together just fine
+(03:59:57 PM) dash: so i have to wonder what happened
+(04:00:02 PM) dash: is your code somewhere i can look at it?
+(06:04:06 PM) dampxf: err i have https://github.com/kennethreitz/flask-sslify imported and https://github.com/garbados/flask-browserid and here is my code https://github.com/Midnightcoffee/petal/tree/master/petalapp. I'll try to put that together in a better way.
+(10:10:20 PM) dampxf: any ideas? I admit there is to much going on here for me to be sure where the point of failure is...
+(01/09/2013 11:51:03 AM) dampxf: Let me know if  i'm infringing on your good graces.... I looked deeper into the role that heroku and gunicorn play and concluded that https://github.com/kennethreitz/flask-sslify/blob/master/flask_sslify.py was appropriately forcing the user to speak with the heroku routing layer using https.  I'm not sure it matters that gunicorn added ssl support in 17.0 (some time after the last flask-sslify commit). What throws me for a loop is my application https://github.com/Midnightcoffee/petal. worked fine before with just the https://github.com/garbados/flask-browserid and my accompanying code https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py. But failed when i combined the two. My heroku logs shows nothing other then several attempts to connect to api/login. Which could indicate anything from what i read here: http://django-browserid.readthedocs.org/en/latest/details/troubleshooting.html
+(11:51:35 AM) dash: hey. i don't mind you asking :)
+(11:51:50 AM) dash: you got cut off at "throws me for a"
+(11:52:09 AM) dampxf: What throws me for a loop is my application https://github.com/Midnightcoffee/petal. worked fine before with just the https://github.com/garbados/flask-browserid and my accompanying code https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py. But failed when i combined the two. My heroku logs shows nothing other then several attempts to connect to api/login
+(11:52:26 AM) dampxf:  Which could indicate anything from what i read here: http://django-browserid.readthedocs.org/en/latest/details/troubleshooting.html
+(04:01:31 PM) dampxf: sorry to keep asking... any ideas on what i should be investigating?
+(04:04:50 PM) dash: i don't know very much about flask or heroku
+(04:04:57 PM) dash: so i'm not sure how much I can help
+(04:05:03 PM) dash: ummm
+(04:06:05 PM) dampxf: thanks ok, i'll figure it out somehow :)
+(04:06:06 PM) dash: where is it failing?
+(04:06:21 PM) dash: goes get_user ever get called?
+(04:06:23 PM) dash: er does
+(04:07:03 PM) dampxf: when i click login comes back "login failed" only happens after i pip install flask-sslify
+(04:16:45 PM) dampxf: get_user -> function defined https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py#L7, becomes function of browserid class as user_loader-> https://github.com/Midnightcoffee/petal/blob/master/petalapp/__init__.py#L49, how extension uses it -> https://github.com/garbados/flask-browserid/blob/master/flaskext/browserid/__init__.py#L54. I hope that answers your question.
+(04:30:46 PM) dash: what are you clicking? where do you seen 'login failed'?
+(04:30:56 PM) dash: seeing the actual flow of http requests would help
+(04:47:34 PM) dampxf: Here are my heroku logs:https://gist.github.com/4497247  I believe what your asking for is at the bottom as heroku[router]. I only see a get request to api/login which represents when i clicked the login button on my webapp.
+(04:49:09 PM) dash: right. and what gets posted to /api/login?
+(04:57:24 PM) dampxf: i believe the 'https://verifier.login.persona.org/very', and a ... the url_root? https://github.com/garbados/flask-browserid/blob/master/flaskext/browserid/__init__.py#L74. 
+(05:04:06 PM) dampxf: for what its worth i the app to sort-of work by expanding https://github.com/kennethreitz/flask-sslify/blob/master/flask_sslify.py#L47 -> to exclude urls that contained the words /login,/logout /favicon (some flask thing). as here https://github.com/Midnightcoffee/petal/blob/master/petalapp/flask_sslify.py but it didn't work whenever i used the back button in the browser and
+(05:04:30 PM) dampxf: didn't feel like a good idea to jerry rig code i don't fully understand
+(05:10:51 PM) dash: yeah i have no idea how the flask stuff works
+(05:11:09 PM) dash: this seems like a flask-sslify question more than anything
+(05:11:27 PM) dampxf: i emailed him /=
+(05:11:33 PM) dampxf: thanks dash!
+(05:12:02 PM) dampxf: you helped me narrow down the range which is huge.
+(05:12:15 PM) dash: <3
+
+
+Danjou reccomends having server do it
+
+(06:05:24 PM) dampxf: Hey dash, my app is working live but failing in production i get a "login error: failed" when i try click the broswerID button.... i have not stacktrace to go on and my heroku logs are don't show anything. any ideas?
+(06:07:25 PM) dampxf: The only thing i could think of is that i have my site redirecting to https:// even on the login page. Maybe that interferes with it..
+(01/08/2013 03:57:54 PM) dampxf:  I posted my question on IT Security. http://security.stackexchange.com/questions/26709/browserid-and-https-conflictds... still not sure how to proceed. I had some elementary success just limiting the redirection a bit. But it seemed randomly the url would goto https then it was stuck there. I'm hopeing someone can at least confirm the login failure is because its https.
+(03:59:35 PM) dash: hmm
+(03:59:41 PM) dash: well we use browserid and https together just fine
+(03:59:57 PM) dash: so i have to wonder what happened
+(04:00:02 PM) dash: is your code somewhere i can look at it?
+(06:04:06 PM) dampxf: err i have https://github.com/kennethreitz/flask-sslify imported and https://github.com/garbados/flask-browserid and here is my code https://github.com/Midnightcoffee/petal/tree/master/petalapp. I'll try to put that together in a better way.
+(10:10:20 PM) dampxf: any ideas? I admit there is to much going on here for me to be sure where the point of failure is...
+(01/09/2013 11:51:03 AM) dampxf: Let me know if  i'm infringing on your good graces.... I looked deeper into the role that heroku and gunicorn play and concluded that https://github.com/kennethreitz/flask-sslify/blob/master/flask_sslify.py was appropriately forcing the user to speak with the heroku routing layer using https.  I'm not sure it matters that gunicorn added ssl support in 17.0 (some time after the last flask-sslify commit). What throws me for a loop is my application https://github.com/Midnightcoffee/petal. worked fine before with just the https://github.com/garbados/flask-browserid and my accompanying code https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py. But failed when i combined the two. My heroku logs shows nothing other then several attempts to connect to api/login. Which could indicate anything from what i read here: http://django-browserid.readthedocs.org/en/latest/details/troubleshooting.html
+(11:51:35 AM) dash: hey. i don't mind you asking :)
+(11:51:50 AM) dash: you got cut off at "throws me for a"
+(11:52:09 AM) dampxf: What throws me for a loop is my application https://github.com/Midnightcoffee/petal. worked fine before with just the https://github.com/garbados/flask-browserid and my accompanying code https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py. But failed when i combined the two. My heroku logs shows nothing other then several attempts to connect to api/login
+(11:52:26 AM) dampxf:  Which could indicate anything from what i read here: http://django-browserid.readthedocs.org/en/latest/details/troubleshooting.html
+(04:01:31 PM) dampxf: sorry to keep asking... any ideas on what i should be investigating?
+(04:04:50 PM) dash: i don't know very much about flask or heroku
+(04:04:57 PM) dash: so i'm not sure how much I can help
+(04:05:03 PM) dash: ummm
+(04:06:05 PM) dampxf: thanks ok, i'll figure it out somehow :)
+(04:06:06 PM) dash: where is it failing?
+(04:06:21 PM) dash: goes get_user ever get called?
+(04:06:23 PM) dash: er does
+(04:07:03 PM) dampxf: when i click login comes back "login failed" only happens after i pip install flask-sslify
+(04:16:45 PM) dampxf: get_user -> function defined https://github.com/Midnightcoffee/petal/blob/master/petalapp/browserid_tools.py#L7, becomes function of browserid class as user_loader-> https://github.com/Midnightcoffee/petal/blob/master/petalapp/__init__.py#L49, how extension uses it -> https://github.com/garbados/flask-browserid/blob/master/flaskext/browserid/__init__.py#L54. I hope that answers your question.
+(04:30:46 PM) dash: what are you clicking? where do you seen 'login failed'?
+(04:30:56 PM) dash: seeing the actual flow of http requests would help
+(04:47:34 PM) dampxf: Here are my heroku logs:https://gist.github.com/4497247  I believe what your asking for is at the bottom as heroku[router]. I only see a get request to api/login which represents when i clicked the login button on my webapp.
+(04:49:09 PM) dash: right. and what gets posted to /api/login?
+(04:57:24 PM) dampxf: i believe the 'https://verifier.login.persona.org/very', and a ... the url_root? https://github.com/garbados/flask-browserid/blob/master/flaskext/browserid/__init__.py#L74. 
+(05:04:06 PM) dampxf: for what its worth i the app to sort-of work by expanding https://github.com/kennethreitz/flask-sslify/blob/master/flask_sslify.py#L47 -> to exclude urls that contained the words /login,/logout /favicon (some flask thing). as here https://github.com/Midnightcoffee/petal/blob/master/petalapp/flask_sslify.py but it didn't work whenever i used the back button in the browser and
+(05:04:30 PM) dampxf: didn't feel like a good idea to jerry rig code i don't fully understand
+(05:10:51 PM) dash: yeah i have no idea how the flask stuff works
+(05:11:09 PM) dash: this seems like a flask-sslify question more than anything
+(05:11:27 PM) dampxf: i emailed him /=
+(05:11:33 PM) dampxf: thanks dash!
+(05:12:02 PM) dampxf: you helped me narrow down the range which is huge.
+(05:12:15 PM) dash: <3
+
+
+Asking on Heroku about ssl issue
+
+(08:45:27 PM) dampxf: i'm searching and i cannot seem to find much about how to specify a port on heroku. My inquiry is due to the answer to my question here http://security.stackexchange.com/questions/26709/browserid-and-https-conflict/26727#26727, in case someone can quickly tell me i'm looking in the wrong direction.
+(08:46:12 PM) jasonh: /5/5
+(08:46:13 PM) jasonh: err.
+(08:46:39 PM) fellu left the room (quit: Ping timeout: 260 seconds).
+(08:48:05 PM) dampxf: it seems heroku handles ports for me, probable not a good idea to temper with that. Its probable also not a solution to my problem just a way to test it
+(08:48:11 PM) thehoff [~ahoff@unaffiliated/thehoff] entered the room.
+(08:48:53 PM) fellu [fellu@skyred.fi] entered the room.
+(08:53:15 PM) thehoff left the room (quit: Quit: WeeChat 0.3.9.2).
+(08:54:07 PM) thehoff [~ahoff@unaffiliated/thehoff] entered the room.
+(08:59:39 PM) pvh___ left the room (quit: Quit: Connection closed for inactivity).
+(09:00:05 PM) thehoff left the room (quit: Quit: WeeChat 0.3.9.2).
+(09:00:38 PM) maletor left the room (quit: Quit: Computer has gone to sleep.).
+(09:02:47 PM) carllerche left the room (quit: Quit: carllerche).
+(09:04:38 PM) blakmatrix left the room (quit: Remote host closed the connection).
+(09:06:28 PM) thehoff [~ahoff@unaffiliated/thehoff] entered the room.
+(09:06:43 PM) pencilcheck left the room (quit: Remote host closed the connection).
+(09:09:34 PM) cloudy_j left the room (quit: Remote host closed the connection).
+(09:13:27 PM) kr left the room (quit: Remote host closed the connection).
+(09:14:58 PM) brjavaman left the room (quit: Quit: Leaving.).
+(09:15:17 PM) ojii|afk is now known as ojii
+(09:16:49 PM) kr [~kr@204.14.152.118] entered the room.
+(09:16:58 PM) fermion left the room (quit: Ping timeout: 246 seconds).
+(09:24:36 PM) kr left the room (quit: Remote host closed the connection).
+(09:25:26 PM) yfeldblum: midnightcoffee, your application is required, on startup, to look at the PORT environment variable (or you can do this in the Procfile command and pass it in as a parameter to the app); and it is required, within 60 seconds of being started, to start listening on that port (i assume on all interfaces, which is the default)
+(09:27:26 PM) cloudy_j [~cloudy_j@c-98-217-193-206.hsd1.ma.comcast.net] entered the room.
+(09:30:52 PM) yfeldblum left the room (quit: Ping timeout: 256 seconds).
+(09:32:33 PM) rburton- [~rburton-@c-67-180-209-222.hsd1.ca.comcast.net] entered the room.
+(09:45:10 PM) rburton- left the room (quit: Quit: Leaving...).
+(09:46:01 PM) yfeldblum [~jay@c-71-206-30-119.hsd1.md.comcast.net] entered the room.
+(09:53:57 PM) oisinh_ left the room (quit: Quit: Connection closed for inactivity).
+(09:55:04 PM) kr [~kr@204.14.152.118] entered the room.
+(09:59:53 PM) pydanny [~textual@cpe-76-174-54-73.socal.res.rr.com] entered the room.
+(10:05:38 PM) kr left the room (quit: Ping timeout: 255 seconds).
+(10:15:04 PM) cheeby [~cheeby@pdpc/supporter/professional/cheeby] entered the room.
+(10:21:16 PM) DatumDrop left the room (quit: Remote host closed the connection).
+(10:21:45 PM) rburton- [~rburton-@c-67-180-209-222.hsd1.ca.comcast.net] entered the room.
+(10:23:53 PM) dmclain left the room (quit: Quit: Computer has gone to sleep.).
+(10:24:25 PM) GarethAdams left the room (quit: Quit: Leaving...).
+(10:24:36 PM) maletor [~maletor@c-69-181-33-169.hsd1.ca.comcast.net] entered the room.
+(10:30:45 PM) ojii is now known as ojii|afk
+(10:31:52 PM) kr [~kr@204.14.152.118] entered the room.
+(10:42:13 PM) kr left the room (quit: Ping timeout: 248 seconds).
+(10:45:49 PM) dmclain [~textual@75-43-17-191.lightspeed.austtx.sbcglobal.net] entered the room.
+(10:53:52 PM) maletor left the room (quit: Quit: Computer has gone to sleep.).
+(10:58:34 PM) dampxf: so... heroku config:add  PORT=443? should make my device listen only on port 443? sorry im new and their doesn't seem to much information on this which leads me to believe im looking the wrong direction
+(10:58:48 PM) yoonchee [~chyoon@222.106.196.129] entered the room.
+(10:59:07 PM) dampxf: yfeldblum: so... heroku config:add  PORT=443? should make my device listen only on port 443? sorry im new and their doesn't seem to much information on this which leads me to believe im looking the wrong direction. 
+(11:00:41 PM) yfeldblum: midnightcoffee, no, you must not use the PORT config var
+(11:01:11 PM) yfeldblum: midnightcoffee, heroku will come up with a port on its own and tell you what it is, through the environment variable PORT that your Procfile or application must look for
+(11:01:26 PM) yfeldblum: midnightcoffee, the PORT that heroku gives you will not be 443
+(11:02:22 PM) yfeldblum: midnightcoffee, also keep in mind that heroku has a routing layer through which HTTP requests pass; so the PORT that heroku gives you is *not* the port that users will use when trying to talk to your application
+(11:02:54 PM) yfeldblum: midnightcoffee, users will use ports 80 (HTTP) and 443 (HTTPS), and heroku will pass the requests through to your application on the PORT that it told your application to listen to
+(11:03:51 PM) dampxf: yfeldbluf: right, makes sense thanks for the information.
+(11:04:58 PM) The account has disconnected and you are no longer in this chat. You will be automatically rejoined in the chat when the account reconnects.
+(01/09/2013 09:10:09 AM) The topic for #heroku is: Docs at https://devcenter.heroku.com || Current status at https://status.heroku.com || Support at https://support.heroku.com
+(09:16:07 AM) ojii is now known as ojii|afk
+(09:20:11 AM) suy left the room ("http://quassel-irc.org - Chat comfortably. Anywhere.").
+(09:23:09 AM) lvh [~lvh@python/psf/lvh] entered the room.
+(09:27:37 AM) sbeam_ [~sbeam@23-25-200-205-static.hfc.comcastbusiness.net] entered the room.
+(09:30:34 AM) fermion left the room (quit: Read error: Connection reset by peer).
+(09:32:06 AM) bed777 [~bed777@host142-252-static.226-95-b.business.telecomitalia.it] entered the room.
+(09:35:40 AM) chuckharmston [~chuckharm@mobile-198-228-233-048.mycingular.net] entered the room.
+(09:37:05 AM) chuckharmston left the room (quit: Client Quit).
+(09:37:16 AM) alexis is now known as ametaireau
+(09:46:14 AM) Takehiro left the room (quit: Remote host closed the connection).
+(09:48:57 AM) dampxf: yfedldblum, it says here https://devcenter.heroku.com/articles/ssl-endpoint that ssl is enabled by default. Does this mean the connection is HTTPS ... even if in my browser isn't reflecting that?
+(09:49:59 AM) Guest25886 [~Jackneill@195-38-98-32.pool.digikabel.hu] entered the room.
+(09:56:50 AM) brjavaman [~brjavaman@189-69-75-147.dsl.telesp.net.br] entered the room.
+(10:00:04 AM) moradan [c3a0e917@gateway/web/freenode/ip.195.160.233.23] entered the room.
+(10:01:32 AM) moradan: hello, something strange - I'm trying to push to heroku and I'm rejected with "Permission denied (publickey)." but "heroku keys" shows my current key - and I tried to remove it and add again with no success. Can anyone help?
+(10:02:14 AM) jdag [~jdag@24.130.35.148] entered the room.
+(10:05:44 AM) catsby: midnightcoffee:  ssl is enabled if you use myapp.herokuapp.com
+(10:06:04 AM) yfeldblum: midnightcoffee, yes, if the user browses using "https://"; otherwise, it's enabled but the user didn't elect to use it
+(10:06:05 AM) catsby: If you want ssl on a custom domain www.myapp.com you need to get a cert etc.
+(10:06:49 AM) yfeldblum: midnightcoffee, if it's a rails application, you can put `config.force_ssl = true` into your `config/environments/production.rb` to force users to browse your site over SSL
+(10:07:56 AM) nateberkopec [~nateberko@207.239.107.3] entered the room.
+(10:08:54 AM) dampxf: catsby: thanks, not sure i need a custom domain.
+(10:08:58 AM) lvh left the room (quit: Read error: Connection reset by peer).
+(10:09:17 AM) lvh [~lvh@python/psf/lvh] entered the room.
+(10:10:16 AM) yfeldblum: midnightcoffee, otherwise, your application will be available over both HTTP and HTTPS, and the protocol that will be used is whichever the user selects (probably HTTP by default)
+(10:11:55 AM) digitalsanctum [~digitalsa@208.96.180.11] entered the room.
+(10:14:24 AM) brjavaman left the room (quit: Quit: Leaving.).
+(10:14:57 AM) dampxf: yfeldblum, im fairly confused. I was advised on /pocoo (flask). that "my websever" (gunicorn, which just added ssl support in 17.0) should be handling handling the https. When i search online everyone is using "middleware" i believe (https://github.com/kennethreitz/flask-sslify) is an example.  I'm i missing the larger picture or are there simple many possible routes?
+(10:15:22 AM) dampxf: yfeldblum, and thanks a lot
+(10:15:49 AM) yfeldblum: midnightcoffee, if you want SSL on Heroku, then *heroku* handles SSL, not your application
+(10:16:38 AM) Takehiro [~Takehiro@p14060-ipngn100201kyoto.kyoto.ocn.ne.jp] entered the room.
+(10:17:02 AM) yfeldblum: midnightcoffee, your application must simply talk regular HTTP, not HTTPS; the user will maintain an HTTPS connection to the heroku routing layer, and then the heroku routing layer will terminate the SSL and pass on HTTP requests to your application
+(10:17:35 AM) seanbrant [~seanbrant@c-98-228-68-134.hsd1.in.comcast.net] entered the room.
+(10:17:36 AM) yfeldblum: midnightcoffee, http://en.wikipedia.org/wiki/SSL_termination_proxy
+(10:18:30 AM) yfeldblum: midnightcoffee, users do *not* talk to your application directly; they talk to the heroku routing layer, which stands in the middle between your users and your application, directing traffic and performing other useful services
+(10:21:15 AM) Takehiro left the room (quit: Ping timeout: 240 seconds).
+(10:22:46 AM) yfeldblum: midnightcoffee, that make any sense?
+(10:23:31 AM) wingy left the room.
+(10:25:04 AM) dampxf: yfeldblum, i think so. Do i need to force the user to use https when communicating with heroku routing layer?
+(10:25:48 AM) lvh: What is the appropriate shebang line to use for a python script inside heroku?
+(10:25:52 AM) lvh: #!python didn't work: bash: bin/make_owner.py: python: bad interpreter: No such file or directory
+(10:26:21 AM) fermion [~fermion@173-166-12-37-newengland.hfc.comcastbusiness.net] entered the room.
+(10:28:02 AM) catsby: midnightcoffee:  config.force_ssl = true is a good idea
+(10:29:02 AM) dampxf: catsby, is that for rails? I'm using the flask microframework.
+(10:29:13 AM) catsby: midnightcoffee:  yeah sorry, thought you were using rails
+(10:29:16 AM) CarlFK [~carl@c-98-223-151-105.hsd1.in.comcast.net] entered the room.
+(10:30:05 AM) CarlFK:   http://beta.flourishconf.com/  FATAL:  remaining connection slots are reserved for non-replication superuser connections
+(10:30:13 AM) CarlFK: error comes and goes..
+(10:30:34 AM) yfeldblum: midnightcoffee, you can look at the "X-Forwarded-For", "X-Forwarded-Port", and "X-Forwarded-Proto" headers to check whether the user send an HTTP or HTTPS connection; heroku sets the "X-Forwarded-*" headers in the request it sends to your app based on the original HTTP request send by the user that Heroku received
+(10:33:49 AM) dmclain [~textual@75-43-17-191.lightspeed.austtx.sbcglobal.net] entered the room.
+(10:39:10 AM) yfeldblum: midnightcoffee, although your webserver library or application framework should hopefully have some API for exposing these headers and telling whether the request is over SSL directly or is proxied with an SSL terminating proxy
+(10:40:48 AM) zrail|afk is now known as zrail
+(10:50:17 AM) sokr left the room (quit: Quit: Page closed).
+(10:50:49 AM) ametaireau is now known as alexis
+(10:50:54 AM) dampxf: yfeldblum, thanks based on what i see in the extension i have linked thats exactly what its doing. But know i understand way more about how everything is working and why.
