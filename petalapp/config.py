@@ -28,14 +28,18 @@ AWS_SECRET_ACCESS_KEY = str(os.environ.get("AWS_SECRET_ACCESS_KEY"))
 S3_BUCKET = str(os.environ.get("S3_BUCKET"))
 S3_UPLOAD_DIRECTORY = str(os.environ.get("S3_UPLOAD_DIRECTORY"))
 
-# configuration
-OPENID_PROVIDERS = [
-    { 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
-    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+BROWERID_LOGIN_URL = "/login"
+BROWERID_LOGOUT_URL = "/logout"
 
+
+# configuration
+#OPENID_PROVIDERS = [
+#    { 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
+#    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
+#    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
+#    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
+#    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+#
 
 #mail server settings
 MAIL_SERVER = 'localhost'
