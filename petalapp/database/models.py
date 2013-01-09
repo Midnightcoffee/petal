@@ -78,9 +78,15 @@ class Answer(db.Model):
 class Question(db.Model):
     """Question has a one to many to one relationship with Answer"""
     id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(500))
+    key = db.Column(db.String(300))
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
 
+
+class Question_header(db.Model):
+    """Question_header has a one to many relationship with question"""
+    id = db.Column(db.Integer, primary_key=True)
+    header = db.Column(db.String(600))
+    questions = db.relationship('Queston', backref='question_header',lazy='dynamic')
 
 class Survey(db.Model):
     """survey has a one to may relationship with  answer"""

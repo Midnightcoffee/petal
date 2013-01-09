@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
     <form action="{{url_for('add_pci_form2') }}" method="post" class=add-entry>
+        <h2>select hospital for which you are submitting </h2>
+        <dl>
+        {% for hospital in g.user.hospitals %}
+        <dt><input type="radio" name="{{ hospital }}" value="{{ hospital }}" />{{ hospital }}
+        {% endfor %}
+        
+    </dl>
 
-        <!--<input type="radio" name="{{ g.user.hospitals }}" value="{{ g.user.hospitals }}" />{{ g.user.hospitals }}-->
     </form>
 
 

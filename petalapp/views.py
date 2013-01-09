@@ -119,7 +119,7 @@ def logout():
 @contributer_permission.require(403)
 @login_required
 def pci_form2():
-    #users_hospitals = g.user.hospitals.query.all()
+    #users_hospitals = g.user.hospitalsjj
     return render_template('pci_form2.html',user=g.user) # TODO: send only name?
 
 
