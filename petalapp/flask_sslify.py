@@ -8,14 +8,12 @@ YEAR_IN_SECS = 31536000
 class SSLify(object):
     """Secures your Flask App."""
 
-    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False,exluded=[],ignore=False):
+    def __init__(self, app, age=YEAR_IN_SECS, subdomains=False, permanent=False):
         if app is not None:
             self.app = app
             self.hsts_age = age
             self.hsts_include_subdomains = subdomains
             self.permanent = permanent
-            self.exluded = exluded
-            self.ignore = ignore
 
             self.init_app(self.app)
         else:
@@ -44,25 +42,18 @@ class SSLify(object):
             self.app.debug,
             request.headers.get('X-Forwarded-Proto', 'http') == 'https'
         ]
+        #added site specific logic
+        if request.url.startswith('http://') and not('login' in request.url)\
+            and not('favicon' in request.url) and not('logout' in request.url):
+            url = request.url.replace('http://', 'https://', 1)
+            code = 302
+            if self.permanent:
+                code = 301
+            r = redirect(url, code=code)
 
-        if not any(criteria):
-            if self.exluded:
-                for e in self.exluded:
-                    if e in request.url:
-                        self.ignore = True
-
-            if not self.ignore:
-                if request.url.startswith('http://'):
-                    url = request.url.replace('http://', 'https://', 1)
-                    code = 302
-                    if self.permanent:
-                        code = 301
-                    r = redirect(url, code=code)
-
-                    return r
+            return r
 
     def set_hsts_header(self, response):
         """Adds HSTS header to each response."""
-        if not self.ignore:
-            response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
-            return response
+        response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
+        return response
