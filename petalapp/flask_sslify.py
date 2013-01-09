@@ -44,8 +44,8 @@ class SSLify(object):
         ]
         #added site specific logic
         if not any(criteria):
-            if request.url.startswith('http://') and not('login' in request.url)\
-                and not('favicon' in request.url) and not('logout' in request.url):
+            if request.url.startswith('http://'):# and not('login' in request.url)\
+                #and not('favicon' in request.url) and not('logout' in request.url):
                 url = request.url.replace('http://', 'https://', 1)
                 code = 302
                 if self.permanent:
