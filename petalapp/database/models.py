@@ -4,6 +4,7 @@ ROLE_VIEWER = 0
 ROLE_CONTRIBUTER = 1
 ROLE_ADMIN = 2
 
+import datetime
 
 #TODO:rename?
 hospitals = db.Table('hospitals',
@@ -27,7 +28,7 @@ class User(db.Model):
 
     #TODO what information to show?
     def __repr__(self):
-        return '<email : %r>' % (self.email)
+        return '<email: %r>' % (self.email)
 
     def add_hospital(self, hospital):
         if not (hospital in self.hospitals):
@@ -62,7 +63,7 @@ class Hospital(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<Name %r>' % self.name
+        return '<Name: %r>' % self.name
 
 class Answer(db.Model):
     """Answers has a many to one relationship with Hospital, a one to
@@ -74,19 +75,41 @@ class Answer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'))
 
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return '<Answer: %r>' % self.value
+
 
 class Question(db.Model):
     """Question has a one to many to one relationship with Answer"""
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(300))
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
+    question_header_id = db.Column(db.Integer, db.ForeignKey('question_header.id'))
+
+    def __init__(self, key):
+        self.key = key
+
+    def __repr__(self):
+        return '<Question: %r>' % self.key
+
 
 
 class Question_header(db.Model):
     """Question_header has a one to many relationship with question"""
     id = db.Column(db.Integer, primary_key=True)
     header = db.Column(db.String(600))
-    questions = db.relationship('Queston', backref='question_header',lazy='dynamic')
+    questions = db.relationship('Question', backref='question_header',lazy='dynamic')
+
+    def __init__(self, header):
+        self.header = header
+
+    def __repr__(self):
+        return '<header: %r>' % self.header
+
+
 
 class Survey(db.Model):
     """survey has a one to may relationship with  answer"""
@@ -94,6 +117,15 @@ class Survey(db.Model):
     answers = db.relationship('Answer', backref='survey', lazy='dynamic')
     release  = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime)
+
+    def __init__(self, release,timestamp=datetime.datetime.utcnow()):
+        self.release = release
+        self.timestamp = timestamp 
+
+def __repr__(self):
+    return '<Release: %r>' % self.release
+
+
 
 
 

@@ -8,7 +8,7 @@ Description: contains the views for the webapp
 from flask import make_response, render_template, url_for, request, redirect\
     , session, g, flash, session, request
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
+        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Question_header
 from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
@@ -120,13 +120,17 @@ def logout():
 @login_required
 def pci_form2():
     #users_hospitals = g.user.hospitalsjj
-    return render_template('pci_form2.html',user=g.user) # TODO: send only name?
+    surveys = Survey.query.all()
+    question_headers = Question_header.query.all()
+    return render_template('pci_form2.html',user=g.user, 
+            surveys=surveys) # TODO: send only name?
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])
 @login_required
 @contributer_permission.require(403)
 def add_pci_form2():
+    selected_hospital = request.form['hospital']
     render_template('pci_form2.html')
 
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])
