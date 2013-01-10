@@ -13,7 +13,8 @@
         {% for question_header in question_headers %}
             <p> {{ question_header }} </p>
             {% for possible in question_header.questions %}
-            <dt><input type="radio" name={{ possible }} value="" />{{ possible }}
+            <dt><input type="radio" name={{ possible }} value="" />{{ possible.key }} {{ possible.point }}
+
             {% endfor %}
         {% endfor %}
     </dl>
