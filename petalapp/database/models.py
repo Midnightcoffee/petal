@@ -86,11 +86,14 @@ class Question(db.Model):
     """Question has a one to many to one relationship with Answer"""
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(300))
+    point = db.Column(db.Integer)
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
     question_header_id = db.Column(db.Integer, db.ForeignKey('question_header.id'))
 
-    def __init__(self, key):
+
+    def __init__(self, key, point):
         self.key = key
+        self.point = point
 
     def __repr__(self):
         return '<Question: %r>' % self.key
