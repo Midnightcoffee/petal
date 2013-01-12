@@ -8,7 +8,7 @@ Description: contains the views for the webapp
 from flask import make_response, render_template, url_for, request, redirect\
     , session, g, flash, session, request
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Question_header
+        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Header
 from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
@@ -122,7 +122,7 @@ def logout():
 def pci_form2():
     #users_hospitals = g.user.hospitalsjj
 
-    question_headers = Question_header.query.order_by(Question_header.order.asc()) #TODO shouldnt be all
+    question_headers = Header.query.order_by(Question_header.order.asc()) #TODO shouldnt be all
     return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
 
 

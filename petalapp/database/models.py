@@ -88,7 +88,8 @@ class Question(db.Model):
     key = db.Column(db.String(300))
     point = db.Column(db.Integer)
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
-    question_header_id = db.Column(db.Integer, db.ForeignKey('question_header.id'))
+    header_id = db.Column(db.Integer, db.ForeignKey('header.id'))
+    inputtype_id = db.Column(db.Integer, db.ForeignKey('inputtype.id'))
     order = db.Column(db.Integer)
 
 
@@ -101,12 +102,23 @@ class Question(db.Model):
         return '<Question: %r>' % self.key
 
 
+class Inputtype(db.Model):
+    """Inputtype has a one to many relationship with Question"""
+    id = db.Column(db.Integer, primary_key=True)
+    questions = db.relationship('Question', backref='inputtype', lazy='dynamic')
+    input_type = db.Column(db.String(50))
 
-class Question_header(db.Model):
-    """Question_header has a one to many relationship with question"""
+    def __init__(self, input_type):
+        self.input_type = input_type
+
+    def __repr__(self):
+        return '<Inputtype: %r>' % self.input_type
+
+class Header(db.Model):
+    """header has a one to many relationship with question"""
     id = db.Column(db.Integer, primary_key=True)
     header = db.Column(db.String(600))
-    questions = db.relationship('Question', backref='question_header',lazy='dynamic')
+    questions = db.relationship('Question', backref='header',lazy='dynamic')
     order = db.Column(db.Integer)
 
     def __init__(self, header,order):

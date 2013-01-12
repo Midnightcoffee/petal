@@ -19,15 +19,35 @@
                     <table border="1">
                     {% for possible in question_header.questions|sort(attribute='order')  %}
                     <!-- TODO refactor possible with heading name rather than order -->
+                    <!-- TODO this is so ugly it can't be right! -->
                         {% if (question_header.order == 7) %}
                                 {% if possible.order in [4,8,12] %}
                                     </tr>
                                 {% endif %}
                                 {% if (possible.order ) % 4 == 0%}
-                                    <tr>
+                                    {% if possible.order == 0 %}
+                                        <tr><td><p></p></td>
+                                    {% endif %}
+                                    {% if possible.order == 4 %}
+                                        <tr><td><p>M-F 5pm-9am</p></td>
+                                    {% endif %}
+                                    {% if possible.order == 8 %}
+                                        <tr><td><p>Weekend 9am-5pm</p></td>
+                                    {% endif %}
+                                    {% if possible.order == 12 %}
+                                        <tr><td><p>Weekend 5pm-9am</p></td>
+                                    {% endif %}
                                 {% endif %}
                                 {% if "M-F 9am-5pm" in possible.key %}
-                                    <td><input type="radio", name="M-F 9am-5pm",value="{{ possible.point }}"/></td>
+                                    {% if possible.order == 0 %}
+                                    <td><p>On site</p></td>
+                                    <td><p>Telephone coverage & availability to return to hospital</p></td>
+                                    <td><p>Telephone coverage only</p></td>
+                                    <td><p>Not available</p></td></tr>
+                                    <td><p>M-F 9am-5pm</p></td>
+                                    {% endif %}
+                                    <td><input type={{ possible.inputtype.input_type }}, name="M-F 9am-5pm",value="{{ possible.point }}"/></td>
+
                                 {% endif %}
                                 {% if "M-F 5pm-9am" in possible.key %}
                                     <td><input type="radio", name="M-F 5pm-9am",value="{{ possible.point }}"/></td>
