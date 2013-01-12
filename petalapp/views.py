@@ -89,6 +89,10 @@ def before_request():
 
 #post method possible to make awswtf work?
 
+
+
+
+
 @app.route("/")
 def index():
     return render_template('index.html')
