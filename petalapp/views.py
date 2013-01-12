@@ -122,7 +122,7 @@ def logout():
 def pci_form2():
     #users_hospitals = g.user.hospitalsjj
 
-    question_headers = Header.query.order_by(Question_header.order.asc()) #TODO shouldnt be all
+    question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
     return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
 
 
