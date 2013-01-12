@@ -57,7 +57,7 @@ class Hospital(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    answer = db.relationship('Answer', backref='hospital', lazy = 'dynamic')
+    answers = db.relationship('Answer', backref='hospital', lazy = 'dynamic')
 
     def __init__(self, name):
         self.name = name
@@ -75,7 +75,7 @@ class Answer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
     survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'))
 
-    def __init__(self, value):
+    def __init__(self, value=0):
         self.value = value
 
     def __repr__(self):
@@ -89,11 +89,13 @@ class Question(db.Model):
     point = db.Column(db.Integer)
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
     question_header_id = db.Column(db.Integer, db.ForeignKey('question_header.id'))
+    order = db.Column(db.Integer)
 
 
-    def __init__(self, key, point):
+    def __init__(self, key, point, order):
         self.key = key
         self.point = point
+        self.order = order
 
     def __repr__(self):
         return '<Question: %r>' % self.key
@@ -105,9 +107,11 @@ class Question_header(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     header = db.Column(db.String(600))
     questions = db.relationship('Question', backref='question_header',lazy='dynamic')
+    order = db.Column(db.Integer)
 
-    def __init__(self, header):
+    def __init__(self, header,order):
         self.header = header
+        self.order = order
 
     def __repr__(self):
         return '<header: %r>' % self.header
@@ -120,10 +124,12 @@ class Survey(db.Model):
     answers = db.relationship('Answer', backref='survey', lazy='dynamic')
     release  = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime)
+    order = db.Column(db.Integer)
 
-    def __init__(self, release,timestamp=datetime.datetime.utcnow()):
+    def __init__(self, release, order, timestamp=datetime.datetime.utcnow()):
         self.release = release
         self.timestamp = timestamp
+        self.order = order
 
 def __repr__(self):
     return '<Release: %r>' % self.release

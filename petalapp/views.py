@@ -17,6 +17,7 @@ from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     UserNeed, Identity, identity_changed, Need, AnonymousIdentity
+import re
 
 # FIXME: move problem import error
 #older code
@@ -120,17 +121,24 @@ def logout():
 @login_required
 def pci_form2():
     #users_hospitals = g.user.hospitalsjj
-    surveys = Survey.query.all() #shouldn't be all
-    question_headers = Question_header.query.all() #TODO shouldnt be all
-    return render_template('pci_form2.html',user=g.user,
-            surveys=surveys,question_headers=question_headers) # TODO: send only name?
+
+    question_headers = Question_header.query.order_by(Question_header.order.asc()) #TODO shouldnt be all
+    return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])
 @login_required
 @contributer_permission.require(403)
 def add_pci_form2():
-    selected_hospital = request.form['hospital']
+    #selected_hospital = request.form['hospital']
+    #questions = Question.query.all() #TODO by survey?
+    #for question in questions:
+    #    question_answer = request.form[question.key]
+    #    an_answer = Answer(value=question_answer)
+    #    Question_going_in = Question(key=question.key,point=question.point,order=question.order)
+
+
+
     render_template('pci_form2.html')
 
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])
