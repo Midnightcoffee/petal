@@ -5,13 +5,13 @@
             <h2>Select hospital for which this form applies:</h2>
             <dl>
             {% for hospital in g.user.hospitals %}
-                <dt><input type="radio" name="{{ hospital.name }}" value="" />{{ hospital.name }}
+                <dt><input type="radio" name="hospital_name" value="" />{{ hospital.name }}
             {% endfor %}
             <hr>
             <h2>Select quarter for which this form applies:</h2>
                 <dt><input type='radio' name='quarter_4' value='' /> 4th Quarter
             {% for survey in surveys %}
-                <dt><input type="radio" name="{{ survey.release }}" value="" />{{ survey.release }}
+                <dt><input type="radio" name="survey_release" value="" />{{ survey.release }}
             {% endfor %}
             <hr>
             <!-- TODO, need to use radrio button for  date instance -->

@@ -134,14 +134,27 @@ def pci_form2():
 @login_required
 @contributer_permission.require(403)
 def add_pci_form2():
-    #selected_hospital = request.form['hospital']
-    #questions = Question.query.all() #TODO by survey?
-    #for question in questions:
-    #    question_answer = request.form[question.key]
-    #    an_answer = Answer(value=question_answer)
-    #    Question_going_in = Question(key=question.key,point=question.point,order=question.order)
 
+    # By Hospital
+    selected_hospital = Hospital.query.filter_by(Hospital.name==request.form['hospital_name'])
+    #By survey
+    selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
+    if selected_survey: # if there is already one
+    #replace
+    else:
 
+    selected_hospital.answer.filter(Answer.survey_id==selected_survey).first()
+    #By survey release  check to make sure no over laping release
+
+                #if overlap:
+                    #replace
+
+                #else:
+                    #record new data
+                #by survey headers #useing db
+                    #by possible.poin
+                #upload graph
+                #download graph to correct url
 
     render_template('pci_form2.html')
 

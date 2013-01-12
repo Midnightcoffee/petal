@@ -143,8 +143,8 @@ class Survey(db.Model):
         self.timestamp = timestamp
         self.order = order
 
-def __repr__(self):
-    return '<Release: %r>' % self.release
+    def __repr__(self):
+        return '<Release: %r>' % self.release
 
 
 
