@@ -139,11 +139,17 @@ def add_pci_form2():
     selected_hospital = Hospital.query.filter_by(Hospital.name==request.form['hospital_name'])
     #By survey
     selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
-    if selected_survey: # if there is already one
-    #replace
-    else:
+    # get all the answers on the page
+    #get the Headers for that survey
+    question_headers_for_that_survey = \
+        Header.query.filter_by(Answer.survey_id==selected_survey.id).all()
+    for header in question_headers_for_that_survey.headers:
+        request.form[header]
+    #if selected_survey: # if there is already one
 
-    selected_hospital.answer.filter(Answer.survey_id==selected_survey).first()
+    #else:
+
+    #selected_hospital.answer.filter(Answer.survey_id==selected_survey).first()
     #By survey release  check to make sure no over laping release
 
                 #if overlap:
