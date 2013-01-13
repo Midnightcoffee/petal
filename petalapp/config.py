@@ -53,7 +53,7 @@ MAIL_PASSWORD = None
 #TODO make an env? to mask?
 ADMINS = ['drew.verlee@gmail.com']
 
-# hospital managers
+# organization managers
 
 
 

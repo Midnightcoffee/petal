@@ -2,10 +2,10 @@
 {% block content %}
     <form action="{{url_for('add_pci_form2') }}" method="post" class=add-entry>
         <div class ="entries"> <!-- should be a DIV in your style! -->
-            <h2>Select hospital for which this form applies:</h2>
+            <h2>Select organization for which this form applies:</h2>
             <dl>
-            {% for hospital in g.user.hospitals %}
-                <dt><input type="radio" name="hospital_name" value="" />{{ hospital.name }}
+            {% for organization in g.user.organizations %}
+                <dt><input type="radio" name="organization_name" value="" />{{ organization.name }}
             {% endfor %}
             <hr>
             <h2>Select quarter for which this form applies:</h2>
@@ -45,7 +45,7 @@
                                 {% if "M-F 9am-5pm" in possible.key %}
                                     {% if possible.order == 0 %}
                                     <td><p>On site</p></td>
-                                    <td><p>Telephone coverage & availability to return to hospital</p></td>
+                                    <td><p>Telephone coverage & availability to return to organization</p></td>
                                     <td><p>Telephone coverage only</p></td>
                                     <td><p>Not available</p></td></tr>
                                     <td><p>M-F 9am-5pm</p></td>

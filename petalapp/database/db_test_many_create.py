@@ -5,7 +5,7 @@
 #Description: functions to build a many-to-many relationship
 #'''
 #import unittest
-#from petalapp.database.models import User, Hospital, ROLE_USER
+#from petalapp.database.models import User, Organization, ROLE_USER
 #from petalapp import db
 #
 #class BuildDestroyTables(unittest.TestCase):
@@ -33,10 +33,10 @@
 #        db.session.add(data_test_1)
 #        db.session.commit()
 #
-#    def test_hospital_setup(self):
+#    def test_organization_setup(self):
 #
-#        hospital_test_1 = Hospital("test_hospital_1")
-#        db.session.add(hospital_test_1)
+#        organization_test_1 = Organization("test_organization_1")
+#        db.session.add(organization_test_1)
 #        db.session.commit()
 #
 #
@@ -59,15 +59,15 @@
 #
 #        #create
 #        drew = User(nickname= "Drew", email="Drew@gmail.com",role=ROLE_USER)
-#        mac_hospital = Hospital("Mac_hospital")
-#        pro_hospital = Hospital("pro_hospital")
+#        mac_organization = Organization("Mac_organization")
+#        pro_organization = Organization("pro_organization")
 #        mac_data = Data(1,2,3)
 #        pro_data = Data(10,9,8)
 #
 #        #add
 #        db.session.add(drew)
-#        db.session.add(mac_hospital)
-#        db.session.add(pro_hospital)
+#        db.session.add(mac_organization)
+#        db.session.add(pro_organization)
 #        db.session.add(mac_data)
 #        db.session.add(pro_data)
 #
@@ -75,34 +75,34 @@
 #        db.session.commit()
 #
 #        #create links
-#        mac_hospital.data.append(mac_data)
-#        pro_hospital.data.append(pro_data)
-#        drew.hospitals.append(mac_hospital)
-#        drew.hospitals.append(pro_hospital)
+#        mac_organization.data.append(mac_data)
+#        pro_organization.data.append(pro_data)
+#        drew.organizations.append(mac_organization)
+#        drew.organizations.append(pro_organization)
 #        db.session.commit()
 #
 #    def functions_of_add_remove(self):
-#        johns_hospital_data = Data('johns_hospital_data')
-#        johns_hospital = Hospital('johns_hospital')
+#        johns_organization_data = Data('johns_organization_data')
+#        johns_organization = Organization('johns_organization')
 #        john = User('john', 'john@gmail.com')
 #
-#        db.session.add(johns_hospital_data)
-#        db.session.add(johns_hospital)
+#        db.session.add(johns_organization_data)
+#        db.session.add(johns_organization)
 #        db.session.add(john)
 #
 #        #TODO make a function for this?
-#        johns_hospital.append(johns_hospital_data)
+#        johns_organization.append(johns_organization_data)
 #        #do  i need a commit?
 #        db.session.commit()
 #
-#        self.assertEqual(john.remove_hospital(johns_hospital), None)
+#        self.assertEqual(john.remove_organization(johns_organization), None)
 #
-#        john_has_hospital = john.add_hospital(johns_hospital)
-#        db.session.add(john_has_hospital)
+#        john_has_organization = john.add_organization(johns_organization)
+#        db.session.add(john_has_organization)
 #        db.session.commit()
 #
-#        self.assertEqual(john.add_hospital(johns_hospital), None)
-#        self.assertEqual(len(john.hospitals), 1)
+#        self.assertEqual(john.add_organization(johns_organization), None)
+#        self.assertEqual(len(john.organizations), 1)
 #
 #
 #if __name__ == "__main__":

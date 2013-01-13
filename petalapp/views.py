@@ -7,8 +7,8 @@ Description: contains the views for the webapp
 
 from flask import make_response, render_template, url_for, request, redirect\
     , session, g, flash, session, request
-from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Header
+from petalapp.database.models import User, Question, Answer , \
+    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
 from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
@@ -124,7 +124,7 @@ def logout():
 @contributer_permission.require(403)
 @login_required
 def pci_form2():
-    #users_hospitals = g.user.hospitalsjj
+    #users_organizations = g.user.organizationsjj
 
     question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
     return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
@@ -135,21 +135,21 @@ def pci_form2():
 @contributer_permission.require(403)
 def add_pci_form2():
 
-    # By Hospital
-    selected_hospital = Hospital.query.filter_by(Hospital.name==request.form['hospital_name'])
-    #By survey
-    selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
-    # get all the answers on the page
-    #get the Headers for that survey
-    question_headers_for_that_survey = \
-        Header.query.filter_by(Answer.survey_id==selected_survey.id).all()
-    for header in question_headers_for_that_survey.headers:
-        request.form[header]
-    #if selected_survey: # if there is already one
+    ## By Organization
+    #selected_organization = Organization.query.filter_by(Organization.name==request.form['organization_name'])
+    ##By survey
+    #selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
+    ## get all the answers on the page
+    ##get the Headers for that survey
+    #question_headers_for_that_survey = \
+    #    Header.query.filter_by(Answer.survey_id==selected_survey.id).all()
+    #for header in question_headers_for_that_survey.headers:
+    #    request.form[header]
+    ##if selected_survey: # if there is already one
 
     #else:
 
-    #selected_hospital.answer.filter(Answer.survey_id==selected_survey).first()
+    #selected_organization.answer.filter(Answer.survey_id==selected_survey).first()
     #By survey release  check to make sure no over laping release
 
                 #if overlap:
@@ -167,10 +167,10 @@ def add_pci_form2():
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])
 #@login_required
 #def add_pci_form():
-#    test_hospital_title = 'detroit_receiving'
-#    test_hospital = Hospital(test_hospital_title)
+#    test_organization_title = 'detroit_receiving'
+#    test_organization = Organization(test_organization_title)
 #    #TODO remove me
-#    db.session.add(test_hospital)
+#    db.session.add(test_organization)
 #    db.session.commit()
 #    #TODO what if not integer
 #    test_data = Data(int(request.form['standard_form']),
@@ -182,7 +182,7 @@ def add_pci_form2():
 #                    int(request.form['team_funding']),
 #                    int(request.form['coverage']),
 #                    int(request.form['pc_for_expired_pts']),
-#                    int(request.form['hospital_pc_screening']),
+#                    int(request.form['organization_pc_screening']),
 #                    int(request.form['pc_follow_up']),
 #                    int(request.form['post_discharge_services']),
 #                    int(request.form['bereavement_contacts']),
@@ -192,9 +192,9 @@ def add_pci_form2():
 #                    )
 #    db.session.add(test_data)
 #    db.session.commit()
-#    test_hospital.data.append(test_data)
+#    test_organization.data.append(test_data)
 #    latest_sample_data= Data.query.all().pop()
-#    sample_hospital = Hospital.query.get(1)
+#    sample_organization = Organization.query.get(1)
 #    package = [str(latest_sample_data.timestamp),'fake quarter', '100',
 #            [latest_sample_data.standard_form,
 #             latest_sample_data.marketing_education,
@@ -205,7 +205,7 @@ def add_pci_form2():
 #             latest_sample_data.team_funding,
 #             latest_sample_data.coverage,
 #             latest_sample_data.pc_for_expired_pts,
-#             latest_sample_data.hospital_pc_screening,
+#             latest_sample_data.organization_pc_screening,
 #             latest_sample_data.pc_follow_up,
 #             latest_sample_data.post_discharge_services,
 #             latest_sample_data.bereavement_contacts,
@@ -213,11 +213,11 @@ def add_pci_form2():
 #             latest_sample_data.team_wellness,
 #             latest_sample_data.care_coordination]]
 #    #TODO refactor ,title
-#    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
+#    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_organization.name
 #    in_file = 'charts/'
 #    upload_s3(title , package)
 #    url =download_s3(in_file + title)
-#    return render_template(test_hospital_title + '.html', url=url)
+#    return render_template(test_organization_title + '.html', url=url)
 #
 #
 @app.errorhandler(404)
@@ -268,7 +268,7 @@ def internal_error(error):
 #@app.route("/dbshow")
 #def dbindex():
 #    '''builds and shows a query from db'''
-#    mydata = str(Hospital.query.all())
+#    mydata = str(Organization.query.all())
 #    return render_template("dbshow.html",data=mydata)
 
 
@@ -277,14 +277,14 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-@app.route("/hospitals")
+@app.route("/organizations")
 @login_required
 @contributer_permission.require(403)
-def hospitals():
-    '''page for hospitals'''
-    return render_template("hospitals.html")
+def organizations():
+    '''page for organizations'''
+    return render_template("organizations.html")
 
-#below are the views for various hospitals
+#below are the views for various organizations
 #TODO: possible move to their own file?
 #TODO uncapitalized
 @app.route("/MetroWest")
@@ -322,11 +322,11 @@ def west_lake():
     return render_template("west_lake.html")
 
 
-@app.route("/childrens_hospital_of_michigan")
+@app.route("/childrens_organization_of_michigan")
 @login_required
 @viewer_permission.require(403)
-def childrens_hospital_of_michigan():
-    return render_template("childrens_hospital_of_michigan.html")
+def childrens_organization_of_michigan():
+    return render_template("childrens_organization_of_michigan.html")
 
 
 @app.route("/detroit_receiving")
