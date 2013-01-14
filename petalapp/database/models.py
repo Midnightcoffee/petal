@@ -41,6 +41,8 @@ class User(db.Model):
         user = User.query.filter_by(name=user_name).first()
         if not user:
             user = User(name=user_name)
+            db.session.add(user)
+            db.session.commit()
         return user
 
 
@@ -62,13 +64,6 @@ class Organization(db.Model):
     def __repr__(self):
         return '<Name: %r>' % self.name
 
-    def add_retrive(self, organization_name):
-        org = Organization.query.filter_by(name=organization_name).first()
-        if not org:
-            org = Organization(name=organization_name)
-        return org
-
-
 
 class Market(db.Model):
     """
@@ -84,11 +79,6 @@ class Market(db.Model):
     def __repr__(self):
         return '<name : %r >' % self.name
 
-    def add_retrive(self, market_name):
-        market = Market.query.filter_by(name=market_name).first()
-        if not market:
-            market = Market(name=market_name)
-        return market
 
 
 
@@ -324,12 +314,6 @@ class InputType(db.Model):
     def __repr__(self):
         return '<Input_type: %r>' % self.input_type
 
-
-    def add_retrive(self,input_name):
-        inpt = InputType.query.filter_by(name=input_name).first()
-        if not inpt:
-            inpt = InputType(Input_type=input_name)
-        return inpt
 
 
 

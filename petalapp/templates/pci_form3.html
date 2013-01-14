@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-  <form action="{{url_for('add_pci_form2') }}" method="post" class=add-entry>
     <div class ="entries"> <!-- should be a DIV in your style! -->
-      <h2> Select hospital for which this form applies:</h2>
-        <dl>
-        {% for organaztion in organization_class.query.filter(survey_header_class.name==
-          'Vanguard Palliative Care Index and Survey') %}
-          <dt><input type="radio", name="oranziation_name",/>{{ organaztion.name }}</dt>
-        {% endfor %}
-      <h2> Select time period for which this form applies: </h2> 
-        <dl>
+    <form action="{{url_for('pci_form2') }}" method="post" class="add-entry"/>
+
+            <dl>
+            {% if message %}
+                {% for organization in organization_class.query.all() %}
+                    <dt><input type="radio", name="organization_name", value="{{ organization.id }}",/>{{ organization.name }}</dt>
+                {% endfor %}
+                <dt><input type ="submit", name="submit_organization"/>Submit Hospital
+            {% endif %}
+            <dl>
+
+    </form>
     </div>
-  </form>
 {% endblock %}

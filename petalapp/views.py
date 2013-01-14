@@ -26,16 +26,6 @@ viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_permission = Permission(RoleNeed(ROLE_ADMIN))
 
-#@identity_loaded.connect_via(app)
-#def on_identity_loaded(sender, identity):
-#    identity.user = current_user
-#
-#    if hasattr(current_user):
-#        identity.provides.add(RoleNeed(current_user.role))
-#
-
-
-
 
 #example TODO remove
 @identity_loaded.connect_via(app)
@@ -44,55 +34,10 @@ def on_identity_loaded(sender, identity):
     for roles in range(identity.name+1):
         identity.provides.add(RoleNeed(roles))
 
-#    if identity.name == 'admin':
-#        identity.provides.add(Need('superuser', 'my_value'))
-#    elif identity.name == 'bill':
-#        identity.provides.add(Need('need1', 'my_value'))
-#    elif identity.name == 'sally':
-#        identity.provides.add(Need('need2', 'my_value'))
-        #TODO add some flashing
-
-
-
 @app.before_request
 def before_request():
     '''run before every url request, to auth our user'''
     g.user = current_user
-    #criteria = [
-    #    request.is_secure,
-    #    app.debug,
-    #    request.headers.get('X-Forwarded-Proto', 'http') == 'https'
-    #]
-    #if not any(criteria):
-
-    #if not app.debug:
-    #    if 'pci_form' in request.url:
-    #        url = request.url.replace('http://','https://',1)
-    #        r = redirect(url)
-    #        return r
-
-
-   ## if request.url.startswith("https://"):
-   ##     if request.url.endswith('/') or request.url.endswith('login'):
-   ##         url = request.url.replace('https://','http://',1)
-   ##         print('before url: ', url)
-   ##         return redirect(url)
-
-
-
-
-#@app.after_request
-#def after_request():
-#    """Adds HSTS header to each response."""
-#    response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
-#    return response
-#
-
-#post method possible to make awswtf work?
-
-
-
-
 
 @app.route("/")
 def index():
@@ -121,173 +66,32 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
 
-#@app.route('/pci_form2', methods = ['GET'])
-#@contributer_permission.require(403)
-#@login_required
-#def pci_form2():
-#    #users_organizations = g.user.organizations
 #
-#    #question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
-#    #return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
-#    users_organization_for_pci
-#
-#
-
-@app.route('/pci_form3', methods = ['GET'])
+from pci_notes.name_storage import list_survey_headers #TODO rename
+@app.route('/pci_form3', methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def pci_form2():
-    #users_organizations = g.user.organizationsjj
+    message = False
+    if request.method== 'POST':
+        message = request.form['organization_name']
 
-    #question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
-    #return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
-    #users_organization_for_pci
     return render_template('pci_form3.html',
+        message = message,
         organization_class=Organization,
-        survey_header_class = SurveyHeader)
+        survey_header_class = SurveyHeader,
+        survey_header=list_survey_headers)
 
-
-
-@app.route('/add_pci_form2', methods = ['POST', 'GET'])
-@login_required
-@contributer_permission.require(403)
-def add_pci_form2():
-
-    ## By Organization
-    #selected_organization = Organization.query.filter_by(Organization.name==request.form['organization_name'])
-    ##By survey
-    #selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
-    ## get all the answers on the page
-    ##get the Headers for that survey
-    #question_headers_for_that_survey = \
-    #    Header.query.filter_by(Answer.survey_id==selected_survey.id).all()
-    #for header in question_headers_for_that_survey.headers:
-    #    request.form[header]
-    ##if selected_survey: # if there is already one
-
-    #else:
-
-    #selected_organization.answer.filter(Answer.survey_id==selected_survey).first()
-    #By survey release  check to make sure no over laping release
-
-                #if overlap:
-                    #replace
-
-                #else:
-                    #record new data
-                #by survey headers #useing db
-                    #by possible.poin
-                #upload graph
-                #download graph to correct url
-
-    render_template('pci_form2.html')
-
-#@app.route('/add_pci_form', methods = ['POST', 'GET'])
-#@login_required
-#def add_pci_form():
-#    test_organization_title = 'detroit_receiving'
-#    test_organization = Organization(test_organization_title)
-#    #TODO remove me
-#    db.session.add(test_organization)
-#    db.session.commit()
-#    #TODO what if not integer
-#    test_data = Data(int(request.form['standard_form']),
-#                    int(request.form['marketing_education']),
-#                    int(request.form['record_availability']),
-#                    int(request.form['family_centerdness']),
-#                    int(request.form['pc_networking']),
-#                    int(request.form['education_and_training']),
-#                    int(request.form['team_funding']),
-#                    int(request.form['coverage']),
-#                    int(request.form['pc_for_expired_pts']),
-#                    int(request.form['organization_pc_screening']),
-#                    int(request.form['pc_follow_up']),
-#                    int(request.form['post_discharge_services']),
-#                    int(request.form['bereavement_contacts']),
-#                    int(request.form['certification']),
-#                    int(request.form['team_wellness']),
-#                    int(request.form['care_coordination'])
-#                    )
-#    db.session.add(test_data)
-#    db.session.commit()
-#    test_organization.data.append(test_data)
-#    latest_sample_data= Data.query.all().pop()
-#    sample_organization = Organization.query.get(1)
-#    package = [str(latest_sample_data.timestamp),'fake quarter', '100',
-#            [latest_sample_data.standard_form,
-#             latest_sample_data.marketing_education,
-#             latest_sample_data.record_availability,
-#             latest_sample_data.family_centerdness,
-#             latest_sample_data.pc_networking,
-#             latest_sample_data.education_and_training,
-#             latest_sample_data.team_funding,
-#             latest_sample_data.coverage,
-#             latest_sample_data.pc_for_expired_pts,
-#             latest_sample_data.organization_pc_screening,
-#             latest_sample_data.pc_follow_up,
-#             latest_sample_data.post_discharge_services,
-#             latest_sample_data.bereavement_contacts,
-#             latest_sample_data.certification,
-#             latest_sample_data.team_wellness,
-#             latest_sample_data.care_coordination]]
-#    #TODO refactor ,title
-#    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_organization.name
-#    in_file = 'charts/'
-#    upload_s3(title , package)
-#    url =download_s3(in_file + title)
-#    return render_template(test_organization_title + '.html', url=url)
-#
 #
 @app.errorhandler(404)
 def internal_error(error):
-    return render_template('404.html'), 404
+    return render_template('404.html')
 
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
-    return render_template('500.html'), 500
-
-#@app.route("/map")
-#def map():
-#    '''renders map of united states'''
-#    return render_template('map.html')
-#
-
-#@app.route("/make_charts",methods=['GET','POST'])
-#def make_charts():
-#    '''helps make graphs/charts'''
-#    if request.method == 'POST':
-#        session['number'] = request.form['number']
-#        return redirect(url_for('show_charts'))
-#
-
-#@app.route('/show_charts',methods= ['GET','POST'])
-#def show_charts():
-#    '''helps show graphs'''
-#    #TODO should just copy this code ...
-#    return render_template('show_charts.html')
-#
-
-#@app.route("/polarchart")
-#def simple():
-#    '''dynamically creates a chart'''
-#    try:
-#        num = int(session['number'])
-#        assert (num >= 0 and num <= 10)
-#    except:
-#        num = 10
-#    data = []
-#    response=make_response(plotpolar(data, num).getvalue())
-#    response.headers['Content-Type'] = 'image/png'
-#    return response
-
-
-#@app.route("/dbshow")
-#def dbindex():
-#    '''builds and shows a query from db'''
-#    mydata = str(Organization.query.all())
-#    return render_template("dbshow.html",data=mydata)
+    return render_template('500.html')
 
 
 @lm.user_loader
