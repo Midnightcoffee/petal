@@ -24,10 +24,11 @@ class User(db.Model):
     """User has a many-to-many relationship with Organization"""
 
     id = db.Column(db.Integer, primary_key=True)
-    survey_comments = db.relationship('Survey_comment', backref='user', lazy='dynamic')
+    survey_comments = db.relationship('SurveyComment', backref='user', lazy='dynamic')
     answers = db.relationship('Answer', backref='user',lazy='dynamic')
     email = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_VIEWER)
+    user_survey_sections = db.relationship('UserSurveySection', backref='user', lazy='dynamic')
 
 #    organizations = db.relationship('Organization', secondary=organizations,
 #        backref=db.backref('users', lazy='dynamic'))
@@ -67,19 +68,36 @@ class User(db.Model):
 
 
 class Organization(db.Model):
-    """Organization's has a one-to-many relationship with answer and a
-    many-to-many relationship with User"""
+    """
+    Organization has a many-to-one relationship with Market
+    Organization has a  one-to-many relationship with survey_headers
+
+    """
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    #answers = db.relationship('Answer', backref='organization', lazy = 'dynamic')
-    survey_headers = db.relationship('Survey_header', backref='organization', lazy='dynamic')
+    survey_headers = db.relationship('SurveyHeader', backref='organization', lazy='dynamic')
+    market_id = db.Column(db.Integer, db.ForeignKey('market.id'))
 
-    def __init__(self, name):
+    def __init__(self, name=''):
         self.name = name
 
     def __repr__(self):
         return '<Name: %r>' % self.name
+
+class Market(db.Model):
+    """
+    Market has a one-to-many relationship with Organization
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    organizations = db.relationship('Organization', backref='market', lazy='dynamic')
+    name = db.Column(db.String(80))
+
+    def __init__(self, name=''):
+        self.name = name
+
+    def __repr__(self):
+        return '<name : %r >' % self.name
 
 
 class SurveyHeader(db.Model):
@@ -90,20 +108,20 @@ class SurveyHeader(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     organization_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
-    survey_sections = db.relationship('Survey_section', backref='survey_header',lazy='dynamic')
-    survey_comments = db.relationship('Survey_comment', backref='survey_header',lazy='dynamic')
-    survey_name = db.Column(db.String(80))
+    sections = db.relationship('SurveySection', backref='survey_header',lazy='dynamic')
+    comments = db.relationship('SurveyComment', backref='survey_header',lazy='dynamic')
+    name = db.Column(db.String(80))
     instructions = db.Column(db.String(3000))
     other_info =  db.Column(db.String(250))
 
 
-    def __init__(self, survey_name='',instructions='',other_info=''):
-        self.survey_name = survey_name
+    def __init__(self, name='',instructions='',other_info=''):
+        self.name = name
         self.instructions = instructions
         self.other_info =other_info
 
     def __repr__(self):
-        return '<survey name: %r>' % self.survey_name
+        return '<survey name: %r>' % self.name
 
 
 class SurveyComment(db.Model):
@@ -132,18 +150,19 @@ class SurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     survey_header_id = db.Column(db.Integer, db.ForeignKey('survey_header.id'))
-    user_survey_sections = db.relationship('User_survey_section', backref="survey_section",
+    user_survey_sections = db.relationship('UserSurveySection', backref="survey_section",
             lazy='dynamic')
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
-    name = db.Column(db.String(45))
-    title = db.Column(db.String(45))
+    order = db.Column(db.Integer)
+    title = db.Column(db.String(100))
     required_yn = db.Column(db.Boolean)
 
 
-    def __init__(self, name='',title='',section_required_yn=False):
-        self.name = name
+    def __init__(self,title='',section_required_yn=False,order=0):
+        self.title = title
         self.title = title
         self.section_required_yn = section_required_yn
+        self.order = order
 
     def __repr__(self):
         return '<survey name: %r>' % self.name
@@ -156,6 +175,7 @@ class UserSurveySection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     completed_date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, completed_date=datetime.datetime.utcnow()):
         self.completed_date = completed_date
@@ -220,7 +240,7 @@ class OptionChoice(db.Model):
     Option_choice has a one-to-many relationship with Question_option
     """
     id = db.Column(db.Integer, primary_key=True)
-    question_options = db.relationship('Question_option', backref='option_choice',lazy='dynamic')
+    question_options = db.relationship('QuestionOption', backref='option_choice',lazy='dynamic')
     option_group_id = db.Column(db.Integer, db.ForeignKey('option_group.id'))
 
     name = db.Column(db.String(200))
@@ -238,12 +258,14 @@ class OptionGroup(db.Model):
     Option_group has a one-to-many relationship with Question
     """
     id = db.Column(db.Integer, primary_key=True)
-    option_choices = db.relationship('Option_choice', backref='option_group',lazy='dynamic')
+    option_choices = db.relationship('OptionChoice', backref='option_group',lazy='dynamic')
     questions = db.relationship('Question', backref ='option_group', lazy='dynamic')
     name = db.Column(db.String(50))
+    head = db.Column(db.String(300))
 
-    def __init__(self, name=''):
+    def __init__(self, name='',head=''):
         self.name = name
+        self.list_head = head
 
     def __repr__(self):
         return '<name: %r >' % self.name
@@ -260,14 +282,13 @@ class Question(db.Model):
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     inputtype_id = db.Column(db.Integer, db.ForeignKey('input_type.id'))
     option_group_id = db.Column(db.Integer, db.ForeignKey('option_group.id'))
-    question_options = db.relationship('Question_option', backref='question',lazy='dynamic')
+    question_options = db.relationship('QuestionOption', backref='question',lazy='dynamic')
 
     #TODO old look over
-    full_text = db.Column(db.String(1500))
-    head_text = db.Column(db.String(750))
-    tail_text = db.Column(db.String(750))
+    full = db.Column(db.String(1500))
+    tail = db.Column(db.String(750))
     order = db.Column(db.Integer)
-    point = db.Column(db.Integer)
+    value = db.Column(db.Integer)
     answer_required_yn =db.Column(db.Boolean)
     subtext = db.Column(db.String(500))
     allow_mult_options_answers_yn = db.Column(db.Boolean)
@@ -276,17 +297,14 @@ class Question(db.Model):
 
     #answers = db.relationship('Answer', backref='question', lazy='dynamic')
 
-
-
     def __init__(
-            self, full_text='',  head_text='',tail_text='',
-            order=0, point=0, answer_required_yn=False, subtext='',
+            self, full='',tail='',
+            order=0, value=0, answer_required_yn=False, subtext='',
             allow_mult_options_answers_yn=False
                 ):
 
-        self.full_text = full_text
-        self.head_text = head_text
-        self.point = point
+        self.full = full
+        self.value = value
         self.order = order
         self.answer_required_yn = answer_required_yn
         self.subtext = subtext
