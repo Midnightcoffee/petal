@@ -5,21 +5,7 @@ ROLE_CONTRIBUTER = 1
 ROLE_ADMIN = 2
 
 import datetime
-#hospitals = db.Table('hospitals',
-#    db.Column('hospital_id', db.Integer, db.ForeignKey('hospital.id', ondelete="CASCADE")),
-#    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"))
-#)
-#
-#organizations = db.Table('organizations',
-#    db.Column('organization_id', db.Integer, db.ForeignKey('organization.id',ondelete='cascade')),
-#    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='cascade'))
-#)
-#
-##user_survey_sections = db.Table('user_survey_sections',
-##    db.Column('user_survey_section_id'), db.Integer, db.ForeignKey('user_survey_section.id'),
-##    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-##    )
-#
+
 class User(db.Model):
     """User has a many-to-many relationship with Organization"""
 
@@ -30,13 +16,6 @@ class User(db.Model):
     role = db.Column(db.SmallInteger, default=ROLE_VIEWER)
     user_survey_sections = db.relationship('UserSurveySection', backref='user', lazy='dynamic')
 
-#    organizations = db.relationship('Organization', secondary=organizations,
-#        backref=db.backref('users', lazy='dynamic'))
-
-    #user_survey_sections = db.relationship('User_survey_section', seciondary=user_survey_sections,
-    #        backref=db.backref('users', lazy='dynamic'))
-
-
     def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant
         self.role = role
         self.email = email
@@ -44,15 +23,6 @@ class User(db.Model):
     #TODO what information to show?
     def __repr__(self):
         return '<email: %r>' % (self.email)
-
-    #TODO maybe alter these to do the connection for us?
-#    def add_organization(self, organization):
-#        if not (organization in self.organizations):
-#            self.organizations.append(organization)
-#
-#    def remove_organization(self, organization):
-#        if not (organization in self.organization):
-#            self.organizations.remove(organization)
 
     def is_authenticated(self):
         return True
@@ -65,6 +35,13 @@ class User(db.Model):
 
     def get_id(self):
         return unicode(self.id)
+
+
+    def add_retrive(self, user_name):
+        user = User.query.filter_by(name=user_name).first()
+        if not user:
+            user = User(name=user_name)
+        return user
 
 
 class Organization(db.Model):
@@ -85,6 +62,14 @@ class Organization(db.Model):
     def __repr__(self):
         return '<Name: %r>' % self.name
 
+    def add_retrive(self, organization_name):
+        org = Organization.query.filter_by(name=organization_name).first()
+        if not org:
+            org = Organization(name=organization_name)
+        return org
+
+
+
 class Market(db.Model):
     """
     Market has a one-to-many relationship with Organization
@@ -99,6 +84,13 @@ class Market(db.Model):
     def __repr__(self):
         return '<name : %r >' % self.name
 
+    def add_retrive(self, market_name):
+        market = Market.query.filter_by(name=market_name).first()
+        if not market:
+            market = Market(name=market_name)
+        return market
+
+
 
 class SurveyHeader(db.Model):
     """
@@ -108,19 +100,22 @@ class SurveyHeader(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     organization_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
-    sections = db.relationship('SurveySection', backref='survey_header',lazy='dynamic')
-    comments = db.relationship('SurveyComment', backref='survey_header',lazy='dynamic')
+    survey_sections = db.relationship('SurveySection', backref='survey_header',lazy='dynamic')
+    survey_comments = db.relationship('SurveyComment', backref='survey_header',lazy='dynamic')
     name = db.Column(db.String(80))
     instructions = db.Column(db.String(3000))
     other_info =  db.Column(db.String(250))
+    time_period = db.Column(db.String(200))
 
 
-    def __init__(self, name='',instructions='',other_info=''):
+    def __init__(self, name='',instructions='',other_info='', time_period=''):
         self.name = name
         self.instructions = instructions
         self.other_info =other_info
+        self.time_period = time_period
 
     def __repr__(self):
+
         return '<survey name: %r>' % self.name
 
 
@@ -156,16 +151,18 @@ class SurveySection(db.Model):
     order = db.Column(db.Integer)
     title = db.Column(db.String(100))
     required_yn = db.Column(db.Boolean)
+    time_period = db.Column(db.String(100))
 
 
-    def __init__(self,title='',section_required_yn=False,order=0):
+    def __init__(self,title='',section_required_yn=False,order=0, time_period=''):
         self.title = title
         self.title = title
         self.section_required_yn = section_required_yn
         self.order = order
+        self.time_period = time_period
 
     def __repr__(self):
-        return '<survey name: %r>' % self.name
+        return '<survey title: %r>' % self.title
 
 class UserSurveySection(db.Model):
     """
@@ -177,8 +174,9 @@ class UserSurveySection(db.Model):
     completed_date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, completed_date=datetime.datetime.utcnow()):
+    def __init__(self, completed_date=None):
         self.completed_date = completed_date
+        #datetime.datetime.utcnow()
 
     def __repr__(self):
         return '<completed on: %r>' % self.completed_date
@@ -327,7 +325,11 @@ class InputType(db.Model):
         return '<Input_type: %r>' % self.input_type
 
 
-
+    def add_retrive(self,input_name):
+        inpt = InputType.query.filter_by(name=input_name).first()
+        if not inpt:
+            inpt = InputType(Input_type=input_name)
+        return inpt
 
 
 

@@ -8,7 +8,8 @@ Description: contains the views for the webapp
 from flask import make_response, render_template, url_for, request, redirect\
     , session, g, flash, session, request
 from petalapp.database.models import User, Question, Answer , \
-    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
+    Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
+    OptionChoice, OptionGroup,InputType, ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
 from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
@@ -120,14 +121,31 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
 
-@app.route('/pci_form2', methods = ['GET'])
+#@app.route('/pci_form2', methods = ['GET'])
+#@contributer_permission.require(403)
+#@login_required
+#def pci_form2():
+#    #users_organizations = g.user.organizations
+#
+#    #question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
+#    #return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
+#    users_organization_for_pci
+#
+#
+
+@app.route('/pci_form3', methods = ['GET'])
 @contributer_permission.require(403)
 @login_required
 def pci_form2():
     #users_organizations = g.user.organizationsjj
 
-    question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
-    return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
+    #question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
+    #return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
+    #users_organization_for_pci
+    return render_template('pci_form3.html',
+        organization_class=Organization,
+        survey_header_class = SurveyHeader)
+
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])
