@@ -139,20 +139,20 @@ class SurveySection(db.Model):
             lazy='dynamic')
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
     order = db.Column(db.Integer)
-    title = db.Column(db.String(100))
+    name = db.Column(db.String(100))
     required_yn = db.Column(db.Boolean)
     time_period = db.Column(db.String(100))
 
 
-    def __init__(self,title='',section_required_yn=False,order=0, time_period=''):
-        self.title = title
-        self.title = title
+    def __init__(self,name='',section_required_yn=False,order=0, time_period=''):
+        self.name = name
+        self.name = name
         self.section_required_yn = section_required_yn
         self.order = order
         self.time_period = time_period
 
     def __repr__(self):
-        return '<survey title: %r>' % self.title
+        return '<survey name: %r>' % self.name
 
 class UserSurveySection(db.Model):
     """
