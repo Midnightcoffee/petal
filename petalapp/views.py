@@ -8,7 +8,7 @@ Description: contains the views for the webapp
 from flask import make_response, render_template, url_for, request, redirect\
     , session, g, flash, session, request
 from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Header
+        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Question_header
 from petalapp import db, app, lm,app
 from flask.ext.login import login_user, logout_user, current_user, login_required\
         , LoginManager
@@ -17,7 +17,6 @@ from petalapp.graphing_tools.graph import plotpolar
 from aws_tools import upload_s3, download_s3
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     UserNeed, Identity, identity_changed, Need, AnonymousIdentity
-import re
 
 # FIXME: move problem import error
 #older code
@@ -32,9 +31,6 @@ admin_permission = Permission(RoleNeed(ROLE_ADMIN))
 #    if hasattr(current_user):
 #        identity.provides.add(RoleNeed(current_user.role))
 #
-
-
-
 
 #example TODO remove
 @identity_loaded.connect_via(app)
@@ -89,10 +85,6 @@ def before_request():
 
 #post method possible to make awswtf work?
 
-
-
-
-
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -125,43 +117,17 @@ def logout():
 @login_required
 def pci_form2():
     #users_hospitals = g.user.hospitalsjj
-
-    question_headers = Header.query.order_by(Header.order.asc()) #TODO shouldnt be all
-    return render_template('pci_form2.html',user=g.user, question_headers=question_headers) # TODO: send only name?
+    surveys = Survey.query.all()
+    question_headers = Question_header.query.all()
+    return render_template('pci_form2.html',user=g.user, 
+            surveys=surveys) # TODO: send only name?
 
 
 @app.route('/add_pci_form2', methods = ['POST', 'GET'])
 @login_required
 @contributer_permission.require(403)
 def add_pci_form2():
-
-    # By Hospital
-    selected_hospital = Hospital.query.filter_by(Hospital.name==request.form['hospital_name'])
-    #By survey
-    selected_survey = Survey.query.filter_by(Survey.release==request.form['survey_release'])
-    # get all the answers on the page
-    #get the Headers for that survey
-    question_headers_for_that_survey = \
-        Header.query.filter_by(Answer.survey_id==selected_survey.id).all()
-    for header in question_headers_for_that_survey.headers:
-        request.form[header]
-    #if selected_survey: # if there is already one
-
-    #else:
-
-    #selected_hospital.answer.filter(Answer.survey_id==selected_survey).first()
-    #By survey release  check to make sure no over laping release
-
-                #if overlap:
-                    #replace
-
-                #else:
-                    #record new data
-                #by survey headers #useing db
-                    #by possible.poin
-                #upload graph
-                #download graph to correct url
-
+    selected_hospital = request.form['hospital']
     render_template('pci_form2.html')
 
 #@app.route('/add_pci_form', methods = ['POST', 'GET'])
