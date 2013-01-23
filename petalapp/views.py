@@ -72,27 +72,19 @@ from pci_notes.name_storage import list_survey_headers #TODO rename
 @contributer_permission.require(403)
 @login_required
 def survey():
-    organization_id = None
-    survey_header_id = None
-    survey_section_id = None
 
     organization_selected = None
     survey_header_selected = None
     survey_section_selected = None
 
-    print('before post: ', organization_id)
     if request.method== 'POST':
-        print('after post: ', organization_id)
-        if not organization_id:
-            organization_id = request.form['organization_id']
+        if not 'organization' in session:
+            session['organization'] = request.form['organization_id']
             organization_selected = Organization.query.get(organization_id)
-            print('if org: ', organization_id)
         elif not survey_header_id:
             survey_header_id = request.form['survey_header_id']
             survey_header_selected = SurveyHeader.query.get(survey_header_id)
-            print('if survey: ', organization_id)
         elif not survey_section_id:
-            print('if survey_section: ', organization_id)
             pass
         else:
             pass
@@ -100,10 +92,7 @@ def survey():
     return render_template('survey.html',
         organization_class = Organization,
         organization_selected = organization_selected,
-        organization_id = organization_id,
-        survey_header_id = survey_header_id,
         survey_header_selected = survey_header_selected,
-        survey_section_id = survey_section_id,
         survey_section_selected = survey_section_selected)
 
 
