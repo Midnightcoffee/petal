@@ -6,7 +6,7 @@ Description: contains the views for the webapp
 '''
 
 from flask import make_response, render_template, url_for, request, redirect\
-    , session, g, flash, session, request
+    , session, g, flash, request
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType, ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
@@ -52,6 +52,10 @@ def login():
         session['logged_in'] = True
         rolelevel = g.user.role
         #TODO add some flashing
+        #TODO consider maybe an add page... or something else?
+        session['organization'] = None
+        session['survey_header'] = None
+        session['survey_section'] = None
     else:
         perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
@@ -73,27 +77,31 @@ from pci_notes.name_storage import list_survey_headers #TODO rename
 @login_required
 def survey():
 
-    organization_selected = None
-    survey_header_selected = None
-    survey_section_selected = None
-
+    seen = ''
     if request.method== 'POST':
-        if not 'organization' in session:
-            session['organization'] = request.form['organization_id']
-            organization_selected = Organization.query.get(organization_id)
-        elif not survey_header_id:
-            survey_header_id = request.form['survey_header_id']
-            survey_header_selected = SurveyHeader.query.get(survey_header_id)
-        elif not survey_section_id:
+        try:
+            session['organization'] = Organization.query.get(request.form['organization_id'])
+            session['survey_section'] = None
+            session['survey_header'] = None
+        except:
             pass
-        else:
+        try:
+            session['survey_header'] = SurveyHeader.query.get(request.form['survey_header_id'])
+            session['survey_section'] = None
+        except:
             pass
+        try:
+            session['survey_section'] = SurveySection.query.get(request.form['survey_section_id'])
+        except:
+            pass
+
 
     return render_template('survey.html',
+        seen = seen,
         organization_class = Organization,
-        organization_selected = organization_selected,
-        survey_header_selected = survey_header_selected,
-        survey_section_selected = survey_section_selected)
+        organization = session['organization'],
+        survey_header = session['survey_header'],
+        survey_section = session['survey_section'])
 
 
 #

@@ -146,7 +146,6 @@ class SurveySection(db.Model):
 
     def __init__(self,name='',section_required_yn=False,order=0, time_period=''):
         self.name = name
-        self.name = name
         self.section_required_yn = section_required_yn
         self.order = order
         self.time_period = time_period
@@ -249,11 +248,9 @@ class OptionGroup(db.Model):
     option_choices = db.relationship('OptionChoice', backref='option_group',lazy='dynamic')
     questions = db.relationship('Question', backref ='option_group', lazy='dynamic')
     name = db.Column(db.String(50))
-    head = db.Column(db.String(300))
 
-    def __init__(self, name='',head=''):
+    def __init__(self, name=''):
         self.name = name
-        self.list_head = head
 
     def __repr__(self):
         return '<name: %r >' % self.name
@@ -275,6 +272,7 @@ class Question(db.Model):
     #TODO old look over
     full = db.Column(db.String(1500))
     tail = db.Column(db.String(750))
+    head = db.Column(db.String(1000))
     order = db.Column(db.Integer)
     value = db.Column(db.Integer)
     answer_required_yn =db.Column(db.Boolean)
@@ -286,12 +284,14 @@ class Question(db.Model):
     #answers = db.relationship('Answer', backref='question', lazy='dynamic')
 
     def __init__(
-            self, full='',tail='',
+            self, full='',tail='',head='',
             order=0, value=0, answer_required_yn=False, subtext='',
             allow_mult_options_answers_yn=False
                 ):
 
         self.full = full
+        self.tail = tail
+        self.head = head
         self.value = value
         self.order = order
         self.answer_required_yn = answer_required_yn
@@ -299,7 +299,7 @@ class Question(db.Model):
         self.allow_mult_options_answers_yn = allow_mult_options_answers_yn
 
     def __repr__(self):
-        return '<Question name: %r>' % self.name
+        return '<Question full: %r>' % self.full
 
 
 class InputType(db.Model):

@@ -11,8 +11,31 @@ Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
 Add tests.
 Should be using url_for rather then hard coding urls
 CSS style within div classes.
-make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
-use the map.
+make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you use the map.
+############
+NOTE
+##############
+load user
+load organization
+    load survey head
+        load survey section RECURSIVE SURVEY SECTION
+            for user packages
+                if user_package .. linked with organization
+                    user_instruction store user id
+
+
+
+make data
+check user_survey_sections for most recent completed on datetime
+    check user id
+    check answers with user id.... something something
+
+when user answer
+store user id and question option_id
+    for question_option_id 
+
+
+Don't need tail and head.
 ################
 WORK LOG:
 ##################

@@ -3,21 +3,33 @@
     <div class ="entries"> <!-- should be a DIV in your style! -->
     <form action="{{url_for('survey') }}" method="post" class="add-entry"/>
             <dl>
-            {% if not organization_id %}
+            {% if not organization %}
                 {% for organization in organization_class.query.all() %}
                     <dt><input type="radio", name="organization_id",
                     value="{{ organization.id }}"/>{{ organization.name }}</dt>
                 {% endfor %}
                 <dt><input type ="submit", name="submit_organization"/>
-            {% elif not survey_header_id %}
-                <h1>{{ organization_selected.name }}</h1>
-                {% for survey_header in organization_selected.survey_headers.all() %}
+            {% elif not survey_header %}
+                <h1>{{ organization.name }}</h1>
+                {% for survey_header in organization.survey_headers.all() %}
                     <dt><input type="radio", name="survey_header_id"
                     value="{{ survey_header.id }}"/>{{ survey_header.name }}
                 {% endfor %}
                 <dt><input type ="submit", name="submit_survey_header"/>
-            {% elif not survey_section_id %}
-                <p>hi</p>
+            {% elif not survey_section %}
+                    {% for survey_section in survey_header.survey_sections.all() %}
+                    <h2>{{ survey_section.name }}</h2>
+                        {% for question in survey_section.questions.all() %}
+                        <!--input type -->
+                        {% if not question.head  == seen %}
+                            {{ question.head }}
+                            {% set seen = question.head %}
+                        {% endif %}
+                        <dt><input type="radio",value= {{ question.id }}
+                        value = {{ question.id }} />({{question.value }}) {{ question.tail }}
+                        {% endfor %}
+                    {% endfor %}
+                <dt><input type ="submit", name ="submit_section"/>
             {% else %}
             {% endif %}
             <dl>
