@@ -135,6 +135,7 @@ class SurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     survey_header_id = db.Column(db.Integer, db.ForeignKey('survey_header.id'))
+    parent_id = Column(db.Integer, db.ForeignKey('surveysection.id'))
     user_survey_sections = db.relationship('UserSurveySection', backref="survey_section",
             lazy='dynamic')
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
@@ -142,6 +143,8 @@ class SurveySection(db.Model):
     name = db.Column(db.String(100))
     required_yn = db.Column(db.Boolean)
     time_period = db.Column(db.String(100))
+    children = db.relationship('SurveySection', backref='survey_section', lazy='dynamic')
+
 
 
     def __init__(self,name='',section_required_yn=False,order=0, time_period=''):
