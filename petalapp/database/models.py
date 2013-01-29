@@ -141,17 +141,20 @@ class SurveySection(db.Model):
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
     order = db.Column(db.Integer)
     name = db.Column(db.String(100))
+    subheading = db.Column(db.String(1200))
     required_yn = db.Column(db.Boolean)
     time_period = db.Column(db.String(100))
     children = db.relationship('SurveySection', backref='survey_section', lazy='dynamic')
 
 
 
-    def __init__(self,name='',section_required_yn=False,order=0, time_period=''):
+    def __init__(self,name='',section_required_yn=False,order=0, time_period=''
+            ,subheading=''):
         self.name = name
         self.section_required_yn = section_required_yn
         self.order = order
         self.time_period = time_period
+        self.subheading = subheading
 
     def __repr__(self):
         return '<survey name: %r>' % self.name
@@ -273,9 +276,7 @@ class Question(db.Model):
     question_options = db.relationship('QuestionOption', backref='question',lazy='dynamic')
 
     #TODO old look over
-    full = db.Column(db.String(1500))
-    tail = db.Column(db.String(750))
-    head = db.Column(db.String(1000))
+    name = db.Column(db.String(500))
     order = db.Column(db.Integer)
     value = db.Column(db.Integer)
     answer_required_yn =db.Column(db.Boolean)
@@ -287,14 +288,12 @@ class Question(db.Model):
     #answers = db.relationship('Answer', backref='question', lazy='dynamic')
 
     def __init__(
-            self, full='',tail='',head='',
+            self, name='',
             order=0, value=0, answer_required_yn=False, subtext='',
             allow_mult_options_answers_yn=False
                 ):
 
-        self.full = full
-        self.tail = tail
-        self.head = head
+        self.name = name
         self.value = value
         self.order = order
         self.answer_required_yn = answer_required_yn
@@ -302,7 +301,7 @@ class Question(db.Model):
         self.allow_mult_options_answers_yn = allow_mult_options_answers_yn
 
     def __repr__(self):
-        return '<Question full: %r>' % self.full
+        return '<Question name: %r>' % self.name
 
 
 class InputType(db.Model):

@@ -14,7 +14,55 @@ CSS style within div classes.
 make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you use the map.
 ############
 NOTE
-##############
+############
+PCI and Hospital palliative care consult survey should be two different survey
+headers. I lose some bundling unity but i avoid sections inside sections and 
+the data seems more true to the form.
+
+So it would be 
+survey_header = pci
+survey_section.name = education and training
+survey_section.subheading = the hospital conductns regular pallative...
+
+question.name = physician in service...
+
+which means there is no need for head, full or tail. 
+Just have question.full? ?not sure about name.
+
+the section should just be like education and training.
+? render one question at a time, give survey section selection page with reminders, allow for 
+release choice
+
+T/F is a question_group
+a useful question group is like M-S with the times,option groups is for common ranges
+only atm i can only see a use for M-S
+
+option_choice then contains the "M-F 9am-5pm", ... these question_choices 
+then "M-F 9am = 5pm" and M-F 5pm-9am get all get stored in question_options
+along with the question_id so to generate are matrix (and all questions it will be something like)
+if option_group == 'M-S' then
+    for option_group.queryup(option_choices)
+        https://github.com/Midnightcoffee/petal/blob/4d93aef375d6ca1cf58b8f97addd14e988cffa9b/petalapp/templates/pci_form2.html
+else
+    kinda what we already have
+
+that means for the PC coverage / Availability question the question name is On
+Site and it uses
+
+the second layer of surey section will be for example, name=education and training
+subheading = 6. The hospital conducts regular palliative education for 
+department and staff members.  PC education is provided at least 1 hr/year at:
+
+? possible add more characters to surveyseciton name and subheader?
+
+with questions like:
+
+Physician in-service or Medical grand rounds – 2 pts
+ER palliative teaching at physician staff meeting – 2 pts
+Palliative Critical Care in-service or grand rounds – 2 pts
+Nursing PC education at in-services or dept. meetings – 2 pts
+Social work department meeting or educational session – 2 pts
+#
 load user
 load organization
     load survey head
@@ -31,8 +79,13 @@ check user_survey_sections for most recent completed on datetime
     check answers with user id.... something something
 
 when user answer
-store user id and question option_id
-    for question_option_id 
+create answer instance with user_id and question_option_id
+question_option_id will contain info about what was selected and question_id
+for most this will be True or False
+but for M-S it will be ... M-F 9am blah blah
+the question_id will link back how many points
+it will contain some redudent info if the question choice was True or False
+but this is necessary in the case where you have the M-S
 
 
 Don't need tail and head.
