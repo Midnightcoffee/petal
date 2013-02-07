@@ -20,6 +20,7 @@ from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     UserNeed, Identity, identity_changed, Need, AnonymousIdentity
 import re
 
+from pci_notes.storage.survey_headers.pci import survey_headers #TODO rename
 # FIXME: move problem import error
 #older code
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
@@ -71,7 +72,7 @@ def logout():
     return redirect(url_for("login")) #TODO should be something else?
 
 #
-from pci_notes.name_storage import list_survey_headers #TODO rename
+
 @app.route('/survey', methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required

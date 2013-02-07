@@ -1,5 +1,5 @@
 from petalapp import db
-from pci_notes.name_storage import market_organization
+from pci_notes.storage.market_organization import market_organization
 
 def add_unique(name, table):
     n = table.query.filter_by(name=name).first()

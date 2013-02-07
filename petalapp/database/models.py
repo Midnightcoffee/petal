@@ -95,10 +95,10 @@ class SurveyHeader(db.Model):
     name = db.Column(db.String(80))
     instructions = db.Column(db.String(3000))
     other_info =  db.Column(db.String(250))
-    time_period = db.Column(db.String(200))
+    time_period = db.Column(db.Integer)
 
 
-    def __init__(self, name='',instructions='',other_info='', time_period=''):
+    def __init__(self, time_period, name='',instructions='',other_info='', ):
         self.name = name
         self.instructions = instructions
         self.other_info =other_info
@@ -135,7 +135,7 @@ class SurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     survey_header_id = db.Column(db.Integer, db.ForeignKey('survey_header.id'))
-    parent_id = Column(db.Integer, db.ForeignKey('surveysection.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     user_survey_sections = db.relationship('UserSurveySection', backref="survey_section",
             lazy='dynamic')
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
@@ -144,12 +144,12 @@ class SurveySection(db.Model):
     subheading = db.Column(db.String(1200))
     required_yn = db.Column(db.Boolean)
     time_period = db.Column(db.String(100))
-    children = db.relationship('SurveySection', backref='survey_section', lazy='dynamic')
+    children = db.relationship('SurveySection', lazy='dynamic')
 
 
 
     def __init__(self,name='',section_required_yn=False,order=0, time_period=''
-            ,subheading=''):
+            ,subheading='', ):
         self.name = name
         self.section_required_yn = section_required_yn
         self.order = order

@@ -63,3 +63,7 @@ Issue 13: roles: that and i tagged on sslify
 Issue 14: Create survey: didn't hit deadline need to clean up
     opened - 2013-01-07 
     closed - 2013-01-23
+
+Issue 15: Was working on building my database load.
+
+    closed - 2013-02-06

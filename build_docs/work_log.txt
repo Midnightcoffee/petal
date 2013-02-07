@@ -1,20 +1,7 @@
+########
+DONE
+############
 
-
-##########
-To Do:
-############
-old Procfile: web: gunicorn runserver:app -b 0.0.0.0:$PORT -w 3
-change config to petalapp.config
-Store passwords somewhere, currently in my keepass. 
-READ http://charlesleifer.com/blog/web-based-encrypted-file-storage-using-flask-and-aws/
-Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
-Add tests.
-Should be using url_for rather then hard coding urls
-CSS style within div classes.
-make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you use the map.
-############
-NOTE
-############
 PCI and Hospital palliative care consult survey should be two different survey
 headers. I lose some bundling unity but i avoid sections inside sections and 
 the data seems more true to the form.
@@ -24,13 +11,21 @@ survey_header = pci
 survey_section.name = education and training
 survey_section.subheading = the hospital conductns regular pallative...
 
-question.name = physician in service...
-
 which means there is no need for head, full or tail. 
-Just have question.full? ?not sure about name.
-
 the section should just be like education and training.
-? render one question at a time, give survey section selection page with reminders, allow for 
+Just have question.full? ?not sure about name.
+##########
+To Do:
+############
+Consider Alembic
+make organization_labels a table in db?
+Store passwords somewhere, currently in my keepass. 
+Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
+Add tests.
+Should be using url_for rather then hard coding urls
+
+
+render one question at a time, give survey section selection page with reminders, allow for 
 release choice
 
 T/F is a question_group
