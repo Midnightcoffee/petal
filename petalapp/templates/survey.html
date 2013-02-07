@@ -19,14 +19,10 @@
             {% elif not survey_section %}
                     {% for survey_section in survey_header.survey_sections.all() %}
                     <h2>{{ survey_section.name }}</h2>
+                    <h3>{{ survey_section.subheading }}</h3>
                         {% for question in survey_section.questions.all() %}
-                        <!--input type -->
-                        {% if not question.head  == seen %}
-                            {{ question.head }}
-                            {% set seen = question.head %}
-                        {% endif %}
-                        <dt><input type="radio",value= {{ question.id }}
-                        value = {{ question.id }} />({{question.value }}) {{ question.tail }}
+                            <dt><input type="radio",value= {{ question.id }}
+                            value = {{ question.id }} />({{question.value }}) {{ question.name }}
                         {% endfor %}
                     {% endfor %}
                 <dt><input type ="submit", name ="submit_section"/>
