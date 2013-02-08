@@ -17,8 +17,10 @@ Just have question.full? ?not sure about name.
 ##########
 To Do:
 ############
+A user isn't given organizations he is given sections!,n
 Consider Alembic
 make organization_labels a table in db?
+Your loading all users with all organizations, you need to fix that asap
 Store passwords somewhere, currently in my keepass. 
 Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
 Add tests.
