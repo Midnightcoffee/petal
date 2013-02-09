@@ -172,6 +172,7 @@ class UserSurveySection(db.Model):
             lazy='dynamic')
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    data_id = db.Column(db.Integer, db.ForeignKey('data.id'))
 
 
     def __init__(self, completed_date=None):
@@ -339,11 +340,10 @@ class Data(db.Model):
     certification = db.Column(db.Integer)
     team_wellness = db.Column(db.Integer)
     care_coordination = db.Column(db.Integer)
-
     timestamp = db.Column(db.DateTime)
 
-    hospital_id = db.Column(db.Integer, db.ForeignKey('hospital.id'))
-
+    user_survey_sections = db.relationship('UserSurveySections', backre='data',
+            lazy='dynamic')
     def __init__(self, standard_form=0,
             marketing_education=0, record_availability=0, family_centerdness=0,
         pc_networking=0, education_and_training=0, team_funding=0,
