@@ -5,15 +5,20 @@ ROLE_ADMIN = 2
 
 import datetime
 
+organizations = db.Table('organizations',
+        db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')),
+        db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
+
 class User(db.Model):
     """User has a many-to-many relationship with Organization"""
-
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_VIEWER)
     answers = db.relationship('Answer', backref='user',lazy='dynamic')
     survey_comments = db.relationship('SurveyComment', backref='user', lazy='dynamic')
     user_survey_sections = db.relationship('UserSurveySection', backref='user', lazy='dynamic')
+    organizations = db.relationship('Organization', secondary=organizations,
+            backref=db.backref('users', lazy='dynamic'))
 
     def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant
         self.role = role
@@ -168,7 +173,7 @@ class UserSurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     completed_date = db.Column(db.DateTime)
-    answers = db.relationship('Answer', backref='user_survey_section', 
+    answers = db.relationship('Answer', backref='user_survey_section',
             lazy='dynamic')
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -239,7 +244,6 @@ class OptionChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question_options = db.relationship('QuestionOption', backref='option_choice',lazy='dynamic')
     option_group_id = db.Column(db.Integer, db.ForeignKey('option_group.id'))
-
     name = db.Column(db.String(200))
 
     def __init__(self, name=''):
@@ -313,13 +317,14 @@ class InputType(db.Model):
     """Input_type has a one to many relationship with Question"""
     id = db.Column(db.Integer, primary_key=True)
     questions = db.relationship('Question', backref='input_type', lazy='dynamic')
-    input_type = db.Column(db.String(50))
+    name = db.Column(db.String(50))
 
-    def __init__(self, input_type):
-        self.input_type = input_type
+    def __init__(self, name):
+        self.input_type = name
 
     def __repr__(self):
-        return '<Input_type: %r>' % self.input_type
+        return '<name: %r>' % self.name
+
 
 
 class Data(db.Model):
@@ -342,14 +347,14 @@ class Data(db.Model):
     care_coordination = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
 
-    user_survey_sections = db.relationship('UserSurveySections', backre='data',
+    user_survey_sections = db.relationship('UserSurveySections', backref='data',
             lazy='dynamic')
     def __init__(self, standard_form=0,
             marketing_education=0, record_availability=0, family_centerdness=0,
         pc_networking=0, education_and_training=0, team_funding=0,
         coverage=0, pc_for_expired_pts=0, hospital_pc_screening=0,
         pc_follow_up=0, post_discharge_services=0, bereavement_contacts=0,
-        certification=0, team_wellness=0, care_coordination=0, timestamp=datetime.utcnow()):
+        certification=0, team_wellness=0, care_coordination=0, timestamp=datetime.datetime.utcnow()):
 
             self.standard_form = standard_form
             self.marketing_education =  marketing_education

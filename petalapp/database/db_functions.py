@@ -1,7 +1,7 @@
 from petalapp import db
 from pci_notes.storage.market_organization import market_organization
 
-def add_unique(name, table):
+def add_unique(name, table): #FIXME include question_option.. probable sql function
     n = table.query.filter_by(name=name).first()
     if not n:
         n = table(name=name)
