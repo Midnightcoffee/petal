@@ -1,32 +1,33 @@
 from petalapp import db
+import datetime
 ROLE_VIEWER = 0
 ROLE_CONTRIBUTER = 1
 ROLE_ADMIN = 2
 
-import datetime
-
-organizations = db.Table('organizations',
+organizations_users = db.Table('organizations_survey_headers',
         db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')),
         db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
 
 class User(db.Model):
     """User has a many-to-many relationship with Organization"""
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(150), unique=True)
+    name = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_VIEWER)
     answers = db.relationship('Answer', backref='user',lazy='dynamic')
     survey_comments = db.relationship('SurveyComment', backref='user', lazy='dynamic')
     user_survey_sections = db.relationship('UserSurveySection', backref='user', lazy='dynamic')
-    organizations = db.relationship('Organization', secondary=organizations,
-            backref=db.backref('users', lazy='dynamic'))
+    organizations_users = db.relationship('Organization',
+            secondary=organizations_users,
+        backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, email, role=ROLE_VIEWER): #FIXME: redundant
+    def __init__(self, name, role=ROLE_VIEWER): #FIXME: redundant
         self.role = role
-        self.email = email
+        self.name = name
 
     #TODO what information to show?
     def __repr__(self):
-        return '<email: %r>' % (self.email)
+        return '<email: %r>' % (self.name)
 
     def is_authenticated(self):
         return True
@@ -49,19 +50,25 @@ class User(db.Model):
             db.session.commit()
         return user
 
-survey_headers = db.Table('survey_headers',
-        db.Column('survey_header_id', db.Integer, db.ForeignKey('survey_headers.id')),
-        db.Column('organizations_id', db.Integer, db.ForeignKey('organization')))
+
+
+
+print("survey_headers_organizations")
+survey_headers_organizations = db.Table('survey_headers_organizations',
+        db.Column('survey_header_id', db.Integer, db.ForeignKey('survey_header.id')),
+        db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')))
 
 class Organization(db.Model):
     """
     Organization has a many-to-one relationship with Market
     Organization has a  one-to-many relationship with survey_headers
     """
+    __tablename__ = 'organization'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    survey_headers = db.relationship('SurveyHeader', secondary=survey_headers,
-        backref=db.backref('organizations', lazy='dynamic'))
+    name = db.Column(db.String(80), unique=True)
+    survey_headers_orgniazations = db.relationship('SurveyHeader',
+            secondary=survey_headers_organizations,
+        backref=db.backref('organizations',lazy='dynamic'))
     market_id = db.Column(db.Integer, db.ForeignKey('market.id'))
 
     def __init__(self, name=''):
@@ -88,7 +95,6 @@ class Market(db.Model):
 
 
 
-
 class SurveyHeader(db.Model):
     """
     Survey_header has a many-to-one relationship with Organization
@@ -96,7 +102,7 @@ class SurveyHeader(db.Model):
     Survey_header has a one-to-many relationship with survey_comments
     """
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80), unique=True)
     other_info =  db.Column(db.String(250))
     time_period = db.Column(db.Integer)
 
@@ -142,7 +148,7 @@ class SurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     order = db.Column(db.Integer)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100),unique=True)
     subheading = db.Column(db.String(1200))
     required_yn = db.Column(db.Boolean)
     time_period = db.Column(db.String(100))
@@ -200,6 +206,7 @@ class Answer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     question_option_id = db.Column(db.Integer, db.ForeignKey('question_option.id'))
     unit_of_measurement_id = db.Column(db.Integer, db.ForeignKey('unit_of_measurement.id'))
+    user_survey_section_id = db.Column(db.Integer, db.ForeignKey('user_survey_section.id'))
 
 
     def __init__(self, numeric=0):
@@ -216,7 +223,7 @@ class UnitOfMeasurement(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     answers = db.relationship('Answer', backref='unit_of_measurement', lazy='dynamic')
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80),unique=True)
 
     def __init__(self, name):
         self.name = name
@@ -244,7 +251,7 @@ class OptionChoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question_options = db.relationship('QuestionOption', backref='option_choice',lazy='dynamic')
     option_group_id = db.Column(db.Integer, db.ForeignKey('option_group.id'))
-    name = db.Column(db.String(200))
+    name = db.Column(db.String(200), unique=True)
 
     def __init__(self, name=''):
         self.name = name
@@ -261,7 +268,7 @@ class OptionGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     option_choices = db.relationship('OptionChoice', backref='option_group',lazy='dynamic')
     questions = db.relationship('Question', backref ='option_group', lazy='dynamic')
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
 
     def __init__(self, name=''):
         self.name = name
@@ -285,7 +292,7 @@ class Question(db.Model):
 
 
     #TODO old look over
-    name = db.Column(db.String(500))
+    name = db.Column(db.String(500),unique=True)
     order = db.Column(db.Integer)
     value = db.Column(db.Integer)
     answer_required_yn =db.Column(db.Boolean)
@@ -317,7 +324,7 @@ class InputType(db.Model):
     """Input_type has a one to many relationship with Question"""
     id = db.Column(db.Integer, primary_key=True)
     questions = db.relationship('Question', backref='input_type', lazy='dynamic')
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50),unique=True)
 
     def __init__(self, name):
         self.input_type = name
@@ -347,7 +354,7 @@ class Data(db.Model):
     care_coordination = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
 
-    user_survey_sections = db.relationship('UserSurveySections', backref='data',
+    user_survey_sections = db.relationship('UserSurveySection', backref='data',
             lazy='dynamic')
     def __init__(self, standard_form=0,
             marketing_education=0, record_availability=0, family_centerdness=0,
@@ -411,4 +418,8 @@ class Data(db.Model):
     self.care_coordination,
     self.timestamp)
 
+# @event.listens_for(Session, 'after_flush')
+# def delete_many_to_many(session, ctx):
+#     session.query(SurveyHeader).filter(SurveyHeader.organizations.any()).delete(synchronize_session=False)
+#     session.query(Organization).filter(Organization.users.any()).delete(synchronize_session=False)
 

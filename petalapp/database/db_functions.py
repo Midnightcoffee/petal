@@ -15,5 +15,7 @@ def number_organizations(market_organization):
         number += len(market_organization[k])
     return number
 
+
+
 number_of_organizations = number_organizations(market_organization)
 

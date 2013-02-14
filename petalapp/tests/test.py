@@ -8,21 +8,21 @@ from flask.ext.testing import TestCase
 
 from myapp import create_app, db
 
-class MyTest(TestCase):
+# class MyTest(TestCase):
 
-    SQLALCHEMY_DATABASE_URI = "sqlite://test.db"
-    TESTING = True
+#     SQLALCHEMY_DATABASE_URI = "sqlite://test.db"
+#     TESTING = True
 
-    def create_app(self):
+#     def create_app(self):
 
-        # pass in test configuration
-        return create_app(self)
+#         # pass in test configuration
+#         return create_app(self)
 
-    def setUp(self):
+#     def setUp(self):
 
-        db.create_all()
+#         db.create_all()
 
-    def tearDown(self):
+#     def tearDown(self):
 
-        db.session.remove()
-        db.drop_all()
+#         db.session.remove()
+#         db.drop_all()
