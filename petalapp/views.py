@@ -50,6 +50,7 @@ def login():
         session['organization'] = None
         session['survey_header'] = None
         session['survey_section'] = None
+        session['question_values'] = None
     else:
         perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
@@ -69,7 +70,6 @@ def logout():
 @contributer_permission.require(403)
 @login_required
 def survey():
-
     seen = ''
     if request.method== 'POST':
         try:
@@ -80,13 +80,14 @@ def survey():
             pass
         try:
             session['survey_header'] = SurveyHeader.query.get(request.form['survey_header_id'])
-            session['survey_section'] = None
         except:
             pass
         try:
-            session['survey_section'] = SurveySection.query.get(request.form['survey_section_id'])
+            session['survey_section'] = request.form.get('1')
+            session['question_values'] = request.form.getlist('1')
         except:
             pass
+
 
 
     return render_template('survey.html',
@@ -94,7 +95,8 @@ def survey():
         organizations = g.user.organizations_users,
         organization = session['organization'],
         survey_header = session['survey_header'],
-        survey_section = session['survey_section'])
+        survey_section = session['survey_section'],
+        total = sum([int(x) for x in session['question_values']]))
 
 
 #

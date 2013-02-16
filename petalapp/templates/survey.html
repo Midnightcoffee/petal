@@ -8,6 +8,7 @@
                     <dt><input type="radio", name="organization_id",
                     value="{{ organization.id }}"/>{{ organization.name }}</dt>
                 {% endfor %}
+                org
                 <dt><input type ="submit", name="submit_organization"/>
             {% elif not survey_header %}
                 <h1>{{ organization.name }}</h1>
@@ -15,18 +16,24 @@
                     <dt><input type="radio", name="survey_header_id"
                     value="{{ survey_header.id }}"/>{{ survey_header.name }}
                 {% endfor %}
+                survey_header
                 <dt><input type ="submit", name="submit_survey_header"/>
             {% elif not survey_section %}
                     {% for survey_section in survey_header.survey_sections.all() %}
                     <h2>{{ survey_section.name }}</h2>
                     <h3>{{ survey_section.subheading }}</h3>
                         {% for question in survey_section.questions.all() %}
-                        <dt><input type="{{question.input_type }}", name= "{{ survey_header.id }}"
-                            value = "{{ question.id }}" />({{question.value }}) {{ question.name }}
+                        <dt><input type="{{question.input_type.name }}", name= "{{ survey_section.id }}"
+                        value = "{{ question.value }}" />({{question.value }}) {{ question.name }}
                         {% endfor %}
+                        ss
                     {% endfor %}
                 <dt><input type ="submit", name ="submit_section"/>
+                survey_section
+            {% elif total %}
+                total: {{ total }}
             {% else %}
+            else
             {% endif %}
             <dl>
     </form>
