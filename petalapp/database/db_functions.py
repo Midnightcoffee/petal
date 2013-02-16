@@ -5,8 +5,6 @@ def add_unique(name, table): #FIXME include question_option.. probable sql funct
     n = table.query.filter_by(name=name).first()
     if not n:
         n = table(name=name)
-        db.session.add(n)
-        db.session.commit()
     return n
 
 def number_organizations(market_organization):

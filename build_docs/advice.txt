@@ -574,3 +574,53 @@ Asking on Heroku about ssl issue
 (10:50:17 AM) sokr left the room (quit: Quit: Page closed).
 (10:50:49 AM) ametaireau is now known as alexis
 (10:50:54 AM) dampxf: yfeldblum, thanks based on what i see in the extension i have linked thats exactly what its doing. But know i understand way more about how everything is working and why.
+
+(02:41:05 AM) dampxf: could http://bpaste.net/show/QDvRvLTA6i6x5FFcRDDw/ be the result of a import loop or something?
+(02:41:36 AM) Reite left the room (quit: Read error: Operation timed out).
+(02:42:41 AM) elemoine [~elemoine@c2cpc3.camptocamp.com] entered the room.
+(02:52:45 AM) ejo: midnightcoffee1: kind of two different things
+(02:53:15 AM) ejo: what you pasted is a pretty ordinary situation in relational databases when you try to drop something that depends on something else
+(02:53:19 AM) foodoo left the room (quit: Quit: leaving).
+(02:54:08 AM) ejo: it's telling you what you need to do instead -- though there's the other approach that the error didn't bother to mention, which is that you can drop the dependent objects yourself rather than use a cascaded drop
+(02:54:11 AM) dampxf: ejo: If i run that database in a small isolated without the rest of my code i can drop it just fine it seems.
+(02:54:52 AM) dampxf: ejo: though i suppose i didn't load the db with any rows in that case....
+(02:55:31 AM) dampxf: ejo: also adding to my stress level is the fact i tried cascading it (as far as my naive understanding goes) and it didn't seem to care.
+(02:56:02 AM) jhauser [~jhauser@p549C5D7A.dip.t-dialin.net] entered the room.
+(02:56:48 AM) ejo: what db is this on
+(02:57:22 AM) ejo: midnightcoffee1: i may have more insight if it's postgresql, less if others
+(02:57:43 AM) dampxf: ejo: it is postgresql
+(02:58:04 AM) ejo: by any chance did you perform the drop(s) through pgadmin3 and its GUI?
+(02:58:29 AM) ejo: because pgadmin3 has always had a bug where it does not apply cascaded drops correctly
+(02:58:42 AM) ejo: and then you find they work properly from psql
+(02:58:46 AM) dampxf: ejo: i'm using flask-sqlalchemy so drop_all
+(02:59:07 AM) ejo: drop_all doesn't issue actual "DROP CASCADED" statements, does it?
+(02:59:55 AM) ejo: I might have to ask for more context too: what is the overall thing you're trying to accomplish... is this in the context of dropping all your tables to reinitialize your database, or some other operation like that, or different
+(03:00:42 AM) kwatch [~kwatch@s190.GtokyoFL26.vectant.ne.jp] entered the room.
+(03:02:26 AM) dampxf: ejo:  just to make sure i have a fresh start. I could just restart the table (whip it clean). its comforting to know i have a clean slate every time.  here is my schema, apologies for the crappy additional tables i had to draw them with a mouse on a labtop http://postimage.org/image/zfevuw9az/
+(03:03:27 AM) dampxf: whip it clean...= restart it. sense im using the  heroku postgres https://devcenter.heroku.com/articles/heroku-postgresql 
+(03:03:46 AM) kwatch: [Q] How to submit 'select count(*) from users'?
+(03:03:52 AM) kwatch: I tried 'dbsess.query(User).count()' and 'dbsess.query(User.id).count()' but both generate sql which contains subquery, such as 'select count(*) from (select users.id from users)'.
+(03:04:30 AM) ejo: midnightcoffee1: this might be useful, or at least give you ideas that could help http://www.sqlalchemy.org/trac/wiki/UsageRecipes/DropEverything
+(03:05:30 AM) elemoine left the room (quit: Ping timeout: 264 seconds).
+(03:06:54 AM) guysoft42 [~guysoft@46.19.81.104] entered the room.
+(03:12:35 AM) elemoine [~elemoine@c2cpc3.camptocamp.com] entered the room.
+(03:14:01 AM) dampxf: ejo: should i be cascading though? like on-delete and cascade=all?
+(03:14:36 AM) ejo: midnightcoffee1: that is different from cascading drop-table or drop-constraint statements.
+(03:14:41 AM) ejo: separate issues.
+(03:15:41 AM) ejo: I am guessing that you are dropping entire tables rather than just their contents (rows).  Your original question and paste didn't contain much information.
+(03:19:11 AM) Ergo^ [~ergo@hyp-p-107.pabianice.msk.pl] entered the room.
+(03:20:15 AM) guntha left the room ("WeeChat 0.3.8").
+(03:25:50 AM) guysoft42 left the room (quit: Ping timeout: 260 seconds).
+(03:30:17 AM) dampxf: ejo: yea, in my design the many-to-manys can have orphans. i don't want the the children to be deleted if the parents are... so in that context does a cascade even make sense?
+(03:30:41 AM) ejo: still talking about two different kinds of cascade.  two separate things.
+(03:31:00 AM) ejo: the error message was about the need for cascaded DROP TABLE or DROP CONSTRAINT statements.
+(03:31:28 AM) ejo: those are a different sort of thing from (a) cascaded foreign keys or (b) sqlalchemy relationship cascades.
+(03:32:06 AM) dampxf: ejo: oh, yes. ok i see what you mean. my previous statement was about (a) but im really glad you highlighted the idea there seperate things.
+(03:32:24 AM) dampxf: ejo: that there*
+(03:33:17 AM) ejo: midnightcoffee1: http://www.postgresql.org/docs/9.2/static/ddl-depend.html
+(03:34:57 AM) dampxf: ejo: is http://www.sqlalchemy.org/trac/wiki/UsageRecipes/DropEverything the sqlalchemy way of doing http://www.postgresql.org/docs/9.2/static/ddl-depend.html? or should i just use the (i haven't done this..) postgres shell to issue that command?
+(03:35:18 AM) dampxf: ejo: also thanks a lot.
+(03:35:58 AM) ejo: And to answer your question about foreign keys: yes, if you want to allow orphan rows, i.e. you do not want them to be automatically deleted when the (parent) rows they refer to are deleted, then that's correct, you would not want those foreign keys set to "ON DELETE CASCADE".
+(03:36:53 AM) ejo: midnightcoffee1: depends on your style and preference... some like to do that stuff from a command line, others prefer to have a script.  Kind of depends on whether it's an action you frequently repeat too (convenience)
+(03:38:06 AM) Shyde [~Shyde^^@HSI-KBW-078-043-093-037.hsi4.kabel-badenwuerttemberg.de] entered the room.
+(03:38:44 AM) dampxf: ejo: k great! your explanations were amazing. i can't thank you enough. im going to bed before i get sick.

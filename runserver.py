@@ -7,8 +7,8 @@ foreman start
 '''
 
 # i suppose i just need the app
+from petalapp import app, views
 import os
-from petalapp import app
 
 # aren't necessary with gunicorn
 if __name__ == "__main__":

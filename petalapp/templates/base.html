@@ -1,15 +1,21 @@
 <!doctype html>
-<title>Petal </title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-<div class =page>
-  <h1>Petal</h1>
-    <div class=metanav>
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('organizations') }}">hospitals</a>
-      <a href="{{ url_for('survey') }}">survey</a>
-      <hr>
-      <!-- add flashes -->
-{% block content %}{% endblock %}
-</div>
+<html>
+  <head>
+    <title>Petal </title>
+    <link rel=stylesheet type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel=shortcut icon href="{{ url_for('static', filename='favicon.ico') }}">
+  </head>
+  <div class=page>
+  <body>
+    <h1>Petal</h1>
+      <div class=metanav>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('organizations') }}">hospitals</a>
+        <a href="{{ url_for('survey') }}">survey</a>
+        <hr>
+  {% block content %}{% endblock %}
+    </div>
+  </div>
+  </body>
+</html>
 

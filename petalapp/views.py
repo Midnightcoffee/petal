@@ -5,30 +5,22 @@ Author: Drew Verlee
 Description: contains the views for the webapp
 '''
 
-from flask import make_response, render_template, url_for, request, redirect\
-    , session, g, flash, request
+from flask import render_template, url_for, redirect\
+    , session, g, request
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType, ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
-from petalapp import db, app, lm,app
-from flask.ext.login import login_user, logout_user, current_user, login_required\
-        , LoginManager
-from forms import LoginForm
-from petalapp.graphing_tools.graph import plotpolar
-from aws_tools import upload_s3, download_s3
+from petalapp import db, app, lm
+from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
-    UserNeed, Identity, identity_changed, Need, AnonymousIdentity
-import re
+    Identity, identity_changed, AnonymousIdentity
 
-from pci_notes.storage.survey_headers.pci import survey_headers #TODO rename
-# FIXME: move problem import error
-#older code
+# permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_permission = Permission(RoleNeed(ROLE_ADMIN))
 
 
-#example TODO remove
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
     """ identity.name is the g.user.role so for admin=2,contributer=1,viewer=0"""
@@ -47,6 +39,7 @@ def index():
 
 @app.route('/login', methods=['GET'])
 def login():
+    #TODO dont use g see tiny module
     if g.user.is_active():
         perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
@@ -66,7 +59,6 @@ def login():
 
 @app.route('/logout')
 def logout():
-    # TODO figure out broswerID logout
     identity_changed.send(app, Identity=AnonymousIdentity())
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
@@ -99,7 +91,7 @@ def survey():
 
     return render_template('survey.html',
         seen = seen,
-        organization_class = Organization,
+        organizations = g.user.organizations_users,
         organization = session['organization'],
         survey_header = session['survey_header'],
         survey_section = session['survey_section'])

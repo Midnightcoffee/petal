@@ -4,14 +4,14 @@
     <form action="{{url_for('survey') }}" method="post" class="add-entry"/>
             <dl>
             {% if not organization %}
-                {% for organization in organization_class.query.all() %}
+                {% for organization in organizations %}
                     <dt><input type="radio", name="organization_id",
                     value="{{ organization.id }}"/>{{ organization.name }}</dt>
                 {% endfor %}
                 <dt><input type ="submit", name="submit_organization"/>
             {% elif not survey_header %}
                 <h1>{{ organization.name }}</h1>
-                {% for survey_header in organization.survey_headers.all() %}
+                {% for survey_header in organization.survey_headers_organizations %}
                     <dt><input type="radio", name="survey_header_id"
                     value="{{ survey_header.id }}"/>{{ survey_header.name }}
                 {% endfor %}
@@ -21,8 +21,8 @@
                     <h2>{{ survey_section.name }}</h2>
                     <h3>{{ survey_section.subheading }}</h3>
                         {% for question in survey_section.questions.all() %}
-                            <dt><input type="radio",value= {{ question.id }}
-                            value = {{ question.id }} />({{question.value }}) {{ question.name }}
+                        <dt><input type="{{question.input_type }}", name= "{{ survey_header.id }}"
+                            value = "{{ question.id }}" />({{question.value }}) {{ question.name }}
                         {% endfor %}
                     {% endfor %}
                 <dt><input type ="submit", name ="submit_section"/>

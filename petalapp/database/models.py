@@ -10,7 +10,6 @@ organizations_users = db.Table('organizations_survey_headers',
 
 class User(db.Model):
     """User has a many-to-many relationship with Organization"""
-    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True)
     role = db.Column(db.SmallInteger, default=ROLE_VIEWER)
@@ -53,7 +52,6 @@ class User(db.Model):
 
 
 
-print("survey_headers_organizations")
 survey_headers_organizations = db.Table('survey_headers_organizations',
         db.Column('survey_header_id', db.Integer, db.ForeignKey('survey_header.id')),
         db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')))
@@ -63,10 +61,9 @@ class Organization(db.Model):
     Organization has a many-to-one relationship with Market
     Organization has a  one-to-many relationship with survey_headers
     """
-    __tablename__ = 'organization'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    survey_headers_orgniazations = db.relationship('SurveyHeader',
+    survey_headers_organizations = db.relationship('SurveyHeader',
             secondary=survey_headers_organizations,
         backref=db.backref('organizations',lazy='dynamic'))
     market_id = db.Column(db.Integer, db.ForeignKey('market.id'))
@@ -112,11 +109,12 @@ class SurveyHeader(db.Model):
 
 
 
-    def __init__(self, time_period, name='',instructions='',other_info='', ):
+    def __init__(self, time_period, name='',instructions='',other_info='' ):
+        self.time_period = time_period
         self.name = name
         self.instructions = instructions
         self.other_info =other_info
-        self.time_period = time_period
+
 
     def __repr__(self):
 
@@ -241,7 +239,7 @@ class QuestionOption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     answers = db.relationship('Answer', backref='question_option',lazy='dynamic')
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-    Option_choice_id = db.Column(db.Integer, db.ForeignKey('option_choice.id'))
+    option_choice_id = db.Column(db.Integer, db.ForeignKey('option_choice.id'))
 
 class OptionChoice(db.Model):
     """
@@ -327,7 +325,7 @@ class InputType(db.Model):
     name = db.Column(db.String(50),unique=True)
 
     def __init__(self, name):
-        self.input_type = name
+        self.name = name
 
     def __repr__(self):
         return '<name: %r>' % self.name

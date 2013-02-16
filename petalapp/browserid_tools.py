@@ -18,7 +18,6 @@ def create_broswerid_user(kwargs):
         user = User(kwargs['email']) # i don't need to create an id?
         db.session.add(user)
         db.session.commit()
-
         return user
     else:
         return None
@@ -31,7 +30,7 @@ def get_user(kwargs):
     '''
     #maybe a better way to do this?
 
-    user = User.query.filter((User.email==kwargs.get('email'))|(User.id==kwargs.get('id'))).first()
+    user = User.query.filter((User.name==kwargs.get('email'))|(User.id==kwargs.get('id'))).first()
     if user:
         return user
     return create_broswerid_user(kwargs)
