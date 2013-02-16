@@ -101,7 +101,6 @@ class SurveyHeader(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     other_info =  db.Column(db.String(250))
-    time_period = db.Column(db.Integer)
 
     survey_sections = db.relationship('SurveySection', backref='survey_header',lazy='dynamic')
     survey_comments = db.relationship('SurveyComment', backref='survey_header',lazy='dynamic')
@@ -109,8 +108,7 @@ class SurveyHeader(db.Model):
 
 
 
-    def __init__(self, time_period, name='',instructions='',other_info='' ):
-        self.time_period = time_period
+    def __init__(self, name='',instructions='',other_info='' ):
         self.name = name
         self.instructions = instructions
         self.other_info =other_info
@@ -149,7 +147,6 @@ class SurveySection(db.Model):
     name = db.Column(db.String(100),unique=True)
     subheading = db.Column(db.String(1200))
     required_yn = db.Column(db.Boolean)
-    time_period = db.Column(db.String(100))
     user_survey_sections = db.relationship('UserSurveySection', backref="survey_section",
             lazy='dynamic')
     questions = db.relationship('Question', backref='survey_section', lazy='dynamic')
@@ -159,12 +156,10 @@ class SurveySection(db.Model):
 
 
 
-    def __init__(self,name='',section_required_yn=False,order=0, time_period=''
-            ,subheading='', ):
+    def __init__(self,name='',section_required_yn=False,order=0,subheading='', ):
         self.name = name
         self.section_required_yn = section_required_yn
         self.order = order
-        self.time_period = time_period
         self.subheading = subheading
 
     def __repr__(self):
@@ -177,6 +172,7 @@ class UserSurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     completed_date = db.Column(db.DateTime)
+    time_period = db.Column(db.Integer)
     answers = db.relationship('Answer', backref='user_survey_section',
             lazy='dynamic')
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
@@ -184,9 +180,8 @@ class UserSurveySection(db.Model):
     data_id = db.Column(db.Integer, db.ForeignKey('data.id'))
 
 
-    def __init__(self, completed_date=None):
+    def __init__(self,time_period, completed_date=datetime.datetime.utcnow()):
         self.completed_date = completed_date
-        #datetime.datetime.utcnow()
 
     def __repr__(self):
         return '<completed on: %r>' % self.completed_date
