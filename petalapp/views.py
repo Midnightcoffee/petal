@@ -15,15 +15,16 @@ from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     Identity, identity_changed, AnonymousIdentity
 
+
+
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_permission = Permission(RoleNeed(ROLE_ADMIN))
 
-
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
-    """ identity.name is the g.user.role so for admin=2,contributer=1,viewer=0"""
+    """ identity.name is  g.user.role se for admin=2,contributer=1,viewer=0"""
     for roles in range(identity.name+1):
         identity.provides.add(RoleNeed(roles))
 
@@ -33,8 +34,8 @@ def before_request():
     g.user = current_user
 
 @app.route("/")
-def index():
-    return render_template('index.html')
+def home():
+    return render_template('home.html')
 
 
 @app.route('/login', methods=['GET'])

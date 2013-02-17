@@ -4,7 +4,7 @@ ROLE_VIEWER = 0
 ROLE_CONTRIBUTER = 1
 ROLE_ADMIN = 2
 
-organizations_users = db.Table('organizations_survey_headers',
+organizations = db.Table('organizations',
         db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')),
         db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
 
@@ -16,17 +16,17 @@ class User(db.Model):
     answers = db.relationship('Answer', backref='user',lazy='dynamic')
     survey_comments = db.relationship('SurveyComment', backref='user', lazy='dynamic')
     user_survey_sections = db.relationship('UserSurveySection', backref='user', lazy='dynamic')
-    organizations_users = db.relationship('Organization',
-            secondary=organizations_users,
+    organizations = db.relationship('Organization',
+            secondary=organizations,
         backref=db.backref('users', lazy='dynamic'))
 
-    def __init__(self, name, role=ROLE_VIEWER): #FIXME: redundant
+    def __init__(self, name='', role=ROLE_VIEWER): #FIXME: redundant
         self.role = role
         self.name = name
 
     #TODO what information to show?
     def __repr__(self):
-        return '<email: %r>' % (self.name)
+        return self.name
 
     def is_authenticated(self):
         return True
@@ -41,10 +41,10 @@ class User(db.Model):
         return unicode(self.id)
 
 
-    def add_retrive(self, user_name):
-        user = User.query.filter_by(name=user_name).first()
+    def add_retrive(self, name):
+        user = User.query.filter_by(name=name).first()
         if not user:
-            user = User(name=user_name)
+            user = User(name=name)
             db.session.add(user)
             db.session.commit()
         return user
@@ -52,9 +52,11 @@ class User(db.Model):
 
 
 
-survey_headers_organizations = db.Table('survey_headers_organizations',
+survey_headers = db.Table('survey_headers',
         db.Column('survey_header_id', db.Integer, db.ForeignKey('survey_header.id')),
         db.Column('organization_id', db.Integer, db.ForeignKey('organization.id')))
+
+
 
 class Organization(db.Model):
     """
@@ -63,16 +65,17 @@ class Organization(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    survey_headers_organizations = db.relationship('SurveyHeader',
-            secondary=survey_headers_organizations,
-        backref=db.backref('organizations',lazy='dynamic'))
+    survey_headers = db.relationship('SurveyHeader',
+            secondary=survey_headers,backref=db.backref('organizations',lazy='dynamic'))
+    user_survey_sections = db.relationship('UserSurveySection', backref='organization',
+            lazy='dynamic')
     market_id = db.Column(db.Integer, db.ForeignKey('market.id'))
 
     def __init__(self, name=''):
         self.name = name
 
     def __repr__(self):
-        return '<Name: %r>' % self.name
+        return self.name
 
 
 
@@ -88,7 +91,7 @@ class Market(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<name : %r >' % self.name
+        return self.name
 
 
 
@@ -116,7 +119,7 @@ class SurveyHeader(db.Model):
 
     def __repr__(self):
 
-        return '<survey name: %r>' % self.name
+        return self.name
 
 
 class SurveyComment(db.Model):
@@ -133,7 +136,7 @@ class SurveyComment(db.Model):
         self.comments = comments
 
     def __repr__(self):
-        return '<comments: %r>' % self.comments
+        return self.comments
 
 
 class SurveySection(db.Model):
@@ -163,7 +166,7 @@ class SurveySection(db.Model):
         self.subheading = subheading
 
     def __repr__(self):
-        return '<survey name: %r>' % self.name
+        return self.name
 
 class UserSurveySection(db.Model):
     """
@@ -179,6 +182,7 @@ class UserSurveySection(db.Model):
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     data_id = db.Column(db.Integer, db.ForeignKey('data.id'))
+    organization_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
 
 
     def __init__(self, due=None, assigned=None, completed=None): #datetime.datetime.utcnow())
@@ -187,7 +191,7 @@ class UserSurveySection(db.Model):
         self.completed = completed
 
     def __repr__(self):
-        return '<completed on: %r>' % self.completed_date
+        return self.completed_date
 
 
 
@@ -224,7 +228,7 @@ class UnitOfMeasurement(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<name: %r>' % self.name
+        return self.name
 
 
 class QuestionOption(db.Model):
@@ -252,7 +256,7 @@ class OptionChoice(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<option choice name: %r >' % self.name
+        return self.name
 
 
 class OptionGroup(db.Model):
@@ -269,7 +273,7 @@ class OptionGroup(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<name: %r >' % self.name
+        return self.name
 
 
 class Question(db.Model):
@@ -312,7 +316,7 @@ class Question(db.Model):
         self.allow_mult_options_answers_yn = allow_mult_options_answers_yn
 
     def __repr__(self):
-        return '<Question name: %r>' % self.name
+        return self.name
 
 
 class InputType(db.Model):

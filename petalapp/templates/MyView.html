@@ -1,0 +1,12 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    <h4>The selected Surveys will be assigned to ALL organizations</h4>
+    {% for survey in  SurveyHeader.query.all() %}
+        <input type="checkbox" />{{ survey.name }}<br>
+    {% endfor %}
+    <input type="datetime" name="date_entered"/>
+    <input type="submit" name="date_sumbited"/>
+    {% if date_sumbitted %}
+        thanks: {{ date_sumbitted }}
+    {% endif %}
+{% endblock %}
