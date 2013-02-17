@@ -66,7 +66,7 @@ def logout():
 
 #
 
-@app.route('/survey', methods = ['GET', 'POST'])
+@app.route('/old_survey', methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def survey():
@@ -98,6 +98,8 @@ def survey():
         survey_section = session['survey_section'],
         total = sum([int(x) for x in session['question_values']]))
 
+
+@app.route('/survey', methods = ['Get'])
 
 #
 @app.errorhandler(404)

@@ -172,7 +172,8 @@ class UserSurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     completed_date = db.Column(db.DateTime)
-    time_period = db.Column(db.Integer)
+    due = db.Column(db.DateTime)
+    assigned = db.Column(db.DateTime)
     answers = db.relationship('Answer', backref='user_survey_section',
             lazy='dynamic')
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
@@ -180,8 +181,10 @@ class UserSurveySection(db.Model):
     data_id = db.Column(db.Integer, db.ForeignKey('data.id'))
 
 
-    def __init__(self,time_period, completed_date=datetime.datetime.utcnow()):
-        self.completed_date = completed_date
+    def __init__(self, due=None, assigned=None, completed=None): #datetime.datetime.utcnow())
+        self.due = due
+        self.assigned = assigned
+        self.completed = completed
 
     def __repr__(self):
         return '<completed on: %r>' % self.completed_date
@@ -196,19 +199,18 @@ class Answer(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     numeric = db.Column(db.Integer)
+    text = db.Column(db.String(500))
+    tf = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     question_option_id = db.Column(db.Integer, db.ForeignKey('question_option.id'))
     unit_of_measurement_id = db.Column(db.Integer, db.ForeignKey('unit_of_measurement.id'))
     user_survey_section_id = db.Column(db.Integer, db.ForeignKey('user_survey_section.id'))
 
 
-    def __init__(self, numeric=0):
+    def __init__(self, numeric=None, text=None, tf=None):
         self.numeric = numeric
-
-    #TODO a dynamic one?
-    def __repr__(self):
-        return '<Answer numeric: %r>' % self.numeric
-
+        self.tf = tf
+        self.text = text
 
 class UnitOfMeasurement(db.Model):
     """
