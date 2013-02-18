@@ -6,7 +6,7 @@ Description: contains the views for the webapp
 '''
 
 from flask import render_template, url_for, redirect\
-    , session, g, request
+    , session, g, request, flash
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType, ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
@@ -48,10 +48,6 @@ def login():
         rolelevel = g.user.role
         #TODO add some flashing
         #TODO consider maybe an add page... or something else?
-        session['organization'] = None
-        session['survey_header'] = None
-        session['survey_section'] = None
-        session['question_values'] = None
     else:
         perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
@@ -67,40 +63,32 @@ def logout():
 
 #
 
-@app.route('/old_survey', methods = ['GET', 'POST'])
+@app.route('/organization',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
-def survey():
-    seen = ''
-    if request.method== 'POST':
-        try:
-            session['organization'] = Organization.query.get(request.form['organization_id'])
-            session['survey_section'] = None
-            session['survey_header'] = None
-        except:
-            pass
-        try:
-            session['survey_header'] = SurveyHeader.query.get(request.form['survey_header_id'])
-        except:
-            pass
-        try:
-            session['survey_section'] = request.form.get('1')
-            session['question_values'] = request.form.getlist('1') #FIXME generic!
-        except:
-            pass
+def organization():
+    error = None
+    if request.method == 'POST':
+        session['organization'] = request.form.get('organization',None)
+        if not session['organization']:
+            error = "Please select an organization"
+        else:
+            flash('Thank you')
+            return redirect(url_for('survey_header'))
+    return render_template('organization.html',
+            organizations=g.user.organizations, error=error)
+
+@app.route('/survey_header', methods = ['GET', 'POST'])
+@contributer_permission.require(403)
+@login_required
+def survey_header():
+    return render_template('survey_header.html')
 
 
 
-    return render_template('survey.html',
-        seen = seen,
-        organizations = g.user.organizations_users,
-        organization = session['organization'],
-        survey_header = session['survey_header'],
-        survey_section = session['survey_section'],
-        total = sum([int(x) for x in session['question_values']]))
 
 
-@app.route('/survey', methods = ['Get'])
+
 
 #
 @app.errorhandler(404)

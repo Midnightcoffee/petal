@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+  <form action="" method="POST" accept-charset="utf-8">
+    <h3>Select the organization:</h3>
+    {% for organization in organizations %}
+      <input type="radio" name="organization" value="{{ organization.id }}" />
+    {% endfor %}
+      <input type="submit" name="organization_submit"/>
+    {% if error %}
+      <strong>Error:</strong> {{ error }}
+    {% endif %}
+  </form>
+{% endblock %}
