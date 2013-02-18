@@ -41,20 +41,31 @@ import datetime
 #admin
 class MyView(BaseView):
 
-
-    @expose('/')
+    @expose('/', methods=('GET','POST'))
     def MyView(self):
+        # YEAR MONTH DAY
+
+        survey_headers = None
         if request.method == 'POST':
-            date_sumbitted = request.form['date_sumbitted']
-            # YEAR MONTH DAY
-            # datetime.date(*[int(x) for x in string_time.split('/')])
+            survey_header_ids = [int(y) for y in request.form.getlist('survey_headers')]
 
-            for organization in Organization:
-                uss = UserSurveySection(
-                Organization.user_survey_sections.append(
+            assigned = datetime.date(*[int(x) for x in
+                request.form['assigned'].split('/')])
 
+            due = datetime.date(*[int(x) for x in
+                request.form['due'].split('/')])
+
+            for organization in Organization.query.all():
+                for survey_header_id in survey_header_ids:
+                    survey_header = SurveyHeader.query.get(survey_header_id)
+                    for survey_sections in survey_header.survey_sections:
+                        uss = UserSurveySection(assigned=assigned, due=due)
+                        db.session.add(uss)
+                        organization.user_survey_sections.append(uss)
+                        survey_sections.user_survey_sections.append(uss)
+            db.session.commit()
         return self.render('MyView.html', current_user=current_user,
-                SurveyHeader=SurveyHeader)
+                SurveyHeader=SurveyHeader, survey_headers=survey_headers)
 
     def is_accessible(self):
         return current_user.is_authenticated() and current_user.role == 2

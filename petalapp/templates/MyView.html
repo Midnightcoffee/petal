@@ -1,12 +1,14 @@
 {% extends 'admin/master.html' %}
 {% block body %}
-    <h4>The selected Surveys will be assigned to ALL organizations</h4>
-    {% for survey in  SurveyHeader.query.all() %}
-        <input type="checkbox" />{{ survey.name }}<br>
-    {% endfor %}
-    <input type="datetime" name="date_entered"/>
-    <input type="submit" name="date_sumbited"/>
-    {% if date_sumbitted %}
-        thanks: {{ date_sumbitted }}
-    {% endif %}
+    <form action='' method="POST" >
+        <h4>The selected Surveys will be assigned to ALL organizations</h4>
+        {% for survey_header in  SurveyHeader.query.all() %}
+            <input type="checkbox" name="survey_headers" value="{{ survey_header.id }}" />{{ survey_header.name }}<br>
+        {% endfor %}
+        <p>Enter format: YEAR/MONTH/DAY<br></p>
+        Assigned: <input type="datetime" name="assigned"/><br>
+        Due date:      <input type="datetime" name="due"/><br>
+        <input type="submit" name="date_sumbited"/><br>
+        <p>add flash message</p>
+    </form>
 {% endblock %}

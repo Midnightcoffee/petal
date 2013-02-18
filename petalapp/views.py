@@ -85,7 +85,7 @@ def survey():
             pass
         try:
             session['survey_section'] = request.form.get('1')
-            session['question_values'] = request.form.getlist('1')
+            session['question_values'] = request.form.getlist('1') #FIXME generic!
         except:
             pass
 

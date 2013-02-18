@@ -185,13 +185,13 @@ class UserSurveySection(db.Model):
     organization_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
 
 
-    def __init__(self, due=None, assigned=None, completed=None): #datetime.datetime.utcnow())
+    def __init__(self, assigned=None, due=None, completed=None): #datetime.datetime.utcnow())
         self.due = due
         self.assigned = assigned
         self.completed = completed
 
     def __repr__(self):
-        return self.completed_date
+        return "complted date: %r>" % self.completed_date
 
 
 
