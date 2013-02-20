@@ -9,7 +9,8 @@ from flask import render_template, url_for, redirect\
     , session, g, request, flash
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
-    OptionChoice, OptionGroup,InputType, ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
+    OptionChoice, OptionGroup,InputType,UserSurveySection, Period, AssignedDue,\
+    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
 from petalapp import db, app, lm
 from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
@@ -61,7 +62,33 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
 
-#
+
+# full page
+#TODO move
+from collections import namedtuple
+@app.route('/select_survey',methods = ['GET', 'POST'])
+@contributer_permission.require(403)
+@login_required
+def select_survey():
+    if request.method == 'POST':
+        unicode_ids = request.form.getlist('unicode_ids',None)
+        if unicode_ids:
+            #session['selection'] is [user.id, org.id, sh.id, ss.id, uss.id]
+            session['id_packages'] = [[int(y) for y in x if y.isdigit()] for x in unicode_ids]
+            return redirect(url_for('selection'))
+    return render_template('select_survey.html',user=g.user)
+
+
+@app.route('/selection',methods = ['GET', 'POST'])
+@contributer_permission.require(403)
+@login_required
+def selection():
+    if request.method == 'POST':
+        pass
+
+    return render_template('selection.html',user=g.user, id_packages=session['id_packages'],
+            SurveySection=SurveySection, Organization=Organization,User=User,
+            SurveyHeader=SurveyHeader)
 
 @app.route('/organization',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
@@ -69,12 +96,12 @@ def logout():
 def organization():
     error = None
     if request.method == 'POST':
-        session['organization'] = request.form.get('organization',None)
-        if not session['organization']:
-            error = "Please select an organization"
-        else:
-            flash('Thank you')
-            return redirect(url_for('survey_header'))
+            session['organization_id'] = request.form.get('organization_id',None)
+            if session['organization_id']:
+                return redirect(url_for('survey_header'))
+            else:
+                error = "Please select an organization"
+
     return render_template('organization.html',
             organizations=g.user.organizations, error=error)
 
@@ -82,12 +109,48 @@ def organization():
 @contributer_permission.require(403)
 @login_required
 def survey_header():
-    return render_template('survey_header.html')
+    if not session.get('organization_id', None):
+        return redirect(url_for('organization'))
+    else:
+        error = None
+        organization = Organization.query.get(session['organization_id'])
+        if request.method == 'POST':
+            session['survey_header_id'] = request.form.get('survey_header_id',None)
+            session['time_period'] = request.form.get('user_survey_section_id',None)
+
+            if session['survey_header_id']:
+                return redirect(url_for('survey_section'))
+            else:
+                error = 'Please select a survey'
+        return render_template('survey_header.html',
+                Organization=Organization,
+                organization_id=session['organization_id'],
+                UserSurveySection=UserSurveySection,
+                organization=organization,
+                error=error)
 
 
-
-
-
+@app.route('/survey_section', methods = ['GET', 'POST'])
+@contributer_permission.require(403)
+@login_required
+def survey_section():
+    #TODO maybe if not -> if
+    if not (session.get('survey_header_id', None) and session.get('time_period',None)):
+        return redirect(url_for('survey_header'))
+    else:
+        error = None
+        if request.method == 'POST':
+            session['survey_section_id'] = request.form.get('survey_section',None)
+            if session['survey_header']:
+                return redirect(url_for('question'))
+            else:
+                error = 'Please select a survey_section'
+        return render_template('survey_section.html',
+                Organization=Organization,
+                SurveyHeader=SurveyHeader,
+                organization_id=session['organization_id'],
+                survey_header_id=session['survey_header_id'],
+                error=error)
 
 
 #
