@@ -168,6 +168,38 @@ class SurveySection(db.Model):
     def __repr__(self):
         return self.name
 
+class Period(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.DateTime)
+    end = db.Column(db.DateTime)
+    name = db.Column(db.String(100), unique=True)
+    user_survey_sections = db.relationship('UserSurveySection', backref='period',
+            lazy='dynamic')
+
+    def __init__(self, name=None, start=None, end=None):
+        self.name = name
+        self.start = start
+        self.end = end
+
+    def __repr__(self):
+        return '<name: %r\n start: %r\n end:%r>' % (self.name,self.start,self.end)
+
+class AssignedDue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    due = db.Column(db.DateTime )
+    assigned = db.Column(db.DateTime)
+    user_survey_sections = db.relationship('UserSurveySection', backref='assigned_due',
+            lazy='dynamic')
+
+    def __init__(self, assigned=None, due=None):
+        self.assigned = assigned
+        self.due = due
+
+    def __repr__(self):
+        return '<assigned: %r\n due: %r >' % (self.assigned, self.due)
+
+
+
 class UserSurveySection(db.Model):
     """
     User_survey_section has a many-to-one relationship with Survey_section
@@ -175,23 +207,24 @@ class UserSurveySection(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     completed_date = db.Column(db.DateTime)
-    due = db.Column(db.DateTime)
-    assigned = db.Column(db.DateTime)
     answers = db.relationship('Answer', backref='user_survey_section',
             lazy='dynamic')
     survey_section_id = db.Column(db.Integer, db.ForeignKey('survey_section.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     data_id = db.Column(db.Integer, db.ForeignKey('data.id'))
     organization_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
+    period_id = db.Column(db.Integer, db.ForeignKey('period.id'))
+    assigned_due_id = db.Column(db.Integer, db.ForeignKey('assigned_due.id'))
 
 
-    def __init__(self, assigned=None, due=None, completed=None): #datetime.datetime.utcnow())
-        self.due = due
-        self.assigned = assigned
+    def __init__(self, completed=None): #datetime.datetime.utcnow())
         self.completed = completed
 
     def __repr__(self):
-        return "complted date: %r>" % self.completed_date
+        return "<completed date: %r>" % self.completed_date
+
+
+
 
 
 

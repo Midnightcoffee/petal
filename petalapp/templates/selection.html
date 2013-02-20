@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page">
+<form action="" method="POST" accept-charset="utf-8">
+    <h1>Welcome {{ user.name }}</h1>
+  {% for id_package in id_packages %}
+    <!--id_package is [0:user.id, 1:org.id, 2:sh.id, 3:ss.id, 4:uss.id]-->
+    <h2>{{ Organization.query.get(id_package[1]).name }}</h2>
+    <h2>{{ SurveyHeader.query.get(id_package[2]).name }}</h2>
+    {% set survey_section = SurveySection.query.get(id_package[3]) %}
+    <h2>{{ survey_section.name }} </h2><br>
+    <h3>{{ survey_section.subheading }}</h3><br>
+    {% for question in survey_section.questions %}<br>
+        {% if question.order == 0 %}
+            {{ question.option_group.name }}<br>
+        {% endif %}
+        {% if question.option_group.name == 'True-False' %}
+            {{ question.order }})<input type="{{ question.input_type.name }}"
+            name="{{ survey_section.id, id_package[4] }}" value="{{ question.id }}" />{{ question.name }}
+            {{ survey_section.id, id_package[4] }}
+        {% endif %}
+    {% endfor %}
+    <br><hr>
+  {% endfor %}
+  <input type="submit"/>
+  {{ question_ids }}
+  <hr><hr>
+</form>
+</div>
+{% endblock %}

@@ -64,8 +64,6 @@ def logout():
 
 
 # full page
-#TODO move
-from collections import namedtuple
 @app.route('/select_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
@@ -73,20 +71,37 @@ def select_survey():
     if request.method == 'POST':
         unicode_ids = request.form.getlist('unicode_ids',None)
         if unicode_ids:
-            #session['selection'] is [user.id, org.id, sh.id, ss.id, uss.id]
+            #session['selection'] is [0:user.id, 1:org.id, 2:sh.id, 3:ss.id, 4:uss.id]
             session['id_packages'] = [[int(y) for y in x if y.isdigit()] for x in unicode_ids]
             return redirect(url_for('selection'))
     return render_template('select_survey.html',user=g.user)
 
-
+#TODO bc primary keys start at 1 have questions start at 1 to.
 @app.route('/selection',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def selection():
+    question_ids = None
     if request.method == 'POST':
-        pass
+        for id_package in session['id_packages']:
+            question_ids = request.form.getlist('({0}, {1})'.format(
+                id_package[3],id_package[4]))
+            survey_section = SurveySection.query.get(id_package[3])
+            user_survey_section = UserSurveySection.query.get(id_package[4])
+            for question in survey_section.questions:
+                if question.id in question_ids:
+                    answer = Answer(tf=True)
+                else:
+                    answer = Answer(tf=False)
+                option_choice = OptionChoice.query.filter_by(name='True').one()
+                question_option = db.session.query(QuestionOption).\
+                        filter((QuestionOption.question == question)
+                                & (QuestionOption.option_choice == option_choice)).first()
+                question_option.answers.append(answer)
+                user_survey_section.answers.append(answer)
+        db.session.commit()
 
-    return render_template('selection.html',user=g.user, id_packages=session['id_packages'],
+    return render_template('selection.html', user=g.user, id_packages=session['id_packages'],
             SurveySection=SurveySection, Organization=Organization,User=User,
             SurveyHeader=SurveyHeader)
 

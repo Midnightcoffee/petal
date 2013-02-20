@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="POST" accept-charset="utf-8">
+<h3>Dates are Year-Day-Month</h3><br>
+<input type="submit" name="sumbit_selection"/><p>submit selection</p>
+<div class="table">
+<table>
+  <colgroup span="10" class="columns"></colgroup>
+
+  <tr>
+    <th>Organization</th>
+    <th>Survey Header</th>
+    <th>Survey Section</th>
+    <th>period name</th>
+    <th>completed</th>
+    <th>period start</th>
+    <th>period end</th>
+    <th>assigned</th>
+    <th>due</th>
+    <th></th>
+  </tr>
+
+  {% for organization in user.organizations  %}
+  <tr>
+    {% for survey_header in organization.survey_headers %}
+      {% for survey_section in survey_header.survey_sections %}
+        {% for user_survey_section in survey_section.user_survey_sections %}
+            {% if user_survey_section.organization.id == organization.id %}
+        <th>{{ organization.name  }}</th>
+        <th>{{ survey_header.name }} </th>
+        <th>{{ survey_section.name }}</th>
+        <th>{{ user_survey_section.period.name }}</th>
+        <th>{{ user_survey_section.completed }}</th>
+        <th>{{ user_survey_section.period.start.strftime("%Y-%d-%m") }}</th>
+        <th>{{ user_survey_section.period.end.strftime("%Y-%d-%m") }}</th>
+        <th>{{ user_survey_section.assigned_due.assigned.strftime("%Y-%d-%m") }}</th>
+        <th>{{ user_survey_section.assigned_due.due.strftime("%Y-%d-%m") }}</th>
+        <th><input type="checkbox" name="unicode_ids" value="{{ user.id }},{{ organization.id }},{{survey_header.id }}, {{ survey_section.id}},{{ user_survey_section.id }}"/></th>
+            {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+  </tr>
+</table>
+</div>
+</form>
+{% endblock %}

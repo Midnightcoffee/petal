@@ -2,13 +2,40 @@
 {% block body %}
     <form action='' method="POST" >
         <h4>The selected Surveys will be assigned to ALL organizations</h4>
+
         {% for survey_header in  SurveyHeader.query.all() %}
             <input type="checkbox" name="survey_headers" value="{{ survey_header.id }}" />{{ survey_header.name }}<br>
         {% endfor %}
+        <p>For reference take a look at these periods:</p>
+        <p>Creating duplicate events will be detrimental to my mental health</p>
+        <ul>
+        {% for period in Period.query.all() %}
+            <li>name:{{ period.name }}</li>
+            <li>start:{{ period.start }}</li>
+            <li>end: {{ period.end }}</li>
+        {% endfor %}
+        {% for assigned_due in AssignedDue.query.all() %}
+            <li>assigned:{{ assigned_due.assigned }}</li>
+            <li>end:{{ assigned_due.due }}</li>
+        {% endfor %}
+        <p>so for instance here is an event you created</p>
+        {% set uss = UserSurveySection.query.get(1) %}
+            <li>period:{{ uss.period.name }}</li>
+            <li>start:{{ uss.period.start }}</li>
+            <li>end:{{ uss.period.end }}</li>
+            <li>assigned:{{ uss.assigned_due.assigned }}</li>
+            <li>due:{{ uss.assigned_due.due }}</li>
+        </ul>
         <p>Enter format: YEAR/MONTH/DAY<br></p>
-        Assigned: <input type="datetime" name="assigned"/><br>
-        Due date:      <input type="datetime" name="due"/><br>
+        Assigned    :<input type="datetime" name="assigned"/><br>
+        Due date    :<input type="datetime" name="due"/><br>
+        period start:<input type="datetime" name="start" /><br>
+        period end  :<input type="datetime" name="end" /><br>
+        period name :<input type="text" name="name"/><br>
+        <strong>Double check dates and names</strong><br>
         <input type="submit" name="date_sumbited"/><br>
-        <p>add flash message</p>
+        {% if error %}
+        {{ error }}
+        {% endif %}
     </form>
 {% endblock %}

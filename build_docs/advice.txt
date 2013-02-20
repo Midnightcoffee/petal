@@ -624,3 +624,17 @@ Asking on Heroku about ssl issue
 (03:36:53 AM) ejo: midnightcoffee1: depends on your style and preference... some like to do that stuff from a command line, others prefer to have a script.  Kind of depends on whether it's an action you frequently repeat too (convenience)
 (03:38:06 AM) Shyde [~Shyde^^@HSI-KBW-078-043-093-037.hsi4.kabel-badenwuerttemberg.de] entered the room.
 (03:38:44 AM) dampxf: ejo: k great! your explanations were amazing. i can't thank you enough. im going to bed before i get sick.
+
+
+(02:58:05 PM) dampxf: I'm trying to figure out a way to prevent the user from accessing a certain url unless they have submitted information on a previous page. Its unlikely someone would do this as it requires them to input the url but i want to be sure. I think this can be achieved with a try except: http://bpaste.net/show/78150/ but maybe i should look into making it work with flask-principle? http://pythonhosted.org/Flask-Principal/
+(03:00:21 PM) mattupstate: midnightcoffee: principal  wont really help you there
+(03:00:58 PM) mattupstate: its not a permission you're setting up
+(03:01:06 PM) mattupstate: you're just managing the state of a session
+(03:02:17 PM) dampxf: mattupstate: The use of try except indicates to me that i might be doing this wrong, i'm fishing for more appropriate solutions. 
+(03:02:19 PM) XenGi_ is now known as XenGi
+(03:02:38 PM) mattupstate: why do you think try/except is wrong?
+(03:02:39 PM) stranac left the room (quit: Read error: Connection reset by peer).
+(03:02:59 PM) mattupstate: if you don't want to use try except you could do
+
+ejo - sqlalchemy
+Doobeh, arg)s, dAnjou

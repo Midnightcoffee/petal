@@ -1,3 +1,27 @@
 {% extends "base.html" %}
-  survey_header
+{% block content %}
+    <div class='entries'>
+        <form action="" method="POST" accept-charset="utf-8">
+            <ul>
+            {% for uss in organization.user_survey_sections %}
+                <li>survey {{ uss.survey_section.survey_header }}</li>
+                <li>period:{{ uss.period.name }}</li>
+                <li>start:{{ uss.period.start }}</li>
+                <li>end:{{ uss.period.end }}</li>
+                <li>assigned:{{ uss.assigned_due.assigned }}</li>
+                <li>due:{{ uss.assigned_due.due }}</li>
+                <li>completed: {{ uss.completed_date }}</li>
+            {% endfor %}
+            </ul>
+            <h3>Select one survey for {{ organization.name }}</h3>
+            {% for survey_header in organization.survey_headers %}
+            <input type="radio" name="survey_header_id"
+            value="{{ survey_header.id }}" />{{ survey_header.name }}<br>
+            {%  endfor %}
+            <input type="submit" name="survey_header_submit" />
+            {% if error %}
+            <strong> {{ error }}</strong>
+            {% endif %}
+        </form>
+    </div>
 {% endblock %}
