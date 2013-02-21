@@ -86,12 +86,35 @@ from sqlalchemy import func
 @contributer_permission.require(403)
 @login_required
 def super_survey():
-    organizations  = [db.session.query(UserSurveySection.id, func.max(
-        UserSurveySection.completed_date)).filter_by(id=org.id).group_by(UserSurveySection).one()
-        for org in g.user.organizations]
-    
+    # org_id_mrs  = [db.session.query(UserSurveySection.id, func.max(
+    #     UserSurveySection.completed_date)).filter_by(id=org.id).group_by(
+    #         UserSurveySection).one() for org in g.user.organizations]
+   db.session.query(UserSurveySection).order_by(UserSurveySection.completed_date.desc().nullslast()).first()
+ 
 
-    return render_template('super_survey.html',organizations=organizations)
+    #have [[uss id for most recent completed, most recent completed date]]
+    # need: organization name for id, survey header name for id, period.name
+    # period start period end, assigneddue.assigned, assigned due end
+    # package = []
+    # for uss_id_mr in org_id_mrs:
+    #     y = {}
+    #     uss = UserSurveySection.query.get(uss_id_mr[0])
+    #     y['organization'] = uss.organization.name
+    #     ss_id = uss.survey_section.id
+    #     ss = SurveySection.query.get(ss_id)
+    #     sh_name = ss.survey_header.name
+    #     y['survey_header'] = sh_name
+    #     y['survey_section'] = uss.completed_date.strftime("%Y-%d-%m")
+    #     y['period_name'] = uss.period.name
+    #     y['period_start'] = uss.period.start
+    #     y['period_end'] = uss.period.end
+    #     y['assigned_due.assigned'] = uss.assigned_due.assigned
+    #     y['assigned_due.due'] = uss.assigned_due.due
+    #     package.append(y)
+
+    # .strftime("%Y-%d-%m")
+
+    return render_template('super_survey.html',t=t) #package=package)
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
 import datetime
