@@ -6,7 +6,6 @@
 <div class="table">
 <table>
   <colgroup span="10" class="columns"></colgroup>
-
   <tr>
     <th>Organization</th>
     <th>Survey Header</th>
@@ -19,23 +18,35 @@
     <th>due</th>
     <th></th>
   </tr>
-
   {% for organization in user.organizations  %}
   <tr>
     {% for survey_header in organization.survey_headers %}
       {% for survey_section in survey_header.survey_sections %}
+        {% set most_current_completed = start_of_time %}
         {% for user_survey_section in survey_section.user_survey_sections %}
-            {% if user_survey_section.organization.id == organization.id %}
-        <th>{{ organization.name  }}</th>
-        <th>{{ survey_header.name }} </th>
-        <th>{{ survey_section.name }}</th>
-        <th>{{ user_survey_section.period.name }}</th>
-        <th>{{ user_survey_section.completed }}</th>
-        <th>{{ user_survey_section.period.start.strftime("%Y-%d-%m") }}</th>
-        <th>{{ user_survey_section.period.end.strftime("%Y-%d-%m") }}</th>
-        <th>{{ user_survey_section.assigned_due.assigned.strftime("%Y-%d-%m") }}</th>
-        <th>{{ user_survey_section.assigned_due.due.strftime("%Y-%d-%m") }}</th>
-        <th><input type="checkbox" name="unicode_ids" value="{{ user.id }},{{ organization.id }},{{survey_header.id }}, {{ survey_section.id}},{{ user_survey_section.id }}"/></th>
+            {% if user_survey_section.completed_date %}
+                {% if user_survey_section.completed_date > most_current_completed %}
+                    {% set most_current_completed = user_survey_section.completed_date %}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% set seen = 0 %}
+        {% for user_survey_section in survey_section.user_survey_sections%}
+            {% if user_survey_section.organization.id == organization.id and
+                not (seen == organization.id) %}
+                <th>{{ organization.name  }}</th>
+                <th>{{ survey_header.name }} </th>
+                <th>{{ survey_section.name }}</th>
+                <th>{{ user_survey_section.period.name }}</th>
+                <th>{{ most_current_completed }}</th>
+                <th>{{ user_survey_section.period.start }}</th>
+                <th>{{ user_survey_section.period.end }}</th>
+                <th>{{ user_survey_section.assigned_due.assigned }} </th>
+                <th>{{ user_survey_section.assigned_due.due }} </th>
+                {% set seen = organization.id %}
+                <th><input type="checkbox" name="unicode_ids" value="{{ user.id }}
+                    ,{{ organization.id }},{{survey_header.id }}, {{ survey_section.id}}"/></th>
             {% endif %}
         {% endfor %}
       {% endfor %}
@@ -46,3 +57,4 @@
 </div>
 </form>
 {% endblock %}
+

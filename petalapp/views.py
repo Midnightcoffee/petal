@@ -68,21 +68,28 @@ def logout():
 @contributer_permission.require(403)
 @login_required
 def select_survey():
+    start_of_time = datetime.datetime(1,1,1)
     if request.method == 'POST':
         unicode_ids = request.form.getlist('unicode_ids',None)
         if unicode_ids:
             #session['selection'] is [0:user.id, 1:org.id, 2:sh.id, 3:ss.id, 4:uss.id]
             session['id_packages'] = [[int(y) for y in x if y.isdigit()] for x in unicode_ids]
             return redirect(url_for('selection'))
-    return render_template('select_survey.html',user=g.user)
+    return render_template('select_survey.html',user=g.user,
+            start_of_time=start_of_time)
 
 #TODO bc primary keys start at 1 have questions start at 1 to.
+#TODO move
+import datetime
+
 @app.route('/selection',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def selection():
     question_ids = None
     if request.method == 'POST':
+        if not session['id_packages']:
+            return redirect(url_for('select_survey'))
         for id_package in session['id_packages']:
             question_ids = request.form.getlist('({0}, {1})'.format(
                 id_package[3],id_package[4]))
@@ -99,7 +106,19 @@ def selection():
                                 & (QuestionOption.option_choice == option_choice)).first()
                 question_option.answers.append(answer)
                 user_survey_section.answers.append(answer)
+                user_survey_section.completed_date  = datetime.datetime.utcnow()
+                organization = Organization.query.get(user_survey_section.organization.id)
+                period = Period.query.get(user_survey_section.period.id)
+                assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+                nuss = UserSurveySection()
+                organization.user_survey_sections.append(nuss)
+                survey_section.user_survey_sections.append(nuss)
+                period.user_survey_sections.append(nuss)
+                assigned_due.user_survey_sections.append(nuss)
+
         db.session.commit()
+        session['id_packages'] = None
+        return redirect(url_for('select_survey'))
 
     return render_template('selection.html', user=g.user, id_packages=session['id_packages'],
             SurveySection=SurveySection, Organization=Organization,User=User,
