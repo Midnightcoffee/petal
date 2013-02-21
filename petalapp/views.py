@@ -64,20 +64,34 @@ def logout():
 
 
 # full page
+from sqlalchemy import func
 @app.route('/select_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def select_survey():
     start_of_time = datetime.datetime(1,1,1)
+    # max created survey section date
     if request.method == 'POST':
         unicode_ids = request.form.getlist('unicode_ids',None)
         if unicode_ids:
             #session['selection'] is [0:user.id, 1:org.id, 2:sh.id, 3:ss.id, 4:uss.id]
             session['id_packages'] = [[int(y) for y in x if y.isdigit()] for x in unicode_ids]
+
             return redirect(url_for('selection'))
     return render_template('select_survey.html',user=g.user,
             start_of_time=start_of_time)
 
+from sqlalchemy import func
+@app.route('/super_survey',methods = ['GET', 'POST'])
+@contributer_permission.require(403)
+@login_required
+def super_survey():
+    organizations  = [db.session.query(UserSurveySection.id, func.max(
+        UserSurveySection.completed_date)).filter_by(id=org.id).group_by(UserSurveySection).one()
+        for org in g.user.organizations]
+    
+
+    return render_template('super_survey.html',organizations=organizations)
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
 import datetime
