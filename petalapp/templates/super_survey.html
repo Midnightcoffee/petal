@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page">
+  <form action="" method="POST" accept-charset="utf-8">
+    <table>
+      <colgroup span="10" class="columns"></colgroup>
+        <tr>
+          <th>Organization</th>
+          <th>Survey Header</th>
+          <th>Survey Section</th>
+          <th>Period name</th>
+          <th>Completed</th>
+          <th>Period start</th>
+          <th>Period end</th>
+          <th>Assigned</th>
+          <th>Due</th>
+          <th></th>
+        </tr>
+          {% for  table in survey_tables %}
+          <tr>
+            <td>{{ table['Organization'] }}</td>
+            <td>{{ table['Survey Header'] }}</td>
+            <td>{{ table['Survey section'] }}</td>
+            <td>{{ table['Period name'] }}</td>
+            <td>{{ table['Completed'] }}</td>
+            <td>{{ table['Period start'] }}</td>
+            <td>{{ table['Period end'] }}</td>
+            <td>{{ table['Assigned'] }}</td>
+            <td>{{ table['Due'] }}</td>
+            <td><input type="checkbox" name="" id="" value="" /></td>
+          </tr>
+          {% endfor %}
+
+    </table>
+  </form>
+</div>
+{% endblock %}
