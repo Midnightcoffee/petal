@@ -147,7 +147,7 @@ import datetime
 
 #FIXME move me
 def extract_data(data):
-    return [ data.standard_form, data.marketing_education, data.record_availability,
+    return [data.standard_form, data.marketing_education, data.record_availability,
     data.family_centerdness, data.pc_networking, data.education_and_training,
     data.team_funding, data.coverage, data.pc_for_expired_pts,
     data.hospital_pc_screening, data.pc_follow_up, data.post_discharge_services,
@@ -198,11 +198,12 @@ def selection():
             if user_survey_section.survey_section.order == 1:
                 user_survey_section.data.standard_form = data_section_total
 
-            plotpolar([survey_header.name, period.name, organization.name,
-                
-
-
-
+            data = extract_data(data)
+            data = [int(x) for x in data]
+            #FIXME upload_s3 is calling plotpolar shouldn't
+            upload_s3(survey_table.survey_header + period.name + organization.name
+                + str(datetime.datetime.utcnow()),[survey_table.survey_header,
+                period.name, organization.name, data] )
 
             db.session.commit()
         session['user_survey_section_ids'] = None

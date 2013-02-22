@@ -66,4 +66,4 @@ def plotpolar(data=[], num=None):
     #how to return it to simple in views
     return png_output
 
-
+print(len([1,1,2,3,4,5,6,7,8,9,10,10,10,10,10,10]))

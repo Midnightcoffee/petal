@@ -33,7 +33,7 @@ sslify = SSLify(app)
 # Can't seem to separate out these into there own files
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from petalapp.database.models import User, Organization, UserSurveySection,\
-        SurveyHeader, Period, AssignedDue, Question, Answer, QuestionOption
+        SurveyHeader, Period, AssignedDue, Question, Answer, QuestionOption, Data
 from flask.ext.admin import BaseView, expose, Admin
 from flask.ext.login import current_user
 import datetime
@@ -68,10 +68,13 @@ class MyView(BaseView):
             ad = AssignedDue(assigned=assigned, due=due)
             db.session.add(ad)
             db.session.add(p)
-
             for organization in Organization.query.all():
+
                 for survey_header_id in survey_header_ids:
                     survey_header = SurveyHeader.query.get(survey_header_id)
+                    if survey_header.name  == "Pallative Care Index":
+                        data = Data()
+                        db.session.add(data)
                     for survey_sections in survey_header.survey_sections:
                         uss = UserSurveySection()
                         db.session.add(uss)
@@ -80,6 +83,7 @@ class MyView(BaseView):
                         survey_sections.user_survey_sections.append(uss)
                         p.user_survey_sections.append(uss)
                         ad.user_survey_sections.append(uss)
+                        data.user_survey_sections.append(uss)
 
             db.session.commit()
             error =  "success"

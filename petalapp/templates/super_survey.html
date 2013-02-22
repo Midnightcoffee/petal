@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page">
+<div class="table">
   <form action="" method="POST" accept-charset="utf-8">
     <table>
-      <colgroup span="10" class="columns"></colgroup>
+      <colgroup span="10" class="columns" ></colgroup>
         <tr>
           <th>Organization</th>
           <th>Survey Header</th>
@@ -16,21 +16,22 @@
           <th>Due</th>
           <th></th>
         </tr>
-          {% for  table in survey_tables %}
+          {% for  survey_table in survey_tables %}
           <tr>
-            <td>{{ table['Organization'] }}</td>
-            <td>{{ table['Survey Header'] }}</td>
-            <td>{{ table['Survey section'] }}</td>
-            <td>{{ table['Period name'] }}</td>
-            <td>{{ table['Completed'] }}</td>
-            <td>{{ table['Period start'] }}</td>
-            <td>{{ table['Period end'] }}</td>
-            <td>{{ table['Assigned'] }}</td>
-            <td>{{ table['Due'] }}</td>
-            <td><input type="checkbox" name="" id="" value="" /></td>
+            <td>{{ survey_table.organization }}</td>
+            <td>{{ survey_table.survey_header }}</td>
+            <td>{{ survey_table.survey_section }}</td>
+            <td>{{ survey_table.period_name }}</td>
+            <td>{{ survey_table.completed }}</td>
+            <td>{{ survey_table.period_start }}</td>
+            <td>{{ survey_table.period_end }}</td>
+            <td>{{ survey_table.assigned }}</td>
+            <td>{{ survey_table.due }}</td>
+            <td><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
+                value="{{ survey_table.user_survey_section_id  }}" /></td>
           </tr>
           {% endfor %}
-
+        <input type="submit"/>
     </table>
   </form>
 </div>
