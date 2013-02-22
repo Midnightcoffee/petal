@@ -5,6 +5,7 @@ Author: Drew Verlee
 Description: contains the views for the webapp
 '''
 
+from sqlalchemy import func
 from flask import render_template, url_for, redirect\
     , session, g, request, flash
 from petalapp.database.models import User, Question, Answer , \
@@ -64,7 +65,6 @@ def logout():
 
 
 # full page
-from sqlalchemy import func
 @app.route('/select_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
@@ -81,40 +81,62 @@ def select_survey():
     return render_template('select_survey.html',user=g.user,
             start_of_time=start_of_time)
 
-from sqlalchemy import func
+from collections import namedtuple
+
+SurveyTable = namedtuple('Survey_Table',['organization','organization_id','survey_header',
+    'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
+    'period_start', 'period_end','assigned','due'])
+
 @app.route('/super_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def super_survey():
-    # org_id_mrs  = [db.session.query(UserSurveySection.id, func.max(
-    #     UserSurveySection.completed_date)).filter_by(id=org.id).group_by(
-    #         UserSurveySection).one() for org in g.user.organizations]
-   db.session.query(UserSurveySection).order_by(UserSurveySection.completed_date.desc().nullslast()).first()
- 
+    current_uss_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+        nullslast()).first().id for x in g.user.organizations]
+    survey_tables = []
+    for current_uss_id in current_uss_ids:
+        uss = UserSurveySection.query.get(current_uss_id)
+        organization = uss.organization.name
+        organization_id = uss.organization.id
+        ss_id = uss.survey_section.id
+        ss = SurveySection.query.get(ss_id)
+        ss_name = ss.name
+        sh_name = ss.survey_header.name
+        survey_header = sh_name
+        if uss.completed_date:
+            survey_section = ss_name
+            completed = uss.completed_date.strftime("%Y-%d-%m")
+        else:
+            survey_section = uss.completed_date
+            completed = uss.completed_date
+        period_name = uss.period.name
+        period_start = uss.period.start.strftime("%Y-%d-%m")
+        period_end = uss.period.end.strftime("%Y-%d-%m")
+        assigned = uss.assigned_due.assigned.strftime("%Y-%d-%m")
+        due = uss.assigned_due.due.strftime("%Y-%d-%m")
+        survey_table = SurveyTable(
+                organization=organization,
+                organization_id=organization_id,
+                survey_header=survey_header,
+                survey_section=survey_section,
+                survey_section_id=ss_id,
+                user_survey_section_id=current_uss_id,
+                period_name=period_name,
+                completed=completed,
+                period_start=period_start,
+                period_end=period_end,
+                assigned=assigned,
+                due=due
+                )
 
-    #have [[uss id for most recent completed, most recent completed date]]
-    # need: organization name for id, survey header name for id, period.name
-    # period start period end, assigneddue.assigned, assigned due end
-    # package = []
-    # for uss_id_mr in org_id_mrs:
-    #     y = {}
-    #     uss = UserSurveySection.query.get(uss_id_mr[0])
-    #     y['organization'] = uss.organization.name
-    #     ss_id = uss.survey_section.id
-    #     ss = SurveySection.query.get(ss_id)
-    #     sh_name = ss.survey_header.name
-    #     y['survey_header'] = sh_name
-    #     y['survey_section'] = uss.completed_date.strftime("%Y-%d-%m")
-    #     y['period_name'] = uss.period.name
-    #     y['period_start'] = uss.period.start
-    #     y['period_end'] = uss.period.end
-    #     y['assigned_due.assigned'] = uss.assigned_due.assigned
-    #     y['assigned_due.due'] = uss.assigned_due.due
-    #     package.append(y)
+        survey_tables.append(survey_table)
+    if  request.method == 'POST':
+        session['survey_tables'] = request.form.getlist('survey_tables')
+        if session['survey_tables']:
+            return redirect(url_for('selection'))
 
-    # .strftime("%Y-%d-%m")
 
-    return render_template('super_survey.html',t=t) #package=package)
+    return render_template('super_survey.html',survey_tables=survey_tables) #package=package)
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
 import datetime
@@ -123,43 +145,49 @@ import datetime
 @contributer_permission.require(403)
 @login_required
 def selection():
-    question_ids = None
-    if request.method == 'POST':
-        if not session['id_packages']:
+    # question_ids = None
+    session['testme'] = 'this is a test'
+    table = session['survey_tables'][0].due
+    if not session.get('survey_tables',None):
             return redirect(url_for('select_survey'))
-        for id_package in session['id_packages']:
-            question_ids = request.form.getlist('({0}, {1})'.format(
-                id_package[3],id_package[4]))
-            survey_section = SurveySection.query.get(id_package[3])
-            user_survey_section = UserSurveySection.query.get(id_package[4])
-            for question in survey_section.questions:
-                if question.id in question_ids:
-                    answer = Answer(tf=True)
-                else:
-                    answer = Answer(tf=False)
-                option_choice = OptionChoice.query.filter_by(name='True').one()
-                question_option = db.session.query(QuestionOption).\
-                        filter((QuestionOption.question == question)
-                                & (QuestionOption.option_choice == option_choice)).first()
-                question_option.answers.append(answer)
-                user_survey_section.answers.append(answer)
-                user_survey_section.completed_date  = datetime.datetime.utcnow()
-                organization = Organization.query.get(user_survey_section.organization.id)
-                period = Period.query.get(user_survey_section.period.id)
-                assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
-                nuss = UserSurveySection()
-                organization.user_survey_sections.append(nuss)
-                survey_section.user_survey_sections.append(nuss)
-                period.user_survey_sections.append(nuss)
-                assigned_due.user_survey_sections.append(nuss)
+    if request.method == 'POST':
 
-        db.session.commit()
-        session['id_packages'] = None
+        # for survey_table in session['survey_tables']:
+            #
+            # question_ids = request.form.getlist('({0}, {1})'.format(
+            #     id_package[3],id_package[4]))
+            # survey_section = SurveySection.query.get(id_package[3])
+            # user_survey_section = UserSurveySection.query.get(id_package[4])
+            # for question in survey_section.questions:
+            #     if question.id in question_ids:
+            #         answer = Answer(tf=True)
+            #     else:
+            #         answer = Answer(tf=False)
+            #     option_choice = OptionChoice.query.filter_by(name='True').one()
+            #     question_option = db.session.query(QuestionOption).\
+            #             filter((QuestionOption.question == question)
+            #                     & (QuestionOption.option_choice == option_choice)).first()
+            #     question_option.answers.append(answer)
+            #     user_survey_section.answers.append(answer)
+            #     user_survey_section.completed_date  = datetime.datetime.utcnow()
+            #     organization = Organization.query.get(user_survey_section.organization.id)
+            #     period = Period.query.get(user_survey_section.period.id)
+            #     assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+            #     nuss = UserSurveySection()
+            #     organization.user_survey_sections.append(nuss)
+            #     survey_section.user_survey_sections.append(nuss)
+            #     period.user_survey_sections.append(nuss)
+            #     assigned_due.user_survey_sections.append(nuss)
+
+        # db.session.commit()
+        # session['id_packages'] = None
         return redirect(url_for('select_survey'))
-
-    return render_template('selection.html', user=g.user, id_packages=session['id_packages'],
-            SurveySection=SurveySection, Organization=Organization,User=User,
-            SurveyHeader=SurveyHeader)
+    survey_tables = session['survey_tables']
+    return render_template('selection.html',survey_tables=survey_tables,
+            SurveySection=SurveySection,table=table )
+            # , user=g.user, id_packages=session['id_packages'],
+            # SurveySection=SurveySection, Organization=Organization,User=User,
+            # SurveyHeader=SurveyHeader)
 
 @app.route('/organization',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
