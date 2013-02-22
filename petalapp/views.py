@@ -11,13 +11,14 @@ from flask import render_template, url_for, redirect\
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType,UserSurveySection, Period, AssignedDue,\
-    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER
+    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
 from petalapp import db, app, lm
 from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     Identity, identity_changed, AnonymousIdentity
 
-
+from aws_tools import upload_s3
+from graphing_tools.graph import plotpolar
 
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
@@ -64,195 +65,156 @@ def logout():
     return redirect(url_for("login")) #TODO should be something else?
 
 
-# full page
-@app.route('/select_survey',methods = ['GET', 'POST'])
-@contributer_permission.require(403)
-@login_required
-def select_survey():
-    start_of_time = datetime.datetime(1,1,1)
-    # max created survey section date
-    if request.method == 'POST':
-        unicode_ids = request.form.getlist('unicode_ids',None)
-        if unicode_ids:
-            #session['selection'] is [0:user.id, 1:org.id, 2:sh.id, 3:ss.id, 4:uss.id]
-            session['id_packages'] = [[int(y) for y in x if y.isdigit()] for x in unicode_ids]
-
-            return redirect(url_for('selection'))
-    return render_template('select_survey.html',user=g.user,
-            start_of_time=start_of_time)
-
 from collections import namedtuple
 
 SurveyTable = namedtuple('Survey_Table',['organization','organization_id','survey_header',
     'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
-    'period_start', 'period_end','assigned','due'])
+    'period_start', 'period_end','assigned','due','questions'])
+
+
+def unpack(user_survey_section_ids):
+    survey_tables = []
+    # new = [int(x) for x in user_survey_section_ids if not type(x) == int]
+
+    for user_survey_section_id in user_survey_section_ids:
+        if user_survey_section_id:
+            uss = UserSurveySection.query.get(user_survey_section_id)
+            organization = uss.organization.name
+            organization_id = uss.organization.id
+            ss_id = uss.survey_section.id
+            ss = SurveySection.query.get(ss_id)
+            ss_name = ss.name
+            sh_name = ss.survey_header.name
+            survey_header = sh_name
+            if uss.completed_date:
+                survey_section = ss_name
+                completed = uss.completed_date.strftime("%Y-%d-%m")
+            else:
+                survey_section = uss.completed_date
+                completed = uss.completed_date
+            period_name = uss.period.name
+            period_start = uss.period.start.strftime("%Y-%d-%m")
+            period_end = uss.period.end.strftime("%Y-%d-%m")
+            assigned = uss.assigned_due.assigned.strftime("%Y-%d-%m")
+            due = uss.assigned_due.due.strftime("%Y-%d-%m")
+            survey_table = SurveyTable(
+                    organization=organization,
+                    organization_id=organization_id,
+                    survey_header=survey_header,
+                    survey_section=survey_section,
+                    survey_section_id=ss_id,
+                    user_survey_section_id=user_survey_section_id,
+                    period_name=period_name,
+                    completed=completed,
+                    period_start=period_start,
+                    period_end=period_end,
+                    assigned=assigned,
+                    due=due,
+                    questions=[]
+                    )
+
+            survey_tables.append(survey_table)
+    return survey_tables
+
+
 
 @app.route('/super_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def super_survey():
-    current_uss_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
-        nullslast()).first().id for x in g.user.organizations]
-    survey_tables = []
-    for current_uss_id in current_uss_ids:
-        uss = UserSurveySection.query.get(current_uss_id)
-        organization = uss.organization.name
-        organization_id = uss.organization.id
-        ss_id = uss.survey_section.id
-        ss = SurveySection.query.get(ss_id)
-        ss_name = ss.name
-        sh_name = ss.survey_header.name
-        survey_header = sh_name
-        if uss.completed_date:
-            survey_section = ss_name
-            completed = uss.completed_date.strftime("%Y-%d-%m")
-        else:
-            survey_section = uss.completed_date
-            completed = uss.completed_date
-        period_name = uss.period.name
-        period_start = uss.period.start.strftime("%Y-%d-%m")
-        period_end = uss.period.end.strftime("%Y-%d-%m")
-        assigned = uss.assigned_due.assigned.strftime("%Y-%d-%m")
-        due = uss.assigned_due.due.strftime("%Y-%d-%m")
-        survey_table = SurveyTable(
-                organization=organization,
-                organization_id=organization_id,
-                survey_header=survey_header,
-                survey_section=survey_section,
-                survey_section_id=ss_id,
-                user_survey_section_id=current_uss_id,
-                period_name=period_name,
-                completed=completed,
-                period_start=period_start,
-                period_end=period_end,
-                assigned=assigned,
-                due=due
-                )
+    #FIXME better way to see if survey?
+    user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+        nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+        nullslast()).first() else None for x in g.user.organizations]
 
-        survey_tables.append(survey_table)
+    survey_tables = unpack(user_survey_section_ids)
+
     if  request.method == 'POST':
-        session['survey_tables'] = request.form.getlist('survey_tables')
-        if session['survey_tables']:
+        session['user_survey_section_ids'] = []
+        for survey_table in survey_tables:
+            session['user_survey_section_ids'].append(request.form.
+                    get(str(survey_table.user_survey_section_id)))
+
+        if session['user_survey_section_ids']:
             return redirect(url_for('selection'))
 
 
     return render_template('super_survey.html',survey_tables=survey_tables) #package=package)
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
+#TODO were in UTC time switch it to local time
 import datetime
+
+#FIXME move me
+def extract_data(data):
+    return [ data.standard_form, data.marketing_education, data.record_availability,
+    data.family_centerdness, data.pc_networking, data.education_and_training,
+    data.team_funding, data.coverage, data.pc_for_expired_pts,
+    data.hospital_pc_screening, data.pc_follow_up, data.post_discharge_services,
+    data.bereavement_contacts, data.certification, data.team_wellness,
+    data.care_coordination]
+
 
 @app.route('/selection',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
 def selection():
-    # question_ids = None
-    session['testme'] = 'this is a test'
-    table = session['survey_tables'][0].due
-    if not session.get('survey_tables',None):
-            return redirect(url_for('select_survey'))
+    if not session.get('user_survey_section_ids',None):
+        return redirect(url_for('super_survey'))
+
+    survey_tables = unpack(session['user_survey_section_ids'])
     if request.method == 'POST':
+        for survey_table in survey_tables:
+            data_section_total = 0
+            question_ids = request.form.getlist(str(survey_table.survey_section_id))
+            survey_section = SurveySection.query.get(survey_table.survey_section_id)
+            user_survey_section = UserSurveySection.query.get(survey_table.user_survey_section_id)
+            data_id = user_survey_section.data.id
+            data = Data.query.get(data_id)
+            for question in survey_section.questions:
+                if unicode(question.id) in question_ids: # because unicode
+                    answer = Answer(tf=True)
+                else:
+                    answer = Answer(tf=False)
+                option_choice = OptionChoice.query.filter_by(name='True').one()
+                question_option = db.session.query(QuestionOption).\
+                        filter((QuestionOption.question == question)
+                                & (QuestionOption.option_choice == option_choice)).first()
+                question_option.answers.append(answer)
+                user_survey_section.answers.append(answer)
+                user_survey_section.completed_date  = datetime.datetime.utcnow()
+                organization = Organization.query.get(user_survey_section.organization.id)
+                period = Period.query.get(user_survey_section.period.id)
+                assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+                nuss = UserSurveySection()
+                organization.user_survey_sections.append(nuss)
+                survey_section.user_survey_sections.append(nuss)
+                period.user_survey_sections.append(nuss)
+                assigned_due.user_survey_sections.append(nuss)
+                data.user_survey_sections.append(nuss)
+                db.session.add(data) #TODO is this necessary?
+                if answer.tf:
+                    data_section_total += question_option.question.value
+            if user_survey_section.survey_section.order == 1:
+                user_survey_section.data.standard_form = data_section_total
 
-        # for survey_table in session['survey_tables']:
-            #
-            # question_ids = request.form.getlist('({0}, {1})'.format(
-            #     id_package[3],id_package[4]))
-            # survey_section = SurveySection.query.get(id_package[3])
-            # user_survey_section = UserSurveySection.query.get(id_package[4])
-            # for question in survey_section.questions:
-            #     if question.id in question_ids:
-            #         answer = Answer(tf=True)
-            #     else:
-            #         answer = Answer(tf=False)
-            #     option_choice = OptionChoice.query.filter_by(name='True').one()
-            #     question_option = db.session.query(QuestionOption).\
-            #             filter((QuestionOption.question == question)
-            #                     & (QuestionOption.option_choice == option_choice)).first()
-            #     question_option.answers.append(answer)
-            #     user_survey_section.answers.append(answer)
-            #     user_survey_section.completed_date  = datetime.datetime.utcnow()
-            #     organization = Organization.query.get(user_survey_section.organization.id)
-            #     period = Period.query.get(user_survey_section.period.id)
-            #     assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
-            #     nuss = UserSurveySection()
-            #     organization.user_survey_sections.append(nuss)
-            #     survey_section.user_survey_sections.append(nuss)
-            #     period.user_survey_sections.append(nuss)
-            #     assigned_due.user_survey_sections.append(nuss)
+            plotpolar([survey_header.name, period.name, organization.name,
+                
 
-        # db.session.commit()
-        # session['id_packages'] = None
-        return redirect(url_for('select_survey'))
-    survey_tables = session['survey_tables']
+
+
+
+            db.session.commit()
+        session['user_survey_section_ids'] = None
+        return redirect(url_for('super_survey'))
+
     return render_template('selection.html',survey_tables=survey_tables,
-            SurveySection=SurveySection,table=table )
+            SurveySection=SurveySection,user =g.user)
             # , user=g.user, id_packages=session['id_packages'],
             # SurveySection=SurveySection, Organization=Organization,User=User,
             # SurveyHeader=SurveyHeader)
 
-@app.route('/organization',methods = ['GET', 'POST'])
-@contributer_permission.require(403)
-@login_required
-def organization():
-    error = None
-    if request.method == 'POST':
-            session['organization_id'] = request.form.get('organization_id',None)
-            if session['organization_id']:
-                return redirect(url_for('survey_header'))
-            else:
-                error = "Please select an organization"
 
-    return render_template('organization.html',
-            organizations=g.user.organizations, error=error)
-
-@app.route('/survey_header', methods = ['GET', 'POST'])
-@contributer_permission.require(403)
-@login_required
-def survey_header():
-    if not session.get('organization_id', None):
-        return redirect(url_for('organization'))
-    else:
-        error = None
-        organization = Organization.query.get(session['organization_id'])
-        if request.method == 'POST':
-            session['survey_header_id'] = request.form.get('survey_header_id',None)
-            session['time_period'] = request.form.get('user_survey_section_id',None)
-
-            if session['survey_header_id']:
-                return redirect(url_for('survey_section'))
-            else:
-                error = 'Please select a survey'
-        return render_template('survey_header.html',
-                Organization=Organization,
-                organization_id=session['organization_id'],
-                UserSurveySection=UserSurveySection,
-                organization=organization,
-                error=error)
-
-
-@app.route('/survey_section', methods = ['GET', 'POST'])
-@contributer_permission.require(403)
-@login_required
-def survey_section():
-    #TODO maybe if not -> if
-    if not (session.get('survey_header_id', None) and session.get('time_period',None)):
-        return redirect(url_for('survey_header'))
-    else:
-        error = None
-        if request.method == 'POST':
-            session['survey_section_id'] = request.form.get('survey_section',None)
-            if session['survey_header']:
-                return redirect(url_for('question'))
-            else:
-                error = 'Please select a survey_section'
-        return render_template('survey_section.html',
-                Organization=Organization,
-                SurveyHeader=SurveyHeader,
-                organization_id=session['organization_id'],
-                survey_header_id=session['survey_header_id'],
-                error=error)
-
-
-#
 @app.errorhandler(404)
 def internal_error(error):
     return render_template('404.html')
