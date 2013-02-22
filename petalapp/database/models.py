@@ -415,25 +415,7 @@ class Data(db.Model):
             self.timestamp = timestamp
 
     def __repr__(self):
-        return """
-    <standard_form : %r>\n
-    <marketing_education : %r>\n
-    <record_availability : %r>\n
-    <family_centerdness : %r>\n
-    <pc_networking : %r>\n
-    <education_and_training : %r>\n
-    <team_funding : %r>\n
-    <coverage : %r>\n
-    <pc_for_expired_pts : %r>\n
-    <hospital_pc_screening  : %r>\n
-    <pc_follow_up : %r>\n
-    <post_discharge_services : %r>\n
-    <bereavement_contacts : %r>\n
-    <certification : %r>\n
-    <team_wellness : %r>\n
-    <care_coordination : %r>\n
-    <datetime_utc  : %r>""" % (
-    self.standard_form,
+        return """ %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r, %r  %r""" % (self.standard_form,
     self.marketing_education,
     self.record_availability,
     self.family_centerdness,
@@ -449,7 +431,26 @@ class Data(db.Model):
     self.certification,
     self.team_wellness,
     self.care_coordination,
-    self.timestamp)
+    self.timestamp,
+    self.url)
+        # """
+    # <standard_form : %r>\n
+    # <marketing_education : %r>\n
+    # <record_availability : %r>\n
+    # <family_centerdness : %r>\n
+    # <pc_networking : %r>\n
+    # <education_and_training : %r>\n
+    # <team_funding : %r>\n
+    # <coverage : %r>\n
+    # <pc_for_expired_pts : %r>\n
+    # <hospital_pc_screening  : %r>\n
+    # <pc_follow_up : %r>\n
+    # <post_discharge_services : %r>\n
+    # <bereavement_contacts : %r>\n
+    # <certification : %r>\n
+    # <team_wellness : %r>\n
+    # <care_coordination : %r>\n
+    # <datetime_utc  : %r>""" % (
 
 # @event.listens_for(Session, 'after_flush')
 # def delete_many_to_many(session, ctx):

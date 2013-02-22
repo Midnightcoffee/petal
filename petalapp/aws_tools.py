@@ -7,7 +7,7 @@ Description: contains upload_s3_chart and download_s3_chart
 
 import boto
 from boto.s3.key import Key
-from boto.s3.connection import S3Connection
+from boto.s3.connection import S3Connection, OrdinaryCallingFormat
 from petalapp import app
 from petalapp.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,S3_BUCKET
 
@@ -55,14 +55,19 @@ def upload_s3(survey_header, organization,period, destination_filename, data, ac
 
 
 def get_url_s3(file_path):
-    s3conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],app.config["AWS_SECRET_ACCESS_KEY"])
+    s3conn = boto.connect_s3(calling_format=OrdinaryCallingFormat)
+    s3conn = boto.connect_s3(
+    aws_access_key_id=app.config["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=app.config["AWS_SECRET_ACCESS_KEY"])
+
+
     bucket = s3conn.get_bucket(app.config["S3_BUCKET"])
     key = bucket.get_key('/'.join([app.config["S3_UPLOAD_DIRECTORY"], file_path]))
-    seconds = 60*5
-    url = key.generate_url(expires_in=seconds)
+    ten_years = 60 * 60 * 24 * 365 * 10
+    url = key.generate_url(expires_in=ten_years)
     return url
 
-# then 
+# then
 # g.url = download_s3('some_title')
 # print(get_url_s3('staging/Pallative Care Index/Arizona Heart/test/2013'))
 

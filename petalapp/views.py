@@ -203,7 +203,7 @@ def selection():
 
 
             data_values = extract_data(data)
-            data_values = [int(x) for x in data_values] #TODO unicode 
+            data_values = [int(x) for x in data_values] #TODO unicode
             #FIXME upload_s3 is calling plotpolar shouldn't
             #TODO refactor name groupings
             time = str(datetime.datetime.utcnow())
@@ -212,13 +212,15 @@ def selection():
                     period.name,
                     time + ' ' + survey_table.survey_header
                     + ' ' + period.name + ' ' + organization.name ,
-                    [survey_table.survey_header, period.name, organization.name, data])
+                    [survey_table.survey_header, period.name, organization.name, data_values])
 
             file_url =  get_url_s3('/'.join([survey_table.survey_header,
                 organization.name, period.name, time + ' ' + survey_table.survey_header
                     + ' ' + period.name + ' ' + organization.name]))
 
-            data.url.append(file_url)
+            data.url = file_url
+            db.session.commit()
+            #TODO consider saving just 1
 
 
 
@@ -247,13 +249,31 @@ def internal_error(error):
 def load_user(id):
     return User.query.get(int(id))
 
-
-@app.route("/organizations")
+# FIXME rename
+@app.route("/organization", methods=['GET','POST'])
 @login_required
 @contributer_permission.require(403)
-def organizations():
+def organization():
     '''page for organizations'''
-    return render_template("organizations.html")
+    session['organization_id'] = None
+    if request.method == 'POST':
+        session['organization_id'] = request.form.get('organization_id',None)
+        #TODO check can i be on this page logic
+        if session['organization_id']:
+            return redirect(url_for('graph_view'))
+    organizations = Organization.query.all()
+    return render_template("organization.html",organizations=organizations)
+
+#TODO rename
+@app.route("/graph_view", methods=['GET','POST'])
+@login_required
+@contributer_permission.require(403)
+def graph_view():
+
+    data_c_url = db.session.query(Data).join(UserSurveySection).join(Organization).\
+        filter(Organization.id==session['organization_id']).all()
+    urls = [data.url for data in data_c_url]
+    return render_template('graph_view.html', urls=urls)
 
 #below are the views for various organizations
 #TODO: possible move to their own file?

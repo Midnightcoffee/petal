@@ -2,7 +2,7 @@
 {% block content %}
   <div class="entries">
     <form action="" method="POST" accept-charset="utf-8">
-        <h3>Select the organization:</h3>
+        <h3>Select the organization whose graph you would like to see:</h3>
         {% for organization in organizations %}
         <input type="radio" name="organization_id" value="{{ organization.id }}" />
             {{ organization.name }}<br>
