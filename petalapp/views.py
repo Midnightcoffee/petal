@@ -17,7 +17,7 @@ from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     Identity, identity_changed, AnonymousIdentity
 
-from aws_tools import upload_s3
+from aws_tools import upload_s3, get_url_s3
 from graphing_tools.graph import plotpolar
 
 # permissions
@@ -123,6 +123,7 @@ def unpack(user_survey_section_ids):
 @login_required
 def super_survey():
     #FIXME better way to see if survey?
+    session['s3'] = None
     user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
         nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
         nullslast()).first() else None for x in g.user.organizations]
@@ -139,7 +140,8 @@ def super_survey():
             return redirect(url_for('selection'))
 
 
-    return render_template('super_survey.html',survey_tables=survey_tables) #package=package)
+    return render_template('super_survey.html',survey_tables=survey_tables,
+            s3=session['s3']) #package=package)
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
 #TODO were in UTC time switch it to local time
@@ -159,6 +161,7 @@ def extract_data(data):
 @contributer_permission.require(403)
 @login_required
 def selection():
+
     if not session.get('user_survey_section_ids',None):
         return redirect(url_for('super_survey'))
 
@@ -198,14 +201,28 @@ def selection():
             if user_survey_section.survey_section.order == 1:
                 user_survey_section.data.standard_form = data_section_total
 
-            data = extract_data(data)
-            data = [int(x) for x in data]
-            #FIXME upload_s3 is calling plotpolar shouldn't
-            upload_s3(survey_table.survey_header + period.name + organization.name
-                + str(datetime.datetime.utcnow()),[survey_table.survey_header,
-                period.name, organization.name, data] )
 
-            db.session.commit()
+            data_values = extract_data(data)
+            data_values = [int(x) for x in data_values] #TODO unicode 
+            #FIXME upload_s3 is calling plotpolar shouldn't
+            #TODO refactor name groupings
+            time = str(datetime.datetime.utcnow())
+            upload_s3(survey_table.survey_header,
+                    organization.name,
+                    period.name,
+                    time + ' ' + survey_table.survey_header
+                    + ' ' + period.name + ' ' + organization.name ,
+                    [survey_table.survey_header, period.name, organization.name, data])
+
+            file_url =  get_url_s3('/'.join([survey_table.survey_header,
+                organization.name, period.name, time + ' ' + survey_table.survey_header
+                    + ' ' + period.name + ' ' + organization.name]))
+
+            data.url.append(file_url)
+
+
+
+
         session['user_survey_section_ids'] = None
         return redirect(url_for('super_survey'))
 
@@ -214,7 +231,6 @@ def selection():
             # , user=g.user, id_packages=session['id_packages'],
             # SurveySection=SurveySection, Organization=Organization,User=User,
             # SurveyHeader=SurveyHeader)
-
 
 @app.errorhandler(404)
 def internal_error(error):

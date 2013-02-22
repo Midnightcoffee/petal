@@ -385,6 +385,7 @@ class Data(db.Model):
     team_wellness = db.Column(db.Integer)
     care_coordination = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
+    url = db.Column(db.String(300))
 
     user_survey_sections = db.relationship('UserSurveySection', backref='data',
             lazy='dynamic')
@@ -393,7 +394,7 @@ class Data(db.Model):
         pc_networking=0, education_and_training=0, team_funding=0,
         coverage=0, pc_for_expired_pts=0, hospital_pc_screening=0,
         pc_follow_up=0, post_discharge_services=0, bereavement_contacts=0,
-        certification=0, team_wellness=0, care_coordination=0, timestamp=datetime.datetime.utcnow()):
+        certification=0, team_wellness=0, care_coordination=0, timestamp=None):
 
             self.standard_form = standard_form
             self.marketing_education =  marketing_education

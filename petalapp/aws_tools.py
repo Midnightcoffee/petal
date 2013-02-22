@@ -15,14 +15,16 @@ from petalapp.graphing_tools.graph import plotpolar
 
 #TODO refactor see aws imports
 #TODO separate out functions, add try except
-def upload_s3(destination_filename, data, acl="public-read"):
+#TODO refactor path
+def upload_s3(survey_header, organization,period, destination_filename, data, acl="public-read"):
     """upload_s3 uploads a string to s3"""
     conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],
             app.config["AWS_SECRET_ACCESS_KEY"])
     b = conn.get_bucket(app.config["S3_BUCKET"])
 
     file_name=plotpolar(data).getvalue()
-    sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],destination_filename]))
+    sml = b.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"],
+        survey_header, organization, period , destination_filename]))
     sml.set_contents_from_string(file_name)
 
     # TODO investigate, Set the file's permissions.
@@ -52,14 +54,15 @@ def upload_s3(destination_filename, data, acl="public-read"):
 #method here:http://jamiecurle.co.uk/blog/creating-expiring-link-s3/
 
 
-def download_s3(file_title):
+def get_url_s3(file_path):
     s3conn = boto.connect_s3(app.config["AWS_ACCESS_KEY_ID"],app.config["AWS_SECRET_ACCESS_KEY"])
     bucket = s3conn.get_bucket(app.config["S3_BUCKET"])
-    key = bucket.get_key(file_title)
+    key = bucket.get_key('/'.join([app.config["S3_UPLOAD_DIRECTORY"], file_path]))
     seconds = 60*5
     url = key.generate_url(expires_in=seconds)
     return url
 
 # then 
 # g.url = download_s3('some_title')
+# print(get_url_s3('staging/Pallative Care Index/Arizona Heart/test/2013'))
 
