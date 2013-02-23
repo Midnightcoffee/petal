@@ -4,238 +4,180 @@ Date: 2012-11
 Author: Drew Verlee
 Description: contains the views for the webapp
 '''
-
-from flask import make_response, render_template, url_for, request, redirect\
-    , session, g, flash, session, request
-from petalapp.database.models import User, Hospital, Question, Survey, Answer,\
-        ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER,Question_header
-from petalapp import db, app, lm,app
-from flask.ext.login import login_user, logout_user, current_user, login_required\
-        , LoginManager
-from forms import LoginForm
-from petalapp.graphing_tools.graph import plotpolar
-from aws_tools import upload_s3, download_s3
+import datetime
+from flask import render_template, url_for, redirect, session, g, request
+from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
-    UserNeed, Identity, identity_changed, Need, AnonymousIdentity
-
-# FIXME: move problem import error
-#older code
+    Identity, identity_changed, AnonymousIdentity
+from petalapp.database.models import User, Question, Answer , \
+    Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
+    OptionChoice, OptionGroup,InputType,UserSurveySection, Period, AssignedDue,\
+    ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
+from petalapp import db, app, lm
+from aws_tools import upload_s3, get_url_s3
+from petalapp.database.db_functions import unpack
+# permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_permission = Permission(RoleNeed(ROLE_ADMIN))
 
-#@identity_loaded.connect_via(app)
-#def on_identity_loaded(sender, identity):
-#    identity.user = current_user
-#
-#    if hasattr(current_user):
-#        identity.provides.add(RoleNeed(current_user.role))
-#
 
-#example TODO remove
+
+
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
-    """ identity.name is the g.user.role so for admin=2,contributer=1,viewer=0"""
+    """ identity.name is  g.user.role se for admin=2,contributer=1,viewer=0"""
     for roles in range(identity.name+1):
         identity.provides.add(RoleNeed(roles))
-
-#    if identity.name == 'admin':
-#        identity.provides.add(Need('superuser', 'my_value'))
-#    elif identity.name == 'bill':
-#        identity.provides.add(Need('need1', 'my_value'))
-#    elif identity.name == 'sally':
-#        identity.provides.add(Need('need2', 'my_value'))
-        #TODO add some flashing
-
 
 
 @app.before_request
 def before_request():
     '''run before every url request, to auth our user'''
     g.user = current_user
-    #criteria = [
-    #    request.is_secure,
-    #    app.debug,
-    #    request.headers.get('X-Forwarded-Proto', 'http') == 'https'
-    #]
-    #if not any(criteria):
 
-    #if not app.debug:
-    #    if 'pci_form' in request.url:
-    #        url = request.url.replace('http://','https://',1)
-    #        r = redirect(url)
-    #        return r
+#TODO bulid a proper homepage
+@app.route('/')
+def base():
+    return render_template('base.html')
 
-
-   ## if request.url.startswith("https://"):
-   ##     if request.url.endswith('/') or request.url.endswith('login'):
-   ##         url = request.url.replace('https://','http://',1)
-   ##         print('before url: ', url)
-   ##         return redirect(url)
-
-
-
-
-#@app.after_request
-#def after_request():
-#    """Adds HSTS header to each response."""
-#    response.headers.setdefault('Strict-Transport-Security', self.hsts_header)
-#    return response
-#
-
-#post method possible to make awswtf work?
-
-@app.route("/")
-def index():
-    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET'])
 def login():
+    #TODO dont use g see tiny module
     if g.user.is_active():
-        perm1 = Permission(RoleNeed(g.user.role))
+        # perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
         session['logged_in'] = True
         rolelevel = g.user.role
         #TODO add some flashing
+        #TODO consider maybe an add page... or something else?
     else:
-        perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
+        # perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
-    return render_template('login.html', perm1=perm1,level=rolelevel)
-
+        #conider having a role level for anonymous
+    if rolelevel:
+        rolelevel = ['visitor','contributer', 'administrator'][rolelevel]
+    return render_template('login.html', rolelevel=rolelevel, user=g.user)
 
 
 @app.route('/logout')
 def logout():
-    # TODO figure out broswerID logout
     identity_changed.send(app, Identity=AnonymousIdentity())
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
 
-@app.route('/pci_form2', methods = ['GET'])
+
+#TOD rename
+@app.route('/super_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required
-def pci_form2():
-    #users_hospitals = g.user.hospitalsjj
-    surveys = Survey.query.all()
-    question_headers = Question_header.query.all()
-    return render_template('pci_form2.html',user=g.user, 
-            surveys=surveys) # TODO: send only name?
+def super_survey():
+    #FIXME better way to see if survey?
+    session['s3'] = None
+    user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+        nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+        nullslast()).first() else None for x in g.user.organizations]
+    survey_tables = unpack(user_survey_section_ids)
+    if  request.method == 'POST':
+        session['user_survey_section_ids'] = []
+        for survey_table in survey_tables:
+            session['user_survey_section_ids'].append(request.form.
+                    get(str(survey_table.user_survey_section_id)))
+        if session['user_survey_section_ids']:
+            return redirect(url_for('selection'))
+    return render_template('super_survey.html',survey_tables=survey_tables,
+            s3=session['s3']) #package=package)
+
+#TODO bc primary keys start at 1 have questions start at 1 to.
+#TODO move
+#TODO were in UTC time switch it to local time
+#FIXME move me
+def extract_data(data):
+    return [data.standard_form, data.marketing_education, data.record_availability,
+    data.family_centerdness, data.pc_networking, data.education_and_training,
+    data.team_funding, data.coverage, data.pc_for_expired_pts,
+    data.hospital_pc_screening, data.pc_follow_up, data.post_discharge_services,
+    data.bereavement_contacts, data.certification, data.team_wellness,
+    data.care_coordination]
 
 
-@app.route('/add_pci_form2', methods = ['POST', 'GET'])
-@login_required
+@app.route('/selection',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
-def add_pci_form2():
-    selected_hospital = request.form['hospital']
-    render_template('pci_form2.html')
+@login_required
+def selection():
 
-#@app.route('/add_pci_form', methods = ['POST', 'GET'])
-#@login_required
-#def add_pci_form():
-#    test_hospital_title = 'detroit_receiving'
-#    test_hospital = Hospital(test_hospital_title)
-#    #TODO remove me
-#    db.session.add(test_hospital)
-#    db.session.commit()
-#    #TODO what if not integer
-#    test_data = Data(int(request.form['standard_form']),
-#                    int(request.form['marketing_education']),
-#                    int(request.form['record_availability']),
-#                    int(request.form['family_centerdness']),
-#                    int(request.form['pc_networking']),
-#                    int(request.form['education_and_training']),
-#                    int(request.form['team_funding']),
-#                    int(request.form['coverage']),
-#                    int(request.form['pc_for_expired_pts']),
-#                    int(request.form['hospital_pc_screening']),
-#                    int(request.form['pc_follow_up']),
-#                    int(request.form['post_discharge_services']),
-#                    int(request.form['bereavement_contacts']),
-#                    int(request.form['certification']),
-#                    int(request.form['team_wellness']),
-#                    int(request.form['care_coordination'])
-#                    )
-#    db.session.add(test_data)
-#    db.session.commit()
-#    test_hospital.data.append(test_data)
-#    latest_sample_data= Data.query.all().pop()
-#    sample_hospital = Hospital.query.get(1)
-#    package = [str(latest_sample_data.timestamp),'fake quarter', '100',
-#            [latest_sample_data.standard_form,
-#             latest_sample_data.marketing_education,
-#             latest_sample_data.record_availability,
-#             latest_sample_data.family_centerdness,
-#             latest_sample_data.pc_networking,
-#             latest_sample_data.education_and_training,
-#             latest_sample_data.team_funding,
-#             latest_sample_data.coverage,
-#             latest_sample_data.pc_for_expired_pts,
-#             latest_sample_data.hospital_pc_screening,
-#             latest_sample_data.pc_follow_up,
-#             latest_sample_data.post_discharge_services,
-#             latest_sample_data.bereavement_contacts,
-#             latest_sample_data.certification,
-#             latest_sample_data.team_wellness,
-#             latest_sample_data.care_coordination]]
-#    #TODO refactor ,title
-#    title = str(latest_sample_data.timestamp)+ ' fake quarter ' + sample_hospital.name
-#    in_file = 'charts/'
-#    upload_s3(title , package)
-#    url =download_s3(in_file + title)
-#    return render_template(test_hospital_title + '.html', url=url)
-#
-#
+    if not session.get('user_survey_section_ids',None):
+        return redirect(url_for('super_survey'))
+
+    survey_tables = unpack(session['user_survey_section_ids'])
+    if request.method == 'POST':
+        for survey_table in survey_tables:
+            data_section_total = 0
+            question_ids = request.form.getlist(str(survey_table.survey_section_id))
+            survey_section = SurveySection.query.get(survey_table.survey_section_id)
+            user_survey_section = UserSurveySection.query.get(survey_table.user_survey_section_id)
+            data_id = user_survey_section.data.id
+            data = Data.query.get(data_id)
+            for question in survey_section.questions:
+                if unicode(question.id) in question_ids: # because unicode
+                    answer = Answer(tf=True)
+                else:
+                    answer = Answer(tf=False)
+                option_choice = OptionChoice.query.filter_by(name='True').one()
+                question_option = db.session.query(QuestionOption).\
+                        filter((QuestionOption.question == question)
+                                & (QuestionOption.option_choice == option_choice)).first()
+                question_option.answers.append(answer)
+                user_survey_section.answers.append(answer)
+                user_survey_section.completed_date  = datetime.datetime.utcnow()
+                organization = Organization.query.get(user_survey_section.organization.id)
+                period = Period.query.get(user_survey_section.period.id)
+                assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+                nuss = UserSurveySection()
+                organization.user_survey_sections.append(nuss)
+                survey_section.user_survey_sections.append(nuss)
+                period.user_survey_sections.append(nuss)
+                assigned_due.user_survey_sections.append(nuss)
+                data.user_survey_sections.append(nuss)
+                db.session.add(data) #TODO is this necessary?
+                if answer.tf:
+                    data_section_total += question_option.question.value
+            if user_survey_section.survey_section.order == 1:
+                user_survey_section.data.standard_form = data_section_total
+            data_values = extract_data(data)
+            data_values = [int(x) for x in data_values] #TODO unicode
+            #FIXME upload_s3 is calling plotpolar shouldn't
+            #TODO refactor name groupings
+            time = str(datetime.datetime.utcnow())
+            upload_s3(survey_table.survey_header,
+                    organization.name,
+                    period.name,
+                    time + ' ' + survey_table.survey_header
+                    + ' ' + period.name + ' ' + organization.name ,
+                    [survey_table.survey_header, period.name, organization.name, data_values])
+            file_url =  get_url_s3('/'.join([survey_table.survey_header,
+                organization.name, period.name, time + ' ' + survey_table.survey_header
+                    + ' ' + period.name + ' ' + organization.name]))
+            data.url = file_url
+            db.session.commit()
+            #TODO consider saving just 1
+        session['user_survey_section_ids'] = None
+        return redirect(url_for('super_survey'))
+    return render_template('selection.html',survey_tables=survey_tables,
+            SurveySection=SurveySection,user =g.user)
+
+
 @app.errorhandler(404)
 def internal_error(error):
-    return render_template('404.html'), 404
+    return render_template('404.html')
 
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
-    return render_template('500.html'), 500
-
-#@app.route("/map")
-#def map():
-#    '''renders map of united states'''
-#    return render_template('map.html')
-#
-
-#@app.route("/make_charts",methods=['GET','POST'])
-#def make_charts():
-#    '''helps make graphs/charts'''
-#    if request.method == 'POST':
-#        session['number'] = request.form['number']
-#        return redirect(url_for('show_charts'))
-#
-
-#@app.route('/show_charts',methods= ['GET','POST'])
-#def show_charts():
-#    '''helps show graphs'''
-#    #TODO should just copy this code ...
-#    return render_template('show_charts.html')
-#
-
-#@app.route("/polarchart")
-#def simple():
-#    '''dynamically creates a chart'''
-#    try:
-#        num = int(session['number'])
-#        assert (num >= 0 and num <= 10)
-#    except:
-#        num = 10
-#    data = []
-#    response=make_response(plotpolar(data, num).getvalue())
-#    response.headers['Content-Type'] = 'image/png'
-#    return response
-
-
-#@app.route("/dbshow")
-#def dbindex():
-#    '''builds and shows a query from db'''
-#    mydata = str(Hospital.query.all())
-#    return render_template("dbshow.html",data=mydata)
+    return render_template('500.html')
 
 
 @lm.user_loader
@@ -243,174 +185,26 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-@app.route("/hospitals")
+@app.route("/organization", methods=['GET','POST'])
 @login_required
 @contributer_permission.require(403)
-def hospitals():
-    '''page for hospitals'''
-    return render_template("hospitals.html")
+def organization():
+    '''page for organizations'''
+    session['organization_id'] = None
+    if request.method == 'POST':
+        session['organization_id'] = request.form.get('organization_id',None)
+        #TODO check can i be on this page logic
+        if session['organization_id']:
+            return redirect(url_for('graph_view'))
+    organizations = Organization.query.all()
+    return render_template("organization.html",organizations=organizations)
 
-#below are the views for various hospitals
-#TODO: possible move to their own file?
-#TODO uncapitalized
-@app.route("/MetroWest")
+#TODO rename
+@app.route("/graph_view", methods=['GET','POST'])
 @login_required
-@viewer_permission.require(403)
-def MetroWest():
-    return render_template("MetroWest.html")
-
-
-@app.route("/st_vince")
-@login_required
-@viewer_permission.require(403)
-def st_vince():
-    return render_template("st_vince.html")
-
-
-@app.route("/weiss_memorial")
-@login_required
-@viewer_permission.require(403)
-def weiss_memorial():
-    return render_template("weiss_memorial.html")
-
-
-@app.route("/west_suburban")
-@login_required
-@viewer_permission.require(403)
-def west_suburban():
-    return render_template("west_suburban.html")
-
-
-@app.route("/west_lake")
-@login_required
-@viewer_permission.require(403)
-def west_lake():
-    return render_template("west_lake.html")
-
-
-@app.route("/childrens_hospital_of_michigan")
-@login_required
-@viewer_permission.require(403)
-def childrens_hospital_of_michigan():
-    return render_template("childrens_hospital_of_michigan.html")
-
-
-@app.route("/detroit_receiving")
-@login_required
-@viewer_permission.require(403)
-def detroit_receiving():
-    return render_template("detroit_receiving.html")
-
-
-@app.route("/huron_valley_sinai")
-@login_required
-@viewer_permission.require(403)
-def huron_valley_sinai():
-    return render_template("huron_valley_sinai.html")
-
-
-@app.route("/sinia_grace")
-@login_required
-@viewer_permission.require(403)
-def sinia_grace():
-    return render_template("sinia_grace.html")
-
-
-@app.route("/harper_university")
-@login_required
-@viewer_permission.require(403)
-def harper_university():
-    return render_template("harper_university.html")
-
-
-@app.route("/mac_neal")
-@login_required
-@viewer_permission.require(403)
-def mac_neal():
-    return render_template("mac_neal.html")
-
-
-@app.route("/valley_baptist_harlingen")
-@login_required
-@viewer_permission.require(403)
-def valley_baptist_harlingen():
-    return render_template("valley_baptist_harlingen.html")
-
-
-@app.route("/valley_baptist_brownsville")
-@login_required
-@viewer_permission.require(403)
-def valley_baptist_brownsville():
-    return render_template("valley_baptist_brownsville.html")
-
-
-@app.route("/arizona_heart")
-@login_required
-@viewer_permission.require(403)
-def arizona_heart():
-    return render_template("arizona_heart.html")
-
-
-@app.route("/arrow_head")
-@login_required
-@viewer_permission.require(403)
-def arrow_head():
-    return render_template("arrow_head.html")
-
-
-@app.route("/maryvale")
-@login_required
-@viewer_permission.require(403)
-def maryvale():
-    return render_template("maryvale.html")
-
-
-@app.route("/paradise_valley")
-@login_required
-@viewer_permission.require(403)
-def paradise_valley():
-    return render_template("paradise_valley.html")
-
-
-@app.route("/phoenix_baptist")
-@login_required
-@viewer_permission.require(403)
-def phoenix_baptist():
-    return render_template("phoenix_baptist.html")
-
-
-@app.route("/west_valley")
-@login_required
-@viewer_permission.require(403)
-def west_valley():
-    return render_template("west_valley.html")
-
-
-@app.route("/st_lukes")
-@login_required
-@viewer_permission.require(403)
-def st_lukes():
-    return render_template("st_lukes.html")
-
-
-@app.route("/northeast")
-@login_required
-@viewer_permission.require(403)
-def northeast():
-    return render_template("northeast.html")
-
-
-@app.route("/north_central")
-@login_required
-@viewer_permission.require(403)
-def north_central():
-    return render_template("north_central.html")
-
-
-@app.route("/mission_trail")
-@login_required
-@viewer_permission.require(403)
-def mission_trail():
-    return render_template("mission_trail.html")
-
-
+@contributer_permission.require(403)
+def graph_view():
+    data_c_url = db.session.query(Data).join(UserSurveySection).join(Organization).\
+        filter(Organization.id==session['organization_id']).all()
+    urls = [data.url for data in data_c_url]
+    return render_template('graph_view.html', urls=urls)

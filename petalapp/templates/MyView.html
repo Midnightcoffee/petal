@@ -1,0 +1,24 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+    <form action='' method="POST" >
+        <h4>The selected Surveys will be assigned to ALL organizations</h4>
+
+        {% for survey_header in  SurveyHeader.query.all() %}
+            <input type="checkbox" name="survey_headers" value="{{ survey_header.id }}" />{{ survey_header.name }}<br>
+        {% endfor %}
+        <p>For reference take a look at these periods:</p>
+        <p>Creating duplicate events will be detrimental to my mental health</p>
+        <ul>
+        <p>Enter format: YEAR/MONTH/DAY<br></p>
+        Assigned    :<input type="datetime" name="assigned"/><br>
+        Due date    :<input type="datetime" name="due"/><br>
+        period start:<input type="datetime" name="start" /><br>
+        period end  :<input type="datetime" name="end" /><br>
+        period name :<input type="text" name="name"/><br>
+        <strong>Double check dates and names</strong><br>
+        <input type="submit" name="date_sumbited"/><br>
+        {% if error %}
+        {{ error }}
+        {% endif %}
+    </form>
+{% endblock %}

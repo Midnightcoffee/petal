@@ -1,18 +1,91 @@
+########
+DONE
+############
 
+PCI and Hospital palliative care consult survey should be two different survey
+headers. I lose some bundling unity but i avoid sections inside sections and 
+the data seems more true to the form.
 
+So it would be 
+survey_header = pci
+survey_section.name = education and training
+survey_section.subheading = the hospital conductns regular pallative...
+
+which means there is no need for head, full or tail. 
+the section should just be like education and training.
+Just have question.full? ?not sure about name.
 ##########
 To Do:
 ############
-old Procfile: web: gunicorn runserver:app -b 0.0.0.0:$PORT -w 3
-change config to petalapp.config
+A user isn't given organizations he is given sections!,n
+Consider Alembic
+make organization_labels a table in db?
+Your loading all users with all organizations, you need to fix that asap
 Store passwords somewhere, currently in my keepass. 
-READ http://charlesleifer.com/blog/web-based-encrypted-file-storage-using-flask-and-aws/
 Set virtul envs and heroku envs allowed extension and UPLOAD_FOLDER
 Add tests.
 Should be using url_for rather then hard coding urls
-CSS style within div classes.
-make sure to mention d-maps http://d-maps.com/conditions.php?lang=ena,if you
-use the map.
+
+
+render one question at a time, give survey section selection page with reminders, allow for 
+release choice
+
+T/F is a question_group
+a useful question group is like M-S with the times,option groups is for common ranges
+only atm i can only see a use for M-S
+
+option_choice then contains the "M-F 9am-5pm", ... these question_choices 
+then "M-F 9am = 5pm" and M-F 5pm-9am get all get stored in question_options
+along with the question_id so to generate are matrix (and all questions it will be something like)
+if option_group == 'M-S' then
+    for option_group.queryup(option_choices)
+        https://github.com/Midnightcoffee/petal/blob/4d93aef375d6ca1cf58b8f97addd14e988cffa9b/petalapp/templates/pci_form2.html
+else
+    kinda what we already have
+
+that means for the PC coverage / Availability question the question name is On
+Site and it uses
+
+the second layer of surey section will be for example, name=education and training
+subheading = 6. The hospital conducts regular palliative education for 
+department and staff members.  PC education is provided at least 1 hr/year at:
+
+? possible add more characters to surveyseciton name and subheader?
+
+with questions like:
+
+Physician in-service or Medical grand rounds – 2 pts
+ER palliative teaching at physician staff meeting – 2 pts
+Palliative Critical Care in-service or grand rounds – 2 pts
+Nursing PC education at in-services or dept. meetings – 2 pts
+Social work department meeting or educational session – 2 pts
+#
+load user
+load organization
+    load survey head
+        load survey section RECURSIVE SURVEY SECTION
+            for user packages
+                if user_package .. linked with organization
+                    user_instruction store user id
+
+
+
+make data
+check user_survey_sections for most recent completed on datetime
+    check user id
+    check answers with user id.... something something
+
+when user answer
+create answer instance with user_id and question_option_id
+question_option_id will contain info about what was selected and question_id
+for most this will be True or False
+but for M-S it will be ... M-F 9am blah blah
+the question_id will link back how many points
+it will contain some redudent info if the question choice was True or False
+but this is necessary in the case where you have the M-S
+
+
+Don't need tail and head.
 ################
 WORK LOG:
 ##################
@@ -35,7 +108,7 @@ worked on database, switching to image storeage problem
 Connected site to amazons AWS site
 
 2012-11-16ish
-built up infrastructure for hospital views, then copied over urls to site.
+built up infrastructure for organization views, then copied over urls to site.
 
 2012-11-23
 refactoring adding docs

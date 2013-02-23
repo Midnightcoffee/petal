@@ -1,85 +1,121 @@
-import os
-from flask import Flask, Response
-#alternative method
-from flask.ext.sqlalchemy import SQLAlchemy
-#from flask.ext.openid import OpenID
-from flask.ext.login import LoginManager
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
-    MAIL_PASSWORD, SQLALCHEMY_DATABASE_URI
+'''
+File: __init__.py
+Date: 2013-02-16
+Author: Drew Verlee
+Description: load up the app, avoid import loops
+'''
 
-from flask.ext.browserid import BrowserID
-from flask_principal import Principal, Permission, RoleNeed
-#from  flask_heroku import Heroku
-#from flask.bycrpt import Bcrypt
-#from petalapp import flask_sslify
-
-#bycrpt extension
-
+import datetime
+from flask import Flask, request
 app = Flask(__name__)
-#configuring from my local computer
-#app.config.from_object('defaultconfig')
 app.config.from_pyfile('config.py')
-#app.config.from_envvar('PETAL_DEV')
-# alternative method to using flask-heroku
-db = SQLAlchemy(app)
-#flask heroku
-#heroku = Heroku(app)
-#db = SQLAlchemy(app)
 
-#login setup
+from flask.ext.sqlalchemy import SQLAlchemy
+db = SQLAlchemy(app)
+
+from flask.ext.login import LoginManager
+from flask_principal import Principal
 lm = LoginManager()
 lm.init_app(app)
-#oid = OpenID(app, os.path.join(basedir, './tmp')) #old version
-#oid = OpenID(app, './tmp') #on a whim
-
-
-
 principles = Principal(app)
 
-#flask Principle #TODO better in config?
-from petalapp.database import models
-from petalapp import views
+from petalapp.flask_browserid.flaskext.browserid import BrowserID
 from browserid_tools import get_user_by_id, get_user
-
 login_manager = LoginManager()
 login_manager.user_loader(get_user_by_id)
 login_manager.init_app(app)
-
 browserid = BrowserID()
 browserid.user_loader(get_user)
 browserid.init_app(app)
 
-
 from flask.ext.sslify import SSLify
 sslify = SSLify(app)
 
-#note that we are only enabling the emails when we run without debugging.
-#
-#Testing this on a development PC that does not have an email server is easy,
-#thanks to Python's SMTP debugging server. Just open a new console window
-#(command prompt for Windows users) and run the following to start a fake email server:
-#python -m smtpd -n -c DebuggingServer localhost:25
-#
-#if not app.debug:
-#    import logging
-#    from logging.handlers import SMTPHandler
-#    credentials = None
-#    if MAIL_USERNAME or MAIL_PASSWORD:
-#        credentials = (MAIL_USERNAME, MAIL_PASSWORD)
-#    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT),
-#        'no-reply@' + MAIL_SERVER, ADMINS, 'microblog failure', credentials)
-#    mail_handler.setLevel(logging.ERROR)
-#    app.logger.addHandler(mail_handler)
-#
-#
-#if not app.debug:
-#    import logging
-#    from logging.handlers import RotatingFileHandler
-#    file_handler = RotatingFileHandler('tmp/petal.log', 'a', 1 * 1024 * 1024, 10)
-#    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-#    app.logger.setLevel(logging.INFO)
-#    file_handler.setLevel(logging.INFO)
-#    app.logger.addHandler(file_handler)
-#    app.logger.info('petal startup')
-#
+# Can't seem to separate out these into there own files
+from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin import BaseView, expose, Admin
+from flask.ext.login import current_user
+from petalapp.database.models import User, Organization, UserSurveySection,\
+        SurveyHeader, Period, AssignedDue, Question, Answer, QuestionOption, Data
 
+#admin
+class ReturnToApp(BaseView):
+    @expose('/')
+    def return_to_app(self):
+        return self.render('index.html')
+
+
+class MyView(BaseView):
+
+    @expose('/', methods=('GET','POST'))
+    def MyView(self):
+        # YEAR MONTH DAY
+
+        survey_headers = None
+        error = None
+        if request.method == 'POST':
+            survey_header_ids = [int(y) for y in request.form.getlist('survey_headers')]
+
+            assigned = datetime.date(*[int(x) for x in
+                request.form.get('assigned','0').split('/')])
+
+            due = datetime.date(*[int(x) for x in
+                request.form.get('due', '0').split('/')])
+
+            start = datetime.date(*[int(x) for x in
+                request.form.get('start', '0').split('/')])
+
+            end = datetime.date(*[int(x) for x in
+                request.form.get('end', '0').split('/')])
+
+            name = request.form.get('name', None)
+
+            p = Period(name=name, start=start, end=end)
+            ad = AssignedDue(assigned=assigned, due=due)
+            db.session.add(ad)
+            db.session.add(p)
+            for organization in Organization.query.all():
+
+                for survey_header_id in survey_header_ids:
+                    survey_header = SurveyHeader.query.get(survey_header_id)
+                    if survey_header.name  == "Pallative Care Index":
+                        data = Data()
+                        db.session.add(data)
+                    for survey_sections in survey_header.survey_sections:
+                        uss = UserSurveySection()
+                        db.session.add(uss)
+                        db.session.flush()
+                        organization.user_survey_sections.append(uss)
+                        survey_sections.user_survey_sections.append(uss)
+                        p.user_survey_sections.append(uss)
+                        ad.user_survey_sections.append(uss)
+                        data.user_survey_sections.append(uss)
+
+            db.session.commit()
+            error =  "success"
+
+        return self.render('MyView.html', current_user=current_user,
+                SurveyHeader=SurveyHeader, survey_headers=survey_headers, error=error,
+                Period=Period,AssignedDue=AssignedDue, UserSurveySection=UserSurveySection)
+
+    def is_accessible(self):
+        return current_user.is_authenticated() and current_user.role == 2
+
+class MyModelView(ModelView):
+
+    @expose('/models/')
+    def index(self):
+        return self.render('index.html')
+
+    def is_accessible(self):
+        return current_user.is_authenticated() and current_user.role == 2
+
+admin = Admin(app, name='Gardner')
+admin.add_view(ReturnToApp(name='return to website'))
+admin.add_view(MyView(name="Create a survey event"))
+admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelView(Organization, db.session))
+admin.add_view(MyModelView(UserSurveySection, db.session))
+admin.add_view(MyModelView(Question, db.session))
+admin.add_view(MyModelView(Answer, db.session))
+admin.add_view(MyModelView(QuestionOption, db.session))

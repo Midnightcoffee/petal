@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="entries">
+    <form action="" method="POST" accept-charset="utf-8">
+        <h3>Select the organization whose graph you would like to see:</h3>
+        {% for organization in organizations %}
+        <input type="radio" name="organization_id" value="{{ organization.id }}" />
+            {{ organization.name }}<br>
+        {% endfor %}
+        <input type="submit" name="organization_submit"/>
+        {% if error %}
+            <strong>{{ error }}</strong>
+        {% endif %}
+    </form>
+  </div>
+{% endblock %}

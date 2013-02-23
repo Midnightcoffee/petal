@@ -1,7 +1,7 @@
 petal
 =====
 
-A web app displaying data about hospitals around the U.S
+A web app displaying data about organizations around the U.S
 
 
 

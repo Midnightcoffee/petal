@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class='entries'>
+        <form action="" method="POST" accept-charset="utf-8">
+            {% set organization = Organization.query.get(organization_id) %}
+            {% set survey_header = SurveyHeader.query.get(survey_header_id) %}
+            <h3>Select survey section in {{ survey_header }} for {{ organization.name }}</h3>
+            {% for survey_section in survey_header.survey_sections %}
+            <input type="radio" name="survey_section_id"
+            value="{{ survey_section.id }}" />{{ survey_section.name }}<br>
+            {%  endfor %}
+            <input type="submit" name="survey_section_submit" />
+            {% if error %}
+            <strong> {{ error }}</strong>
+            {% endif %}
+        </form>
+    </div>
+{% endblock %}

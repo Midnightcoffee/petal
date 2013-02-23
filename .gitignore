@@ -36,3 +36,4 @@ pci_notes/
 #sensitive data
 petalapp/db_temp.py
 
+build_docs/

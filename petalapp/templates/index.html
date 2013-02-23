@@ -1,4 +1,7 @@
-{% extends "base.html" %}
-{% block content %}
-<img src ="{{ url_for('static', filename='flower350.jpg') }}" alt="flower" usemap="#logos">
+{% extends 'admin/master.html' %}
+{% block body %}
+        <a href="{{ url_for('login') }}">Login/Logout</a><br />
+        <a href="{{ url_for('organization') }}">hospitals</a><br />
+        <a href="{{ url_for('super_survey') }}">survey</a><br />
+        <a href="/admin/">admin</a>
 {% endblock %}
