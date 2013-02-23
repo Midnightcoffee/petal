@@ -1,6 +1,6 @@
 import unittest
 from petalapp import db
-from pci_notes.name_storage import market_organization
+# from pci_notes.name_storage import market_organization
 from petalapp.database.db_functions import add_unique, number_of_organizations
 from petalapp.database.models import User, Market, Organization, SurveyComment,\
     SurveyHeader, SurveySection, Question, Answer, QuestionOption, OptionChoice,\
@@ -26,5 +26,5 @@ class test_live_db(unittest.TestCase):
                 "2, actual size: " + str(survey_per_org)
             self.assertEqual(survey_per_org, 2, message)
 
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()
