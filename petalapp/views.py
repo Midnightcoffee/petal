@@ -4,24 +4,25 @@ Date: 2012-11
 Author: Drew Verlee
 Description: contains the views for the webapp
 '''
-
-from collections import namedtuple
+import datetime
 from flask import render_template, url_for, redirect, session, g, request
 from flask.ext.login import current_user, login_required
 from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
     Identity, identity_changed, AnonymousIdentity
-
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType,UserSurveySection, Period, AssignedDue,\
     ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
 from petalapp import db, app, lm
 from aws_tools import upload_s3, get_url_s3
-
+from petalapp.database.db_functions import unpack
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
 admin_permission = Permission(RoleNeed(ROLE_ADMIN))
+
+
+
 
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
@@ -29,14 +30,17 @@ def on_identity_loaded(sender, identity):
     for roles in range(identity.name+1):
         identity.provides.add(RoleNeed(roles))
 
+
 @app.before_request
 def before_request():
     '''run before every url request, to auth our user'''
     g.user = current_user
 
-@app.route("/")
-def home():
-    return render_template('home.html')
+#TODO bulid a proper homepage
+@app.route('/')
+def base():
+    return render_template('base.html')
+
 
 
 @app.route('/login', methods=['GET'])
@@ -49,7 +53,6 @@ def login():
         rolelevel = g.user.role
         #TODO add some flashing
         #TODO consider maybe an add page... or something else?
-
     else:
         # perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
@@ -59,65 +62,11 @@ def login():
     return render_template('login.html', rolelevel=rolelevel, user=g.user)
 
 
-
 @app.route('/logout')
 def logout():
     identity_changed.send(app, Identity=AnonymousIdentity())
     session.pop('logged_in', None)
     return redirect(url_for("login")) #TODO should be something else?
-
-
-
-
-SurveyTable = namedtuple('Survey_Table',['organization','organization_id','survey_header',
-    'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
-    'period_start', 'period_end','assigned','due','questions'])
-
-#TODO MOVE unpack
-def unpack(user_survey_section_ids):
-    survey_tables = []
-    # new = [int(x) for x in user_survey_section_ids if not type(x) == int]
-
-    for user_survey_section_id in user_survey_section_ids:
-        if user_survey_section_id:
-            uss = UserSurveySection.query.get(user_survey_section_id)
-            organization = uss.organization.name
-            organization_id = uss.organization.id
-            ss_id = uss.survey_section.id
-            ss = SurveySection.query.get(ss_id)
-            ss_name = ss.name
-            sh_name = ss.survey_header.name
-            survey_header = sh_name
-            if uss.completed_date:
-                survey_section = ss_name
-                completed = uss.completed_date.strftime("%Y-%d-%m")
-            else:
-                survey_section = uss.completed_date
-                completed = uss.completed_date
-            period_name = uss.period.name
-            period_start = uss.period.start.strftime("%Y-%d-%m")
-            period_end = uss.period.end.strftime("%Y-%d-%m")
-            assigned = uss.assigned_due.assigned.strftime("%Y-%d-%m")
-            due = uss.assigned_due.due.strftime("%Y-%d-%m")
-            survey_table = SurveyTable(
-                    organization=organization,
-                    organization_id=organization_id,
-                    survey_header=survey_header,
-                    survey_section=survey_section,
-                    survey_section_id=ss_id,
-                    user_survey_section_id=user_survey_section_id,
-                    period_name=period_name,
-                    completed=completed,
-                    period_start=period_start,
-                    period_end=period_end,
-                    assigned=assigned,
-                    due=due,
-                    questions=[]
-                    )
-
-            survey_tables.append(survey_table)
-    return survey_tables
-
 
 
 #TOD rename
@@ -130,26 +79,20 @@ def super_survey():
     user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
         nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
         nullslast()).first() else None for x in g.user.organizations]
-
     survey_tables = unpack(user_survey_section_ids)
-
     if  request.method == 'POST':
         session['user_survey_section_ids'] = []
         for survey_table in survey_tables:
             session['user_survey_section_ids'].append(request.form.
                     get(str(survey_table.user_survey_section_id)))
-
         if session['user_survey_section_ids']:
             return redirect(url_for('selection'))
-
-
     return render_template('super_survey.html',survey_tables=survey_tables,
             s3=session['s3']) #package=package)
+
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
 #TODO were in UTC time switch it to local time
-import datetime
-
 #FIXME move me
 def extract_data(data):
     return [data.standard_form, data.marketing_education, data.record_availability,
@@ -203,8 +146,6 @@ def selection():
                     data_section_total += question_option.question.value
             if user_survey_section.survey_section.order == 1:
                 user_survey_section.data.standard_form = data_section_total
-
-
             data_values = extract_data(data)
             data_values = [int(x) for x in data_values] #TODO unicode
             #FIXME upload_s3 is calling plotpolar shouldn't
@@ -216,26 +157,17 @@ def selection():
                     time + ' ' + survey_table.survey_header
                     + ' ' + period.name + ' ' + organization.name ,
                     [survey_table.survey_header, period.name, organization.name, data_values])
-
             file_url =  get_url_s3('/'.join([survey_table.survey_header,
                 organization.name, period.name, time + ' ' + survey_table.survey_header
                     + ' ' + period.name + ' ' + organization.name]))
-
             data.url = file_url
             db.session.commit()
             #TODO consider saving just 1
-
-
-
-
         session['user_survey_section_ids'] = None
         return redirect(url_for('super_survey'))
-
     return render_template('selection.html',survey_tables=survey_tables,
             SurveySection=SurveySection,user =g.user)
-            # , user=g.user, id_packages=session['id_packages'],
-            # SurveySection=SurveySection, Organization=Organization,User=User,
-            # SurveyHeader=SurveyHeader)
+
 
 @app.errorhandler(404)
 def internal_error(error):
@@ -252,7 +184,7 @@ def internal_error(error):
 def load_user(id):
     return User.query.get(int(id))
 
-# FIXME rename
+
 @app.route("/organization", methods=['GET','POST'])
 @login_required
 @contributer_permission.require(403)
@@ -272,9 +204,7 @@ def organization():
 @login_required
 @contributer_permission.require(403)
 def graph_view():
-
     data_c_url = db.session.query(Data).join(UserSurveySection).join(Organization).\
         filter(Organization.id==session['organization_id']).all()
     urls = [data.url for data in data_c_url]
     return render_template('graph_view.html', urls=urls)
-
