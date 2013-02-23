@@ -1,5 +1,4 @@
 from petalapp import db
-import datetime
 ROLE_VIEWER = 0
 ROLE_CONTRIBUTER = 1
 ROLE_ADMIN = 2

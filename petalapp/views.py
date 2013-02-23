@@ -5,20 +5,18 @@ Author: Drew Verlee
 Description: contains the views for the webapp
 '''
 
-from sqlalchemy import func
-from flask import render_template, url_for, redirect\
-    , session, g, request, flash
+from collections import namedtuple
+from flask import render_template, url_for, redirect, session, g, request
+from flask.ext.login import current_user, login_required
+from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
+    Identity, identity_changed, AnonymousIdentity
+
 from petalapp.database.models import User, Question, Answer , \
     Organization, SurveyHeader, SurveySection, SurveyComment, QuestionOption,\
     OptionChoice, OptionGroup,InputType,UserSurveySection, Period, AssignedDue,\
     ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
 from petalapp import db, app, lm
-from flask.ext.login import current_user, login_required
-from flask.ext.principal import Permission, RoleNeed, identity_loaded,\
-    Identity, identity_changed, AnonymousIdentity
-
 from aws_tools import upload_s3, get_url_s3
-from graphing_tools.graph import plotpolar
 
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
@@ -69,7 +67,7 @@ def logout():
     return redirect(url_for("login")) #TODO should be something else?
 
 
-from collections import namedtuple
+
 
 SurveyTable = namedtuple('Survey_Table',['organization','organization_id','survey_header',
     'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
@@ -279,168 +277,4 @@ def graph_view():
         filter(Organization.id==session['organization_id']).all()
     urls = [data.url for data in data_c_url]
     return render_template('graph_view.html', urls=urls)
-
-#below are the views for various organizations
-#TODO: possible move to their own file?
-#TODO uncapitalized
-@app.route("/MetroWest")
-@login_required
-@viewer_permission.require(403)
-def MetroWest():
-    return render_template("MetroWest.html")
-
-
-@app.route("/st_vince")
-@login_required
-@viewer_permission.require(403)
-def st_vince():
-    return render_template("st_vince.html")
-
-
-@app.route("/weiss_memorial")
-@login_required
-@viewer_permission.require(403)
-def weiss_memorial():
-    return render_template("weiss_memorial.html")
-
-
-@app.route("/west_suburban")
-@login_required
-@viewer_permission.require(403)
-def west_suburban():
-    return render_template("west_suburban.html")
-
-
-@app.route("/west_lake")
-@login_required
-@viewer_permission.require(403)
-def west_lake():
-    return render_template("west_lake.html")
-
-
-@app.route("/childrens_organization_of_michigan")
-@login_required
-@viewer_permission.require(403)
-def childrens_organization_of_michigan():
-    return render_template("childrens_organization_of_michigan.html")
-
-
-@app.route("/detroit_receiving")
-@login_required
-@viewer_permission.require(403)
-def detroit_receiving():
-    return render_template("detroit_receiving.html")
-
-
-@app.route("/huron_valley_sinai")
-@login_required
-@viewer_permission.require(403)
-def huron_valley_sinai():
-    return render_template("huron_valley_sinai.html")
-
-
-@app.route("/sinia_grace")
-@login_required
-@viewer_permission.require(403)
-def sinia_grace():
-    return render_template("sinia_grace.html")
-
-
-@app.route("/harper_university")
-@login_required
-@viewer_permission.require(403)
-def harper_university():
-    return render_template("harper_university.html")
-
-
-@app.route("/mac_neal")
-@login_required
-@viewer_permission.require(403)
-def mac_neal():
-    return render_template("mac_neal.html")
-
-
-@app.route("/valley_baptist_harlingen")
-@login_required
-@viewer_permission.require(403)
-def valley_baptist_harlingen():
-    return render_template("valley_baptist_harlingen.html")
-
-
-@app.route("/valley_baptist_brownsville")
-@login_required
-@viewer_permission.require(403)
-def valley_baptist_brownsville():
-    return render_template("valley_baptist_brownsville.html")
-
-
-@app.route("/arizona_heart")
-@login_required
-@viewer_permission.require(403)
-def arizona_heart():
-    return render_template("arizona_heart.html")
-
-
-@app.route("/arrow_head")
-@login_required
-@viewer_permission.require(403)
-def arrow_head():
-    return render_template("arrow_head.html")
-
-
-@app.route("/maryvale")
-@login_required
-@viewer_permission.require(403)
-def maryvale():
-    return render_template("maryvale.html")
-
-
-@app.route("/paradise_valley")
-@login_required
-@viewer_permission.require(403)
-def paradise_valley():
-    return render_template("paradise_valley.html")
-
-
-@app.route("/phoenix_baptist")
-@login_required
-@viewer_permission.require(403)
-def phoenix_baptist():
-    return render_template("phoenix_baptist.html")
-
-
-@app.route("/west_valley")
-@login_required
-@viewer_permission.require(403)
-def west_valley():
-    return render_template("west_valley.html")
-
-
-@app.route("/st_lukes")
-@login_required
-@viewer_permission.require(403)
-def st_lukes():
-    return render_template("st_lukes.html")
-
-
-@app.route("/northeast")
-@login_required
-@viewer_permission.require(403)
-def northeast():
-    return render_template("northeast.html")
-
-
-@app.route("/north_central")
-@login_required
-@viewer_permission.require(403)
-def north_central():
-    return render_template("north_central.html")
-
-
-@app.route("/mission_trail")
-@login_required
-@viewer_permission.require(403)
-def mission_trail():
-    return render_template("mission_trail.html")
-
 

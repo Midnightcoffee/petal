@@ -5,6 +5,7 @@ Author: Drew Verlee
 Description: load up the app, avoid import loops
 '''
 
+import datetime
 from flask import Flask, request
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -32,11 +33,10 @@ sslify = SSLify(app)
 
 # Can't seem to separate out these into there own files
 from flask.ext.admin.contrib.sqlamodel import ModelView
-from petalapp.database.models import User, Organization, UserSurveySection,\
-        SurveyHeader, Period, AssignedDue, Question, Answer, QuestionOption, Data
 from flask.ext.admin import BaseView, expose, Admin
 from flask.ext.login import current_user
-import datetime
+from petalapp.database.models import User, Organization, UserSurveySection,\
+        SurveyHeader, Period, AssignedDue, Question, Answer, QuestionOption, Data
 
 #admin
 class ReturnToApp(BaseView):
