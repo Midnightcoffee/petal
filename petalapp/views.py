@@ -45,16 +45,20 @@ def home():
 def login():
     #TODO dont use g see tiny module
     if g.user.is_active():
-        perm1 = Permission(RoleNeed(g.user.role))
+        # perm1 = Permission(RoleNeed(g.user.role))
         identity_changed.send(app, identity=Identity(g.user.role))
         session['logged_in'] = True
         rolelevel = g.user.role
         #TODO add some flashing
         #TODO consider maybe an add page... or something else?
+
     else:
-        perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
+        # perm1 = Permission(RoleNeed(g.user)) # to represent no level aka Anonymou
         rolelevel = None
-    return render_template('login.html', perm1=perm1,level=rolelevel)
+        #conider having a role level for anonymous
+    if rolelevel:
+        rolelevel = ['visitor','contributer', 'administrator'][rolelevel]
+    return render_template('login.html', rolelevel=rolelevel, user=g.user)
 
 
 
@@ -71,7 +75,7 @@ SurveyTable = namedtuple('Survey_Table',['organization','organization_id','surve
     'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
     'period_start', 'period_end','assigned','due','questions'])
 
-
+#TODO MOVE unpack
 def unpack(user_survey_section_ids):
     survey_tables = []
     # new = [int(x) for x in user_survey_section_ids if not type(x) == int]
@@ -118,6 +122,7 @@ def unpack(user_survey_section_ids):
 
 
 
+#TOD rename
 @app.route('/super_survey',methods = ['GET', 'POST'])
 @contributer_permission.require(403)
 @login_required

@@ -18,7 +18,7 @@ lm = LoginManager()
 lm.init_app(app)
 principles = Principal(app)
 
-from flask.ext.browserid import BrowserID
+from petalapp.flask_browserid.flaskext.browserid import BrowserID
 from browserid_tools import get_user_by_id, get_user
 login_manager = LoginManager()
 login_manager.user_loader(get_user_by_id)
@@ -39,6 +39,12 @@ from flask.ext.login import current_user
 import datetime
 
 #admin
+class ReturnToApp(BaseView):
+    @expose('/')
+    def return_to_app(self):
+        return self.render('index.html')
+
+
 class MyView(BaseView):
 
     @expose('/', methods=('GET','POST'))
@@ -105,6 +111,7 @@ class MyModelView(ModelView):
         return current_user.is_authenticated() and current_user.role == 2
 
 admin = Admin(app, name='Gardner')
+admin.add_view(ReturnToApp(name='return to website'))
 admin.add_view(MyView(name="Create a survey event"))
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(Organization, db.session))

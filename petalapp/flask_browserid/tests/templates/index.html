@@ -1,6 +1,3 @@
-{% extends "base.html" %}
-{% block content %}
-<!-- login is serving as a index at the moment this is ok... -->
 <html>
     <head>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -10,12 +7,8 @@
     <body>
         {% if current_user.is_authenticated() %}
             <button id="browserid-logout">Logout</button>
-            <h3>welcome {{ g.user.name }} </h3>
-            <h3>Your access level is: {{ rolelevel }}</h2>
-        {% else %}
+        {% else %}        
             <button id="browserid-login">Login</button>
         {% endif %}
-        </div>
     </body>
 </html>
-{% endblock %}

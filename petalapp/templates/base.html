@@ -7,12 +7,15 @@
   </head>
   <div class=page>
   <body>
-    <h1>Petal</h1>
       <div class=metanav>
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('organization') }}">hospitals</a>
-        <a href="{{ url_for('super_survey') }}">survey</a>
-        <hr>
+        <div class="nav">
+          <h1>Petal</h1>
+          <a href="{{ url_for('login') }}">Login/Logout</a>
+          <a href="{{ url_for('organization') }}">hospitals</a>
+          <a href="{{ url_for('super_survey') }}">survey</a>
+          <a href="/admin/">admin</a>
+          <hr>
+      </div>
   {% block content %}{% endblock %}
     </div>
   </div>
