@@ -12,6 +12,25 @@ SurveyTable = namedtuple('Survey_Table',['organization','organization_id','surve
     'survey_section','survey_section_id','user_survey_section_id','completed','period_name',
     'period_start', 'period_end','assigned','due','questions'])
 
+# FIXME pitfually slow!
+import datetime
+def most_recent_completed_uss(user):
+    lids = []
+    for o in user.organizations:
+        for sh in o.survey_headers:
+            for ss in sh.survey_sections:
+                l = datetime.datetime(1,1,1)
+                lid = None
+                for uss in ss.user_survey_sections:
+                    if o.id == uss.organization.id:
+                        if l == datetime.datetime(1,1,1):
+                            lid = uss.id
+                        if (uss.completed_date and uss.completed_date >= l):
+                            l = uss.completed_date
+                            lid = uss.id
+                lids.append(lid)
+    return lids
+
 def unpack(user_survey_section_ids):
     """given a list of ids return he labels i need to populate my views"""
     survey_tables = []
@@ -27,10 +46,8 @@ def unpack(user_survey_section_ids):
             sh_name = ss.survey_header.name
             survey_header = sh_name
             if uss.completed_date:
-                survey_section = ss_name
                 completed = uss.completed_date.strftime("%Y-%d-%m")
             else:
-                survey_section = uss.completed_date
                 completed = uss.completed_date
             period_name = uss.period.name
             period_start = uss.period.start.strftime("%Y-%d-%m")
@@ -41,7 +58,7 @@ def unpack(user_survey_section_ids):
                     organization=organization,
                     organization_id=organization_id,
                     survey_header=survey_header,
-                    survey_section=survey_section,
+                    survey_section=ss_name,
                     survey_section_id=ss_id,
                     user_survey_section_id=user_survey_section_id,
                     period_name=period_name,

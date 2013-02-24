@@ -51,7 +51,7 @@ class MyView(BaseView):
     def MyView(self):
         # YEAR MONTH DAY
 #TODO you need to add which organizations are allowed/have which survies.
-#this is the reason for the m-to-m relationship, so that we can expose 
+#this is the reason for the m-to-m relationship, so that we can expose
 # that different organizations have different survies. Below you just assigned
 # all survey sections, ignoring this concept.
 
@@ -82,7 +82,7 @@ class MyView(BaseView):
 
                 for survey_header_id in survey_header_ids:
                     survey_header = SurveyHeader.query.get(survey_header_id)
-                    if survey_header.name  == "Pallative Care Index":
+                    if survey_header.name  == "Pallative Care Index": #FIXME
                         data = Data()
                         db.session.add(data)
                     for survey_sections in survey_header.survey_sections:

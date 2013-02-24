@@ -15,7 +15,7 @@ from petalapp.database.models import User, Question, Answer , \
     ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
 from petalapp import db, app, lm
 from aws_tools import upload_s3, get_url_s3
-from petalapp.database.db_functions import unpack
+from petalapp.database.db_functions import unpack, most_recent_completed_uss
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
@@ -75,10 +75,12 @@ def logout():
 @login_required
 def super_survey():
     #FIXME better way to see if survey?
-    session['s3'] = None
-    user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
-        nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
-        nullslast()).first() else None for x in g.user.organizations]
+    # FIXME move function
+    # user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+    #     nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
+    #     nullslast()).first() else None for x in g.user.organizations]
+    user_survey_section_ids = most_recent_completed_uss(g.user)
+
     survey_tables = unpack(user_survey_section_ids)
     if  request.method == 'POST':
         session['user_survey_section_ids'] = []
@@ -87,8 +89,7 @@ def super_survey():
                     get(str(survey_table.user_survey_section_id)))
         if session['user_survey_section_ids']:
             return redirect(url_for('selection'))
-    return render_template('super_survey.html',survey_tables=survey_tables,
-            s3=session['s3']) #package=package)
+    return render_template('super_survey.html',survey_tables=survey_tables,ids = user_survey_section_ids) #package=package)
 
 #TODO bc primary keys start at 1 have questions start at 1 to.
 #TODO move
@@ -111,11 +112,13 @@ def selection():
     if not session.get('user_survey_section_ids',None):
         return redirect(url_for('super_survey'))
 
+    # TODO rename survey_table
+    # TODO move into own function
     survey_tables = unpack(session['user_survey_section_ids'])
     if request.method == 'POST':
         for survey_table in survey_tables:
             data_section_total = 0
-            question_ids = request.form.getlist(str(survey_table.survey_section_id))
+            question_ids = request.form.getlist(str(survey_table.user_survey_section_id))
             survey_section = SurveySection.query.get(survey_table.survey_section_id)
             user_survey_section = UserSurveySection.query.get(survey_table.user_survey_section_id)
             data_id = user_survey_section.data.id
@@ -144,27 +147,35 @@ def selection():
                 db.session.add(data) #TODO is this necessary?
                 if answer.tf:
                     data_section_total += question_option.question.value
+            #TODO generalize
             if user_survey_section.survey_section.order == 1:
                 user_survey_section.data.standard_form = data_section_total
+            elif user_survey_section.survey_section.order == 2:
+                user_survey_section.data.marketing_education = data_section_total
+            elif user_survey_section.survey_section.order == 3:
+                user_survey_section.data.record_availability = data_section_total
+            db.session.commit()
+        # possible don't need this datas it was a commit problem.
             data_values = extract_data(data)
             data_values = [int(x) for x in data_values] #TODO unicode
             #FIXME upload_s3 is calling plotpolar shouldn't
             #TODO refactor name groupings
             time = str(datetime.datetime.utcnow())
             upload_s3(survey_table.survey_header,
-                    organization.name,
-                    period.name,
+                    survey_table.organization,
+                    survey_table.period_name,
                     time + ' ' + survey_table.survey_header
-                    + ' ' + period.name + ' ' + organization.name ,
-                    [survey_table.survey_header, period.name, organization.name, data_values])
+                    + ' ' + survey_table.period_name + ' ' + survey_table.organization ,
+                    [survey_table.survey_header, survey_table.period_name, survey_table.organization, data_values])
             file_url =  get_url_s3('/'.join([survey_table.survey_header,
-                organization.name, period.name, time + ' ' + survey_table.survey_header
-                    + ' ' + period.name + ' ' + organization.name]))
+                survey_table.organization, survey_table.period_name, time + ' ' + survey_table.survey_header
+                    + ' ' + survey_table.period_name + ' ' + survey_table.organization]))
             data.url = file_url
+            data.timestamp = time
             db.session.commit()
-            #TODO consider saving just 1
+        #TODO consider saving just 1
         session['user_survey_section_ids'] = None
-        return redirect(url_for('super_survey'))
+        return redirect(url_for('organization'))
     return render_template('selection.html',survey_tables=survey_tables,
             SurveySection=SurveySection,user =g.user)
 
