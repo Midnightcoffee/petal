@@ -8,6 +8,9 @@
         <script type="text/javascript">{{ auth_script|safe }}</script>
     </head>
     <body>
+        <h2>In order to use petal your going to need a Persona by Mozzila</h2>
+        <h3>Just click the login button then follow the instructions index
+        the pop up window "learn more"</h3>
         {% if current_user.is_authenticated() %}
             <button id="browserid-logout">Logout</button>
             <h3>welcome {{ g.user.name }} </h3>
@@ -15,6 +18,7 @@
         {% else %}
             <button id="browserid-login">Login</button>
         {% endif %}
+        <img src='/static/flowerlogin.jpg' alt="" />
         </div>
     </body>
 </html>

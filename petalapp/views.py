@@ -38,8 +38,11 @@ def before_request():
 
 #TODO bulid a proper homepage
 @app.route('/')
-def base():
-    return render_template('base.html')
+def home():
+    return render_template('home.html')
+
+
+
 
 
 
