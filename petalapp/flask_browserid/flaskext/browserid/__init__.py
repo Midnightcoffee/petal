@@ -74,7 +74,7 @@ class BrowserID(object):
         else:
             audience = flask.request.url_root.replace('http','https')
         payload = dict(
-            assertion = flask.request.form['assertion'], 
+            assertion = flask.request.form['assertion'],
             audience =audience) # a slight change
         response = requests.post('https://verifier.login.persona.org/verify', data=payload)
         if response.status_code == 200:

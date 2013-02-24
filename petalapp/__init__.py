@@ -50,6 +50,10 @@ class MyView(BaseView):
     @expose('/', methods=('GET','POST'))
     def MyView(self):
         # YEAR MONTH DAY
+#TODO you need to add which organizations are allowed/have which survies.
+#this is the reason for the m-to-m relationship, so that we can expose 
+# that different organizations have different survies. Below you just assigned
+# all survey sections, ignoring this concept.
 
         survey_headers = None
         error = None

@@ -18,14 +18,14 @@ from pci_notes.storage.users import users
 
 #TODO move me
 def in_database(instance, table):
-    return table.query.filter_by(name=instance.name).first()
+    return table.query.filter_by(name=instance.name).one()
 
 
 def create_init_database():
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
     for user_package in users:
-        user = User.query.filter_by(name=user_package.name).first()
+        user = User.query.filter_by(name=user_package.name).one()
         if not user:
             user = User(
                     name = user_package.name,
@@ -33,12 +33,12 @@ def create_init_database():
                     )
         # markets
         for market_key in user_package.market_organization:
-            m = Market.query.filter_by(name=market_key).first()
+            m = Market.query.filter_by(name=market_key).one()
             if not m:
                 m =  Market(name=market_key)
             # organizations
             for organization_name in user_package.market_organization[market_key]:
-                org = Organization.query.filter_by(name=organization_name).first()
+                org = Organization.query.filter_by(name=organization_name).one()
                 if not org:
                     org = Organization(name = organization_name)
                 # join
@@ -48,7 +48,7 @@ def create_init_database():
                 # Survey_head
                 for survey_header_package in survey_headers:
                     #survey_header = in_database(survey_header_package, SurveyHeader)
-                    survey_header = SurveyHeader.query.filter_by(name=survey_header_package.name).first()
+                    survey_header = SurveyHeader.query.filter_by(name=survey_header_package.name).one()
                     if not survey_header:
                         survey_header = SurveyHeader(
                                 name = survey_header_package.name
@@ -82,14 +82,14 @@ def create_init_database():
                             # question section merge
                             survey_section.questions.append(question)
                             #input types
-                            input_type = InputType.query.filter_by(name=question_package.input_type).first()
+                            input_type = InputType.query.filter_by(name=question_package.input_type).one()
                             if not input_type:
                                 input_type = InputType( name = question_package.input_type)
                             #merge question input type
                             input_type.questions.append(question)
                             db.session.add(input_type)
                             # OptionGroup
-                            option_group = OptionGroup.query.filter_by(name=question_package.option_group_name).first()
+                            option_group = OptionGroup.query.filter_by(name=question_package.option_group_name).one()
                             if not option_group:
                                 option_group = OptionGroup(
                                         name=question_package.option_group_name
@@ -98,7 +98,7 @@ def create_init_database():
                             db.session.add(option_group)
                             #option choices
                             for choice in question_package.option_choice:
-                                option_choice = OptionChoice.query.filter_by(name=choice).first()
+                                option_choice = OptionChoice.query.filter_by(name=choice).one()
                                 if not option_choice:
                                     option_choice = OptionChoice(name=choice)
                                 #merge option group and choice
@@ -107,15 +107,18 @@ def create_init_database():
                                 db.session.add(option_choice)
                                 question_option = db.session.query(QuestionOption).\
                                         filter((QuestionOption.question == question)
-                                                & (QuestionOption.option_choice == option_choice)).first()
+                                                & (QuestionOption.option_choice == option_choice)).one()
                                 if not question_option:
                                     question_option = QuestionOption()
                                     question.question_options.append(question_option)
                                     option_choice.question_options.append(question_option)
-                                db.session.add(option_choice)
-                                db.session.flush()
-    points = UnitOfMeasurement('points')
-    db.session.add(points)
+                                # db.session.flush()
+
+    #TODO generalize points
+    points = UnitOfMeasurement.query.filter_by(name='points').one()
+    if not  points:
+        points = UnitOfMeasurement('points')
+        db.session.add(points)
     db.session.add(user)
     db.session.commit()
 
