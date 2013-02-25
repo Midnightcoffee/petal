@@ -9,14 +9,15 @@
     </head>
     <body>
         <h2>In order to use petal your going to need a Persona by Mozzila</h2>
-        <h3>Just click the login button then follow the instructions index
-        the pop up window "learn more"</h3>
+        <h3>Just click the login button then follow the instructions at the bottom of
+            the pop up window by clicking "learn more". Which will take you to a site and click
+        login. </h3>
         {% if current_user.is_authenticated() %}
-            <button id="browserid-logout">Logout</button>
+            <button id="browserid-logout" class="button">Logout</button>
             <h3>welcome {{ g.user.name }} </h3>
             <h3>Your access level is: {{ rolelevel }}</h2>
         {% else %}
-            <button id="browserid-login">Login</button>
+            <button id="browserid-login" class="button">Login with persona</button>
         {% endif %}
         <img src='/static/flowerlogin.jpg' alt="" />
         </div>
