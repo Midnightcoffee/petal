@@ -6,13 +6,11 @@
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="https://login.persona.org/include.js" type="text/javascript"></script>
         <script type="text/javascript">{{ auth_script|safe }}</script>
-        <link rel=stylesheet type="text/css" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
         <h2>In order to use petal your going to need a Persona by Mozzila</h2>
         <h3>Just click the login button then follow the instructions at the bottom of
-            the pop up window by clicking "learn more". Which will take you to a site and click
-        login. </h3>
+            the pop up window by clicking "learn more". Which will take you to a site and follow the instructions. </h3>
         {% if current_user.is_authenticated() %}
             <button id="browserid-logout" class="button">Logout</button>
             <h3>welcome {{ g.user.name }} </h3>
