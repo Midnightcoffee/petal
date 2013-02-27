@@ -82,7 +82,7 @@ class MyView(BaseView):
 
                 for survey_header_id in survey_header_ids:
                     survey_header = SurveyHeader.query.get(survey_header_id)
-                    if survey_header.name  == "Pallative Care Index": #FIXME
+                    if survey_header.name  == "Palliative Care Index": #FIXME
                         data = Data()
                         db.session.add(data)
                     for survey_sections in survey_header.survey_sections:

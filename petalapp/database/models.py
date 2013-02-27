@@ -323,7 +323,7 @@ class Question(db.Model):
 
 
     #TODO old look over
-    name = db.Column(db.String(500),unique=True)
+    name = db.Column(db.String(500), unique=True)
     order = db.Column(db.Integer)
     value = db.Column(db.Integer)
     answer_required_yn =db.Column(db.Boolean)

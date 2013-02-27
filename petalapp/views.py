@@ -41,9 +41,19 @@ def before_request():
 def home():
     return render_template('home.html')
 
+@app.template_filter('custom_strip')
+def reverse_filters(s):
+    return s[:s.index(' ')]
 
-
-
+@app.route('/sample_table', methods=['GET','POST'])
+def sample_table():
+    survey_section = SurveySection.query.get(9)
+    if request.method == 'POST':
+        id_list = []
+        for q in survey_section.questions:
+            id_list.append(request.form.get(str(q.id), None))
+        return "{0}".format(id_list)
+    return render_template('sample_table.html', survey_section=survey_section)
 
 
 @app.route('/login', methods=['GET'])
@@ -120,6 +130,11 @@ def selection():
     survey_tables = unpack(session['user_survey_section_ids'])
     if request.method == 'POST':
         for survey_table in survey_tables:
+            # if survey_table.user_survey_section_id == pc coverage:
+            # for choice in question.group.choice:
+                # question_ids = request.form.getlist(qustion.name)
+                #data section_total = 0
+                # its own set of rules :(
             data_section_total = 0
             question_ids = request.form.getlist(str(survey_table.user_survey_section_id))
             survey_section = SurveySection.query.get(survey_table.survey_section_id)
@@ -151,11 +166,11 @@ def selection():
                 if answer.tf:
                     data_section_total += question_option.question.value
             #TODO generalize
-            if user_survey_section.survey_section.order == 1:
+            if user_survey_section.survey_section.order == 2:
                 user_survey_section.data.standard_form = data_section_total
-            elif user_survey_section.survey_section.order == 2:
-                user_survey_section.data.marketing_education = data_section_total
             elif user_survey_section.survey_section.order == 3:
+                user_survey_section.data.marketing_education = data_section_total
+            elif user_survey_section.survey_section.order == 4:
                 user_survey_section.data.record_availability = data_section_total
             db.session.commit()
         # possible don't need this datas it was a commit problem.

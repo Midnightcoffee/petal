@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="POST" accept-charset="utf-8">
+{% set column_heading = False %}
+{% set row_heading = False %}
+{{ survey_section.name }}
+  <table >
+    <colgroup span='5' class='columns'></colgroup>
+        {% for q in survey_section.questions %}
+            {% if q.option_group.name != column_heading %}
+                {% set column_heading = q.option_group.name %}
+                <tr>
+                    <th></th>
+                {% for oc in q.option_group.option_choices %}
+                    <th>{{ oc.name }}</th>
+                {% endfor %}
+                </tr>
+            {% endif %}
+            {% if row_heading == False %}
+                {% set row_heading = q.name | custom_strip %}
+                <tr>
+                <th>{{ q.name | custom_strip }}</th>
+                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+            {% elif row_heading != q.name | custom_strip %}
+                {% set row_heading = q.name | custom_strip %}
+                </tr><tr>
+                <th>{{ q.name | custom_strip }}</th>
+                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+            {% else %}
+                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+            {% endif %}
+        {% endfor %}
+    </tr>
+  </table>
+  <input type="submit" name="submit" id="submit" value="submit" />
+</form>
+{% endblock %}

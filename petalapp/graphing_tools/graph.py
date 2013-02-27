@@ -12,6 +12,12 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from random import randrange as rr
 from math import pi
 from petalapp.graphing_tools.labels import organization_labels
+# from pci_notes.survey import pci
+# organization_labels = [ss.name for ss in pci.survey_sections if ss.order !=0]
+# print(organization_labels)
+
+
+
 
 #TODO: do something num and data..and this default, currently num
 #serves only as a teaching method from how to extract a num from session
@@ -30,8 +36,8 @@ def plotpolar(data=[], num=None):
     #ax.set_autoscale_on(False)
     #xmin,xmax,ymin,ymax
     ax.set_ylim(0,10)
-    
-    
+
+
 
     deg = [360/len(organization_labels) * x for x in range(1,len(organization_labels)+1)]
     theta = [i*pi/180 for i in deg]  # convert to radians

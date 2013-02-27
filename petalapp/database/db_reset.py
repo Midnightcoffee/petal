@@ -14,12 +14,15 @@ from petalapp.database.models import User, Organization, SurveyHeader,\
     SurveyComment, SurveySection, UserSurveySection, Answer, \
     UnitOfMeasurement, QuestionOption, OptionChoice, Question,OptionGroup, \
     InputType, ROLE_VIEWER, ROLE_CONTRIBUTER, ROLE_ADMIN, Market
-from pci_notes.storage.survey_headers.pci import survey_headers
-from pci_notes.storage.users import users
-from pci_notes.storage.market_organization import market_organization
-from petalapp.config import SQLALCHEMY_DATABASE_URI
-from pci_notes.storage.name_storage import input_types, option_group_choice,\
-   units_of_measurements
+# from pci_notes.storage.survey_headers.pci import survey_headers
+# from pci_notes.storage.users import users
+# from pci_notes.storage.market_organization import market_organization
+
+# from petalapp.config import SQLALCHEMY_DATABASE_URI
+# from pci_notes.storage.name_storage import input_types, option_groups,\
+#    units_of_measurements
+from pci_notes.survey import markets, users, survey_headers,\
+    input_types, option_groups, units_of_measurements
 
 
 def db_reset():
@@ -29,24 +32,24 @@ def db_reset():
     # units_of_measurements
     uoms = []
     for u_om in units_of_measurements:
-        uom = UnitOfMeasurement(name=u_om)
+        uom = UnitOfMeasurement(name=u_om.name)
         db.session.add(uom)
         uoms.append(uom)
 
     # input_types
     its = []
     for i_t in input_types:
-        it = InputType(name=i_t)
+        it = InputType(name=i_t.name)
         its.append(it)
         db.session.add(it)
 
     # option_group_choice
     ogs = {}
     ocs = []
-    for o_g in option_group_choice:
-        og = OptionGroup(name=o_g)
-        for o_c in option_group_choice[o_g]:
-            oc = OptionChoice(name = o_c)
+    for o_g in option_groups:
+        og = OptionGroup(name=o_g.name)
+        for o_c in o_g.option_choices:
+            oc = OptionChoice(name=o_c.name)
             ocs.append(oc)
             og.option_choices.append(oc)
         db.session.add(og)
@@ -65,10 +68,10 @@ def db_reset():
                         subtext=q_u.subtext,
                     allow_mult_options_answers_yn=q_u.allow_mult_options_answers_yn)
                 for it in its:
-                    if it.name ==  q_u.input_type:
+                    if it.name ==  q_u.input_type.name:
                         it.questions.append(q)
                 for og in ogs:
-                    if og.name == q_u.option_group_name:
+                    if og.name == q_u.option_group.name:
                         og.questions.append(q)
                     for oc in ogs[og]:
                         qo = QuestionOption()
@@ -79,18 +82,18 @@ def db_reset():
         db.session.add(sh)
         shs.append(sh)
 
-    #TODO FIX ME currently were ignoring the idea that organizations might
-    # not have every survey_header
-    # organizations:w
+
     orgs = []
-    for m in market_organization:
-        market = Market(name=m)
-        for o in market_organization[m]:
-            org = Organization(name=o)
+    for m in markets:
+        market = Market(name=m.name)
+        for o in m.organizations:
+            org = Organization(name=o.name)
             for sh in shs:
-                org.survey_headers.append(sh)
+                for osh in o.survey_headers:
+                    if osh.name == sh.name:
+                        org.survey_headers.append(sh)
             orgs.append(org)
-            market.organizations.append(org)
+        market.organizations.append(org)
         db.session.add(market)
 
     for u in users:
