@@ -20,14 +20,14 @@
                 {% set row_heading = q.name | custom_strip %}
                 <tr>
                 <th>{{ q.name | custom_strip }}</th>
-                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
             {% elif row_heading != q.name | custom_strip %}
                 {% set row_heading = q.name | custom_strip %}
                 </tr><tr>
                 <th>{{ q.name | custom_strip }}</th>
-                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
             {% else %}
-                <th><input type="{{ q.input_type.name }}" name="{{ q.id }}" value="{{ q.id }}" />{{q.value }}</th>
+                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
             {% endif %}
         {% endfor %}
     </tr>

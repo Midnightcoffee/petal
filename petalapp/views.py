@@ -42,17 +42,23 @@ def home():
     return render_template('home.html')
 
 @app.template_filter('custom_strip')
-def reverse_filters(s):
-    return s[:s.index(' ')]
+def custom_strip(s):
+    try:
+        return s[:s.index(' ')]
+    except:
+        return s
 
 @app.route('/sample_table', methods=['GET','POST'])
 def sample_table():
-    survey_section = SurveySection.query.get(9)
+    survey_section = SurveySection.query.get(2)
     if request.method == 'POST':
-        id_list = []
+        question_ids = []
+        heading = False
         for q in survey_section.questions:
-            id_list.append(request.form.get(str(q.id), None))
-        return "{0}".format(id_list)
+            if custom_strip(str(q.name)) != heading:
+                heading = custom_strip(str(q.name))
+                question_ids.append(request.form.get(custom_strip(str(q.name))))
+        return "{0}".format(question_ids)
     return render_template('sample_table.html', survey_section=survey_section)
 
 
@@ -121,26 +127,27 @@ def extract_data(data):
 @contributer_permission.require(403)
 @login_required
 def selection():
-
     if not session.get('user_survey_section_ids',None):
         return redirect(url_for('super_survey'))
-
     # TODO rename survey_table
     # TODO move into own function
     survey_tables = unpack(session['user_survey_section_ids'])
     if request.method == 'POST':
         for survey_table in survey_tables:
-            # if survey_table.user_survey_section_id == pc coverage:
-            # for choice in question.group.choice:
-                # question_ids = request.form.getlist(qustion.name)
-                #data section_total = 0
-                # its own set of rules :(
             data_section_total = 0
-            question_ids = request.form.getlist(str(survey_table.user_survey_section_id))
             survey_section = SurveySection.query.get(survey_table.survey_section_id)
             user_survey_section = UserSurveySection.query.get(survey_table.user_survey_section_id)
             data_id = user_survey_section.data.id
             data = Data.query.get(data_id)
+            if survey_section.order == 9:
+                question_ids = []
+                heading = False
+                for q in survey_section.questions:
+                    if custom_strip(str(q.name)) != heading:
+                        heading = custom_strip(str(q.name))
+                        question_ids.append(request.form.get(custom_strip(str(q.name))))
+            else:
+                question_ids = request.form.getlist(str(survey_table.user_survey_section_id))
             for question in survey_section.questions:
                 if unicode(question.id) in question_ids: # because unicode
                     answer = Answer(tf=True)
@@ -165,13 +172,29 @@ def selection():
                 db.session.add(data) #TODO is this necessary?
                 if answer.tf:
                     data_section_total += question_option.question.value
-            #TODO generalize
+            #TODO generalize, ugly solution
             if user_survey_section.survey_section.order == 2:
                 user_survey_section.data.standard_form = data_section_total
             elif user_survey_section.survey_section.order == 3:
                 user_survey_section.data.marketing_education = data_section_total
             elif user_survey_section.survey_section.order == 4:
                 user_survey_section.data.record_availability = data_section_total
+            elif user_survey_section.survey_section.order == 5:
+                user_survey_section.data.family_centerdness = data_section_total
+            elif user_survey_section.survey_section.order == 6:
+                user_survey_section.data.pc_networking = data_section_total
+            elif user_survey_section.survey_section.order == 7:
+                user_survey_section.data.education_and_training = data_section_total
+            elif user_survey_section.survey_section.order == 8:
+                user_survey_section.data.team_funding = data_section_total
+            elif user_survey_section.survey_section.order == 9:
+                user_survey_section.data.coverage = data_section_total
+            elif user_survey_section.survey_section.order == 10:
+                user_survey_section.data.pc_for_expired_pts = data_section_total
+            elif user_survey_section.survey_section.order == 11:
+                user_survey_section.data.hospital_pc_screening = data_section_total
+            elif user_survey_section.survey_section.order == 12:
+                user_survey_section.data.pc_follow_up = data_section_total
             db.session.commit()
         # possible don't need this datas it was a commit problem.
             data_values = extract_data(data)

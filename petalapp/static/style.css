@@ -18,7 +18,7 @@ table,th,td     { border: 1px solid black; }
                   border: 1px solid #AACBE2; }
 .error          { background: #F0D6D6; padding: 0.5em; }
 .nav            {  text-align: right;}
-.table          { table-layout: auto; text-align: left; padding: 2px;}
+.table          { table-layout: fixed; text-align: left; padding: 2px; width 200px}
 .question       { display: block; text-align: left; }
 
 .button {

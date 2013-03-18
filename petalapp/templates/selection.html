@@ -15,34 +15,69 @@
                 <h4>Survey due on:{{ survey_table.due }}</h4>
                 {% set seen_organization = survey_table.organization %}
             {% else %}
-
             {% set seen_organization = survey_table.organization %}
             {% endif %}
             {% set survey_section = SurveySection.query.get(survey_table.survey_section_id) %}
-            {% set seen_survey_section = False %}
-            <table>
-                <tr>
-                    <th><h3>#</h3></th>
-                    <th><h3>question</h3></th>
-                    <th><h3></h3></th>
-                    <th><h3>Value</h3></th>
-                </tr>
-            {% for question in survey_section.questions %}
-                {% if not seen_survey_section == survey_section.name %}
-                <h3>{{ survey_section.order }}: {{ survey_section.name }}</h3>
-                {{ survey_section.subheading }}</br>
-                    {% set seen_survey_section = survey_section.name %}
-                {% endif %}
-                <tr>
-                    <td>{{ question.order }}</td>
-                    <td>{{ question.name }}</td>
-                    <td><input type="{{ question.input_type.name }}"
-                        name="{{ survey_table.user_survey_section_id }}"
-                        value="{{ question.id }}" align="right"/> </td>
-                    <td>{{ question.value }}</td>
-                </tr>
-            {% endfor %}
-            </table>
+            <!-- TODO Combined these somehow -->
+            {% if survey_section.order != 9 %} <!-- this also needs to be more specific  -->
+                {% set seen_survey_section = False %}
+                <table>
+                    <tr>
+                        <th><h3>#</h3></th>
+                        <th><h3>question</h3></th>
+                        <th><h3></h3></th>
+                        <th><h3>Value</h3></th>
+                    </tr>
+                {% for question in survey_section.questions %}
+                    {% if not seen_survey_section == survey_section.name %}
+                    <h3>{{ survey_section.order }}: {{ survey_section.name }}</h3>
+                    {{ survey_section.subheading }}</br>
+                        {% set seen_survey_section = survey_section.name %}
+                    {% endif %}
+                    <tr>
+                        <td>{{ question.order }}</td>
+                        <td>{{ question.name }}</td>
+                        <td><input type="{{ question.input_type.name }}"
+                            name="{{ survey_table.user_survey_section_id }}"
+                            value="{{ question.id }}" align="right"/> </td>
+                        <td>{{ question.value }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            {% else %}
+                {% set column_heading = False %}
+                {% set row_heading = False %}
+                <h3>{{ survey_section.order }}:{{ survey_section.name }}</h3>
+                {{ survey_section.subheading }}
+                <table >
+                    <colgroup span='5' class='columns'></colgroup>
+                        {% for q in survey_section.questions %}
+                            {% if q.option_group.name != column_heading %}
+                                {% set column_heading = q.option_group.name %}
+                                <tr>
+                                    <th></th>
+                                {% for oc in q.option_group.option_choices %}
+                                    <th>{{ oc.name }}</th>
+                                {% endfor %}
+                                </tr>
+                            {% endif %}
+                            {% if row_heading == False %}
+                                {% set row_heading = q.name | custom_strip %}
+                                <tr>
+                                <th>{{ q.name | custom_strip }}</th>
+                                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
+                            {% elif row_heading != q.name | custom_strip %}
+                                {% set row_heading = q.name | custom_strip %}
+                                </tr><tr>
+                                <th>{{ q.name | custom_strip }}</th>
+                                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
+                            {% else %}
+                                <th><input type="{{ q.input_type.name }}" name="{{ q.name | custom_strip }}" value="{{ q.id }}" />{{q.value }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </table>
+            {% endif %}
         {% endfor %}
         <input type="submit"/>
     </form>
