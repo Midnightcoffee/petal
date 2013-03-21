@@ -50,7 +50,7 @@
                 <h3>{{ survey_section.order }}:{{ survey_section.name }}</h3>
                 {{ survey_section.subheading }}
                 <table >
-                    <colgroup span='5' class='columns'></colgroup>
+                    <colgroup span='5' ></colgroup>
                         {% for q in survey_section.questions %}
                             {% if q.option_group.name != column_heading %}
                                 {% set column_heading = q.option_group.name %}
