@@ -29,7 +29,7 @@ def most_recent_completed_uss(user):
     for k in r:
         result.append(r[k].id)
     result.sort() #FIXME i don't believe this will work
-    return result[0:10]
+    return result
 
 
 

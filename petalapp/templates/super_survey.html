@@ -4,34 +4,62 @@
   <form action="" method="POST" accept-charset="utf-8">
       <h3>Please select the survey sections you would like to complete</h3>
     <table>
-      <colgroup span="10"></colgroup>
+      <colgroup span="18"></colgroup>
         <tr>
           <th>Organization</th>
           <th>Survey Header</th>
-          <th>Survey Section</th>
           <th>Period name</th>
           <th>Completed</th>
-          <th>Period start</th>
-          <th>Period end</th>
-          <th>Assigned</th>
           <th>Due</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3 </th>
+          <th>4</th>
+          <th>5</th>
+          <th>6</th>
+          <th>7</th>
+          <th>8</th>
+          <th>9</th>
+          <th>10</th>
+          <th>11</th>
+          <th>12</th>
+          <th>13</th>
+          <th>14</th>
+          <th>15</th>
+          <th>16</th>
+          <th>17</th>
+          <th>18</th>
+          <th>19</th>
+          <th>20</th>
+          <th>21</th>
+          <th>22</th>
           <th></th>
         </tr>
+        {% set oshp = (0,0,0) %}
           {% for  survey_table in survey_tables %}
-          <tr>
-            <td>{{ survey_table.organization }}</td>
-            <td>{{ survey_table.survey_header }}</td>
-            <td>{{ survey_table.survey_section }}</td>
-            <td>{{ survey_table.period_name }}</td>
-            <td>{{ survey_table.completed }}</td>
-            <td>{{ survey_table.period_start }}</td>
-            <td>{{ survey_table.period_end }}</td>
-            <td>{{ survey_table.assigned }}</td>
-            <td>{{ survey_table.due }}</td>
-            <td><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
-                value="{{ survey_table.user_survey_section_id  }}" /></td>
-          </tr>
+            {% if survey_table.completed != None %}
+                {% set color = "#00ff00" %}
+            {% else %}
+                {% set color = "#ff00ff" %}
+            {% endif %}
+            {% if oshp != (survey_table.organization, survey_table.survey_header,
+            survey_table.period_name)  %}
+                {% set oshp = (survey_table.organization, survey_table.survey_header,
+                survey_table.period_name)  %}
+                <tr>
+                    <td>{{ survey_table.organization }}</td>
+                    <td>{{ survey_table.survey_header }}</td>
+                    <td>{{ survey_table.period_name }}</td>
+                    <td>{{ survey_table.completed }}</td>
+                    <td>{{ survey_table.due }}</td>
+                    <td BGCOLOR="{{ color }}"><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
+                        value="{{ survey_table.user_survey_section_id  }}" /></td>
+            {% else %}
+                <td BGCOLOR="{{ color }}"><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
+                    value="{{ survey_table.user_survey_section_id  }}"/></td>
+            {% endif %}
           {% endfor %}
+            </tr>
         <input type="submit"/>
     </table>
   </form>
