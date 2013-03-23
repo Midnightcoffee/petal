@@ -15,7 +15,8 @@ from petalapp.database.models import User, Question, Answer , \
     ROLE_VIEWER, ROLE_ADMIN, ROLE_CONTRIBUTER, Data
 from petalapp import db, app, lm
 from aws_tools import upload_s3, get_url_s3
-from petalapp.database.db_functions import unpack, most_recent_completed_uss
+from petalapp.database.db_functions import unpack #, most_recent_completed_uss
+from petalapp.database.db_query import most_recent_completed_uss
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
@@ -158,43 +159,50 @@ def selection():
                         filter((QuestionOption.question == question)
                                 & (QuestionOption.option_choice == option_choice)).first()
                 question_option.answers.append(answer)
-                user_survey_section.answers.append(answer)
-                user_survey_section.completed_date  = datetime.datetime.utcnow()
-                organization = Organization.query.get(user_survey_section.organization.id)
-                period = Period.query.get(user_survey_section.period.id)
-                assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+            # should be nuss if there is already a completed
+
+            organization = Organization.query.get(user_survey_section.organization.id)
+            period = Period.query.get(user_survey_section.period.id)
+            assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+
+            if user_survey_section.completed_date == None:
+                nuss = user_survey_section
+            else:
                 nuss = UserSurveySection()
-                organization.user_survey_sections.append(nuss)
-                survey_section.user_survey_sections.append(nuss)
-                period.user_survey_sections.append(nuss)
-                assigned_due.user_survey_sections.append(nuss)
-                data.user_survey_sections.append(nuss)
-                db.session.add(data) #TODO is this necessary?
-                if answer.tf:
-                    data_section_total += question_option.question.value
+            nuss.answers.append(answer)
+            nuss.completed_date  = datetime.datetime.utcnow()
+            organization.user_survey_sections.append(nuss)
+            survey_section.user_survey_sections.append(nuss)
+            period.user_survey_sections.append(nuss)
+            assigned_due.user_survey_sections.append(nuss)
+            data.user_survey_sections.append(nuss)
+            db.session.add(data) #TODO is this necessary?
+            db.session.flush()
+            if answer.tf:
+                data_section_total += question_option.question.value
             #TODO generalize, ugly solution
-            if user_survey_section.survey_section.order == 2:
-                user_survey_section.data.standard_form = data_section_total
-            elif user_survey_section.survey_section.order == 3:
-                user_survey_section.data.marketing_education = data_section_total
-            elif user_survey_section.survey_section.order == 4:
-                user_survey_section.data.record_availability = data_section_total
-            elif user_survey_section.survey_section.order == 5:
-                user_survey_section.data.family_centerdness = data_section_total
-            elif user_survey_section.survey_section.order == 6:
-                user_survey_section.data.pc_networking = data_section_total
-            elif user_survey_section.survey_section.order == 7:
-                user_survey_section.data.education_and_training = data_section_total
-            elif user_survey_section.survey_section.order == 8:
-                user_survey_section.data.team_funding = data_section_total
-            elif user_survey_section.survey_section.order == 9:
-                user_survey_section.data.coverage = data_section_total
-            elif user_survey_section.survey_section.order == 10:
-                user_survey_section.data.pc_for_expired_pts = data_section_total
-            elif user_survey_section.survey_section.order == 11:
-                user_survey_section.data.hospital_pc_screening = data_section_total
-            elif user_survey_section.survey_section.order == 12:
-                user_survey_section.data.pc_follow_up = data_section_total
+            if nuss.survey_section.order == 2:
+                nuss.data.standard_form = data_section_total
+            elif nuss.survey_section.order == 3:
+                nuss.data.marketing_education = data_section_total
+            elif nuss.survey_section.order == 4:
+                nuss.data.record_availability = data_section_total
+            elif nuss.survey_section.order == 5:
+                nuss.data.family_centerdness = data_section_total
+            elif nuss.survey_section.order == 6:
+                nuss.data.pc_networking = data_section_total
+            elif nuss.survey_section.order == 7:
+                nuss.data.education_and_training = data_section_total
+            elif nuss.survey_section.order == 8:
+                nuss.data.team_funding = data_section_total
+            elif nuss.survey_section.order == 9:
+                nuss.data.coverage = data_section_total
+            elif nuss.survey_section.order == 10:
+                nuss.data.pc_for_expired_pts = data_section_total
+            elif nuss.survey_section.order == 11:
+                nuss.data.hospital_pc_screening = data_section_total
+            elif nuss.survey_section.order == 12:
+                nuss.data.pc_follow_up = data_section_total
             db.session.commit()
         # possible don't need this datas it was a commit problem.
             data_values = extract_data(data)

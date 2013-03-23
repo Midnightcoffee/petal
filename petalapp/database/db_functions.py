@@ -13,8 +13,10 @@ SurveyTable = namedtuple('Survey_Table',['organization','organization_id','surve
     'period_start', 'period_end','assigned','due','questions'])
 
 # FIXME pitfually slow!
+# FIXME not currently creating unique database
 import datetime
 def most_recent_completed_uss(user):
+
     lids = []
     for o in user.organizations:
         for sh in o.survey_headers:

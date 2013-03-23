@@ -9,7 +9,7 @@ from petalapp.database.models import UserSurveySection,SurveySection, User,\
 from petalapp import db
 from sqlalchemy import func, extract, distinct
 
-def most_recent_completed_uss():
+def most_recent_completed_uss(user):
     # user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().\
     # nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().\
     # nullslast()).first() else None for x in user.organizations]
@@ -57,13 +57,47 @@ def most_recent_completed_uss():
     # for value, m in db.session.query(Organization.id, User.id).distinct().\
     #         filter(Organization.id == 1).all():
     #             print(value, m)
-    count = 0
-    for uss in db.session.query(UserSurveySection.completed_date).filter(
-        (Organization.id == 1) | (Organization.id ==2)).filter(SurveyHeader.id == 1).\
-        filter(SurveySection.id ==1).filter(UserSurveySection.completed_date != None).distinct():
-        count+=1
-        print(uss)
-    print(count)
+    # lids = []
+    # user_ids = [x.id for x in drew.organizations]
+    # for o,ss, uss in db.session.query(Organization,SurveySection, UserSurveySection).\
+    #     filter(Organization.id.in_(user_ids)).\
+    #     filter(Organization.id == UserSurveySection.organization_id).\
+    #     filter(SurveySection.id == UserSurveySection.survey_section_id).\
+    #     filter(UserSurveySection.completed_date != None).\
+    #     distinct():
+    #     lids.append(((o.id, ss.id), uss))
+    # result = {}
+
+    # for oss, uss in lids:
+    #     if oss not in result:
+    #         result[oss] = uss
+    #     else:
+    #         if result[oss].completed_date < uss.completed_date:
+    #             result[oss] = uss
+    # return len(result)
+    r = {}
+    for uss in UserSurveySection.query.all():
+        oss = (uss.organization_id, uss.survey_section_id)
+        if oss not in r:
+            r[oss] = uss
+        else:
+            if not r[oss].completed_date:
+                if uss.completed_date:
+                    r[oss] = uss
+            else:
+                if uss.completed_date and r[oss].completed_date < uss.completed_date:
+                    r[oss] = uss
+    result = []
+    for k in r:
+        result.append(r[k].id)
+
+    result.sort()
+    return result[0:10]
+
+
+
+
+
 
 
 
@@ -75,7 +109,8 @@ def most_recent_completed_uss():
 
 if __name__ == "__main__":
     from pprint import pprint as pp
-    pp(most_recent_completed_uss())
+    drew = User.query.filter_by(name='drew.verlee@gmail.com').one()
+    pp(most_recent_completed_uss(drew))
 
 
 
