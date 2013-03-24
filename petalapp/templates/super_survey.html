@@ -28,19 +28,13 @@
           <th>15</th>
           <th>16</th>
           <th>17</th>
-          <th>18</th>
-          <th>19</th>
-          <th>20</th>
-          <th>21</th>
-          <th>22</th>
-          <th></th>
         </tr>
         {% set oshp = (0,0,0) %}
           {% for  survey_table in survey_tables %}
             {% if survey_table.completed != None %}
-                {% set color = "#00ff00" %}
+                {% set color = "#237E20" %}
             {% else %}
-                {% set color = "#ff00ff" %}
+                {% set color = "#A71266" %}
             {% endif %}
             {% if oshp != (survey_table.organization, survey_table.survey_header,
             survey_table.period_name)  %}

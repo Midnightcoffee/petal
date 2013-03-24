@@ -16,7 +16,7 @@ from petalapp.database.models import User, Question, Answer , \
 from petalapp import db, app, lm
 from aws_tools import upload_s3, get_url_s3
 from petalapp.database.db_functions import unpack #, most_recent_completed_uss
-from petalapp.database.db_query import most_recent_completed_uss
+from petalapp.database.db_query import chain
 # permissions
 viewer_permission = Permission(RoleNeed(ROLE_VIEWER))
 contributer_permission = Permission(RoleNeed(ROLE_CONTRIBUTER))
@@ -99,7 +99,7 @@ def super_survey():
     # user_survey_section_ids = [x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
     #     nullslast()).first().id if x.user_survey_sections.order_by(UserSurveySection.completed_date.desc().
     #     nullslast()).first() else None for x in g.user.organizations]
-    user_survey_section_ids = most_recent_completed_uss(g.user)
+    user_survey_section_ids = chain(g.user)
 
     survey_tables = unpack(user_survey_section_ids)
     if  request.method == 'POST':
@@ -140,6 +140,13 @@ def selection():
             user_survey_section = UserSurveySection.query.get(survey_table.user_survey_section_id)
             data_id = user_survey_section.data.id
             data = Data.query.get(data_id)
+            organization = Organization.query.get(user_survey_section.organization.id)
+            period = Period.query.get(user_survey_section.period.id)
+            assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
+            if user_survey_section.completed_date == None:
+                nuss = user_survey_section
+            else:
+                nuss = UserSurveySection()
             if survey_section.order == 9:
                 question_ids = []
                 heading = False
@@ -154,32 +161,26 @@ def selection():
                     answer = Answer(tf=True)
                 else:
                     answer = Answer(tf=False)
+                nuss.answers.append(answer)
                 option_choice = OptionChoice.query.filter_by(name='True').one()
                 question_option = db.session.query(QuestionOption).\
                         filter((QuestionOption.question == question)
                                 & (QuestionOption.option_choice == option_choice)).first()
                 question_option.answers.append(answer)
+                if answer.tf:
+                    data_section_total += question_option.question.value
             # should be nuss if there is already a completed
 
-            organization = Organization.query.get(user_survey_section.organization.id)
-            period = Period.query.get(user_survey_section.period.id)
-            assigned_due = AssignedDue.query.get(user_survey_section.assigned_due.id)
 
-            if user_survey_section.completed_date == None:
-                nuss = user_survey_section
-            else:
-                nuss = UserSurveySection()
-            nuss.answers.append(answer)
             nuss.completed_date  = datetime.datetime.utcnow()
             organization.user_survey_sections.append(nuss)
             survey_section.user_survey_sections.append(nuss)
             period.user_survey_sections.append(nuss)
             assigned_due.user_survey_sections.append(nuss)
             data.user_survey_sections.append(nuss)
-            db.session.add(data) #TODO is this necessary?
+            # db.session.add(data) #TODO is this necessary?
             db.session.flush()
-            if answer.tf:
-                data_section_total += question_option.question.value
+
             #TODO generalize, ugly solution
             if nuss.survey_section.order == 2:
                 nuss.data.standard_form = data_section_total
@@ -203,25 +204,35 @@ def selection():
                 nuss.data.hospital_pc_screening = data_section_total
             elif nuss.survey_section.order == 12:
                 nuss.data.pc_follow_up = data_section_total
+            elif nuss.survey_section.order == 13:
+                nuss.data.post_discharge_services = data_section_total
+            elif nuss.survey_section.order == 14:
+                nuss.data.bereavement_contacts = data_section_total
+            elif nuss.survey_section.order == 15:
+                nuss.data.certification = data_section_total
+            elif nuss.survey_section.order == 16:
+                nuss.data.team_wellness = data_section_total
+            elif nuss.survey_section.order == 17:
+                nuss.data.care_coordination = data_section_total
             db.session.commit()
         # possible don't need this datas it was a commit problem.
-            data_values = extract_data(data)
-            data_values = [int(x) for x in data_values] #TODO unicode
-            #FIXME upload_s3 is calling plotpolar shouldn't
-            #TODO refactor name groupings
-            time = str(datetime.datetime.utcnow())
-            upload_s3(survey_table.survey_header,
-                    survey_table.organization,
-                    survey_table.period_name,
-                    time + ' ' + survey_table.survey_header
-                    + ' ' + survey_table.period_name + ' ' + survey_table.organization ,
-                    [survey_table.survey_header, survey_table.period_name, survey_table.organization, data_values])
-            file_url =  get_url_s3('/'.join([survey_table.survey_header,
-                survey_table.organization, survey_table.period_name, time + ' ' + survey_table.survey_header
-                    + ' ' + survey_table.period_name + ' ' + survey_table.organization]))
-            data.url = file_url
-            data.timestamp = time
-            db.session.commit()
+        data_values = extract_data(data)
+        data_values = [int(x) for x in data_values] #TODO unicode
+        #FIXME upload_s3 is calling plotpolar shouldn't
+        #TODO refactor name groupings
+        time = str(datetime.datetime.utcnow())
+        upload_s3(survey_table.survey_header,
+                survey_table.organization,
+                survey_table.period_name,
+                time + ' ' + survey_table.survey_header
+                + ' ' + survey_table.period_name + ' ' + survey_table.organization ,
+                [survey_table.survey_header, survey_table.period_name, survey_table.organization, data_values])
+        file_url =  get_url_s3('/'.join([survey_table.survey_header,
+            survey_table.organization, survey_table.period_name, time + ' ' + survey_table.survey_header
+                + ' ' + survey_table.period_name + ' ' + survey_table.organization]))
+        data.url = file_url
+        data.timestamp = time
+        db.session.commit()
         #TODO consider saving just 1
         session['user_survey_section_ids'] = None
         return redirect(url_for('organization'))
