@@ -2,39 +2,39 @@
 {% block content %}
 <div class="table">
   <form action="" method="POST" accept-charset="utf-8">
-      <h3>Please select the survey sections you would like to complete</h3>
-    <table>
+    <table cellspacing="0" table id="table">
+      <caption>Please select the survey sections you would like to complete</caption>
       <colgroup span="18"></colgroup>
         <tr>
-          <th>Organization</th>
-          <th>Survey Header</th>
-          <th>Period name</th>
-          <th>Completed</th>
-          <th>Due</th>
-          <th>1</th>
-          <th>2</th>
-          <th>3 </th>
-          <th>4</th>
-          <th>5</th>
-          <th>6</th>
-          <th>7</th>
-          <th>8</th>
-          <th>9</th>
-          <th>10</th>
-          <th>11</th>
-          <th>12</th>
-          <th>13</th>
-          <th>14</th>
-          <th>15</th>
-          <th>16</th>
-          <th>17</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Survey Header</th>
+          <th scope="col">Period name</th>
+          <th scope="col">Completed</th>
+          <th scope="col">Due</th>
+          <th scope="col">1</th>
+          <th scope="col">2</th>
+          <th scope="col">3 </th>
+          <th scope="col">4</th>
+          <th scope="col">5</th>
+          <th scope="col">6</th>
+          <th scope="col">7</th>
+          <th scope="col">8</th>
+          <th scope="col">9</th>
+          <th scope="col">10</th>
+          <th scope="col">11</th>
+          <th scope="col">12</th>
+          <th scope="col">13</th>
+          <th scope="col">14</th>
+          <th scope="col">15</th>
+          <th scope="col">16</th>
+          <th scope="col">17</th>
         </tr>
         {% set oshp = (0,0,0) %}
           {% for  survey_table in survey_tables %}
             {% if survey_table.completed != None %}
-                {% set color = "#237E20" %}
+                {% set color = "#DCF8FF" %}
             {% else %}
-                {% set color = "#A71266" %}
+                {% set color = "#FFEBF4" %}
             {% endif %}
             {% if oshp != (survey_table.organization, survey_table.survey_header,
             survey_table.period_name)  %}
@@ -54,8 +54,8 @@
             {% endif %}
           {% endfor %}
             </tr>
-        <input type="submit"/>
     </table>
+    <input class="bigbutton" type="button" value="Submit" />
   </form>
 </div>
 {% endblock %}
