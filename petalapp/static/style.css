@@ -3,7 +3,6 @@ a, h1, h2,h3    { color: #377BA8; }
 h1, h2, h3      { font-family: 'Georgia', serif; margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
-/* table,th,td     { border: 1px solid black; } */
 tr:nth-child(even) { background-color: #EBECE4; }
 tr:nth-child(odd) { background-color: white; }
 
@@ -130,10 +129,10 @@ box-shadow: inset 0px 1px 0px #3e9cbf, 0px 5px 0px 0px #205c73, 0px 10px 5px #99
 border-radius: 10px;
 }
 /***SET THE BUTTON'S HOVER AND FOCUS STATES***/
-input#bigbutton:hover, input#bigbutton:focus {
-color:#dfe7ea;
-/*reduce the size of the shadow to give a pushed effect*/
--webkit-box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999;
--moz-box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999;
-box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999;
-}
+/* input#bigbutton:hover, input#bigbutton:focus { */
+/* color:#dfe7ea; */
+/* /*reduce the size of the shadow to give a pushed effect*/ */
+/* -webkit-box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999; */
+/* -moz-box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999; */
+/* box-shadow: inset 0px 1px 0px #3e9cbf, 0px 2px 0px 0px #205c73, 0px 2px 5px #999; */
+/* } */
