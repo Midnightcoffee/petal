@@ -8,9 +8,17 @@
         <script type="text/javascript">{{ auth_script|safe }}</script>
     </head>
     <body>
-        <h2>In order to use petal your going to need a Persona by Mozzila</h2>
-        <h3>Just click the login button then follow the instructions at the bottom of
-            the pop up window by clicking "learn more". Which will take you to a site and follow the instructions. </h3>
+        <h2>If its your first time here, read me:</h2>
+        <p>In order to log in your going to need a Persona account.
+            click the big blue login button. A pop up will appear, in the bottem right corner
+            click "learn more". This will redirect you to a site where you
+            can create a Persona account.  The Persona
+            account will use your email as it's username, however you will want
+            to create a new unique password for your Persona account. Then you use
+            your email/username and Persona password to login to this site.
+            Why all the fuss? <b>Security</b>. Persona is a creation of
+            Mozzila, a leader in web security.</p>
+
         {% if current_user.is_authenticated() %}
             <button id="browserid-logout" class="button">Logout</button>
             <h3>welcome {{ g.user.name }} </h3>

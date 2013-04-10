@@ -276,6 +276,6 @@ def organization():
 @contributer_permission.require(403)
 def graph_view():
     data_c_url = db.session.query(Data).join(UserSurveySection).join(Organization).\
-        filter(Organization.id==session['organization_id']).all()
+        filter(Organization.id==session['organization_id']).all()  # FIXME is USS necessary
     urls = [data.url for data in data_c_url]
     return render_template('graph_view.html', urls=urls)
