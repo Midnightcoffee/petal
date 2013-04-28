@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="table">
-  <form action="" method="POST" accept-charset="utf-8">
+  <form method="POST" accept-charset="utf-8" >
+    <div class="table">
     <table cellspacing="0" table id="table">
       <caption>Please select the survey sections you would like to complete</caption>
-      <colgroup span="18"></colgroup>
+      <colgroup span="19"></colgroup>
         <tr>
           <th scope="col">Organization</th>
           <th scope="col">Survey Header</th>
           <th scope="col">Period name</th>
           <th scope="col">Completed</th>
           <th scope="col">Due</th>
+          <th scope="col">check all</th>
           <th scope="col">1</th>
           <th scope="col">2</th>
           <th scope="col">3 </th>
@@ -30,6 +31,7 @@
           <th scope="col">17</th>
         </tr>
         {% set oshp = (0,0,0) %}
+        {% set start = True %}
           {% for  survey_table in survey_tables %}
             {% if survey_table.completed != None %}
                 {% set color = "#DCF8FF" %}
@@ -37,25 +39,37 @@
                 {% set color = "#FFEBF4" %}
             {% endif %}
             {% if oshp != (survey_table.organization, survey_table.survey_header,
-            survey_table.period_name)  %}
+                survey_table.period_name)  %}
                 {% set oshp = (survey_table.organization, survey_table.survey_header,
                 survey_table.period_name)  %}
+                {% if start %}
+                    {% set start = False %}
+                {% else %}
+                    </tr>
+                {% endif %}
                 <tr>
                     <td>{{ survey_table.organization }}</td>
                     <td>{{ survey_table.survey_header }}</td>
                     <td>{{ survey_table.period_name }}</td>
                     <td>{{ survey_table.completed }}</td>
                     <td>{{ survey_table.due }}</td>
-                    <td BGCOLOR="{{ color }}"><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
-                        value="{{ survey_table.user_survey_section_id  }}" /></td>
+                    <td><input type="checkbox" class="checkall"/></td>
+                    <td BGCOLOR="{{ color }}"><input type="checkbox"
+                        name="{{ survey_table.user_survey_section_id}}"
+                        value="{{ survey_table.user_survey_section_id  }}"
+                        title= "{{ survey_table.survey_section }}" /></td>
             {% else %}
-                <td BGCOLOR="{{ color }}"><input type="checkbox" name="{{ survey_table.user_survey_section_id}}"
-                    value="{{ survey_table.user_survey_section_id  }}"/></td>
+            <td BGCOLOR="{{ color }}"><input type="checkbox"
+                name="{{ survey_table.user_survey_section_id}}"
+                value="{{ survey_table.user_survey_section_id  }}"
+                title= "{{ survey_table.survey_section }}" /></td>
             {% endif %}
           {% endfor %}
             </tr>
     </table>
-    <input class="bigbutton" type="submit" value="Submit" />
+    </div>
+    <input class="bigbutton" type="submit" value="Submit" >
   </form>
-</div>
+
+
 {% endblock %}
