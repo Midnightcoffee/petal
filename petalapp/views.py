@@ -236,8 +236,10 @@ def selection():
         #TODO consider saving just 1
         session['user_survey_section_ids'] = None
         return redirect(url_for('organization'))
+
     return render_template('selection.html',survey_tables=survey_tables,
             SurveySection=SurveySection,user =g.user)
+
 
 
 @app.errorhandler(404)

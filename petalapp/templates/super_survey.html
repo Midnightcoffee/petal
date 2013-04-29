@@ -3,7 +3,13 @@
   <form method="POST" accept-charset="utf-8" >
     <div class="table">
     <table cellspacing="0" table id="table">
-      <caption>Please select the survey sections you would like to complete</caption>
+        <caption>Please select the survey sections you would like to complete, hover over the button to see the section name</caption>
+      <caption>
+          <b>
+            If you DON'T have a Palliative Care Team skip sections 8-17
+         </b>
+    </caption>
+
       <colgroup span="20"></colgroup>
         <tr>
           <th scope="col">Organization</th>
@@ -29,7 +35,6 @@
           <th scope="col">15</th>
           <th scope="col">16</th>
           <th scope="col">17</th>
-          <th scope="col">18</th>
         </tr>
         {% set oshp = (0,0,0) %}
         {% set start = True %}

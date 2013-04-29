@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+    <form action="" method="POST" accept-charset="utf-8">
+        <h3>welcome {{ user }}</h3>
+        {% set seen_organization = False %}
+        {% for survey_table in  survey_tables %}
+            {% if seen_organization != survey_table.organization %}
+                <h2>Organization: {{ survey_table.organization }}</h2>
+                <h2>Survey:{{ survey_table.survey_header }}</h2>
+                <h4>Period: {{ survey_table.period_name }}</h4>
+                <h4>completed: {{ survey_table.completed }}</h4>
+                <h4>Period start: {{ survey_table.period_start }}</h4>
+                <h4>Period end: {{ survey_table.period_end }}</h4>
+                <h4>Survey assigned on:{{ survey_table.assigned }}</h4>
+                <h4>Survey due on:{{ survey_table.due }}</h4>
+                {% set seen_organization = survey_table.organization %}
+            {% else %}
+                {% set seen_organization = survey_table.organization %}
+            {% endif %}
+            {% set survey_section = SurveySection.query.get(survey_table.survey_section_id) %}
+            <!-- TODO Combined these somehow -->
+                {% set seen_survey_section = False %}
+                <table>
+                    <tr>
+                        <th><h3>#</h3></th>
+                        <th><h3>question</h3></th>
+                        <th><h3></h3></th>
+                        <th><h3>Value</h3></th>
+                    </tr>
+                {% for question in survey_section.questions %}
+                    {% if not seen_survey_section == survey_section.name %}
+                    <h3>{{ survey_section.order }}: {{ survey_section.name }}</h3>
+                    {{ survey_section.subheading }}</br>
+                        {% set seen_survey_section = survey_section.name %}
+                    {% endif %}
+                    <tr>
+                        <td>{{ question.order }}</td>
+                        <td>{{ question.name }}</td>
+                        <td><input type="{{ question.input_type.name }}"
+                            name="{{ survey_table.user_survey_section_id }}"
+                            value="{{ question.id }}" align="right"/> </td>
+                        <td>{{ question.value }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+        {% endfor %}
+        <input type="submit"/>
+    </form>
+{% endblock %}

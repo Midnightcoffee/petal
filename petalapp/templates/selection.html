@@ -19,7 +19,7 @@
             {% endif %}
             {% set survey_section = SurveySection.query.get(survey_table.survey_section_id) %}
             <!-- TODO Combined these somehow -->
-            {% if survey_section.order != 9 and survey_section.order  != 18 %} <!-- this also needs to be more specific  -->
+            {% if survey_section.order != 9 and survey_section.order  != 18 and survey_section.order != 1 %} <!-- this also needs to be more specific  -->
                 {% set seen_survey_section = False %}
                 <table>
                     <tr>
@@ -44,7 +44,7 @@
                     </tr>
                 {% endfor %}
                 </table>
-            {% else %}
+            {% elif survey_section.order == 9 or survey_section.order == 18  %}
                 {% set column_heading = False %}
                 {% set row_heading = False %}
                 <h3>{{ survey_section.order }}:{{ survey_section.name }}</h3>
