@@ -1,7 +1,8 @@
 petal
 =====
 
-A web app displaying data about organizations around the U.S
+A webapp allowing over 20 hospitals to take, share and visuzlize data. 
+site lives here: http://warm-atoll-3630.herokuapp.com/
 
 
 
